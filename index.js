@@ -1,5 +1,5 @@
 const platformClient = require("purecloud-platform-client-v2");
-
+const fs = require("fs")
 const client = platformClient.ApiClient.instance;
 client.setEnvironment("mypurecloud.jp"); // Genesys Cloud region
 
@@ -21,7 +21,7 @@ client
         name: "SAMPLE-AGENT_INTERACTION_DETAIL_VIEW",
         timeZone: "Aisa/Singapore",
         exportFormat: "CSV",
-        interval: "2022-07-01T00:00:00/2022-07-07T00:00:00",
+        interval: "2022-06-12T00:00:00/2022-07-07T00:00:00",
         period: "PT30M",
         viewType: "INTERACTION_SEARCH_VIEW",
         read: true,
@@ -38,7 +38,6 @@ client
         hasCustomParticipantAttributes: true,
       })
       .then((data) => {
-        console.log(data);
       })
       .catch((err) => {
         console.log(
@@ -49,19 +48,33 @@ client
 
     let opts = {
       pageNumber: 1, // Number | Page number
-      pageSize: 25, // Number | Page size
+      pageSize: 500, // Number | Page size
     };
 
     apiInstance
       .getAnalyticsReportingExports(opts)
       .then((data) => {
-        console.log(
-          `getAnalyticsReportingExports success! data: ${JSON.stringify(
-            data,
-            null,
-            2
-          )}`
-        );
+        ObjectData = Object.values(data)
+        ObjectData1 = ObjectData[0]
+        ObjectCount1 = Object.values(ObjectData1)
+        EntityElements =Object.keys(ObjectCount1[0]) //entities
+        EntityValues = Object.values(ObjectCount1[0])
+        var TopField = EntityElements.join() + "\n"
+        fs.writeFileSync("demo.csv", TopField)
+         for (i = 0; i < ObjectCount1.length; i++)
+  {
+    
+    Fdata = Object.values(ObjectCount1[i])
+    Filter = Fdata[10]
+    Media = Object.keys(Filter)
+    Type = Object.values(Filter)
+    var mediatype = `${Media}: ${Type}`
+    correctedData = Fdata[10] = mediatype
+    var test1 = (Fdata.join() + "\n")
+    fs.appendFileSync("demo.csv", test1)  
+  
+  }
+        
       })
       .catch((err) => {
         console.log("There was a failure calling getAnalyticsReportingExports");
@@ -72,20 +85,3 @@ client
     console.log("Invalid Credentials");
     throw new Error(err);
   });
-
-// authenticate();
-
-// Manually set auth token or use loginImplicitGrant(...) or loginClientCredentialsGrant(...)
-
-// Get all export metadata
-// apiInstance
-//   .getAnalyticsReportingExportsMetadata()
-//   .then((data) => {
-//     console.log(data);
-//   })
-//   .catch((err) => {
-//     console.log(
-//       "There was a failure calling getAnalyticsReportingExportsMetadata"
-//     );
-//     console.error(err);
-//   });
