@@ -2,14 +2,13 @@ const platformClient = require("purecloud-platform-client-v2");
 const download = require("download");
 const fs = require("fs");
 const fetch = require("node-fetch");
-const creds = require("./creds.json")
+const creds = require("./creds.json");
 const client = platformClient.ApiClient.instance;
 client.setEnvironment("mypurecloud.jp"); // Genesys Cloud region
 
 client
   .loginClientCredentialsGrant(creds.id, creds.secret)
   .then(({ accessToken }) => {
-
     client.setAccessToken(accessToken);
 
     let apiInstance = new platformClient.AnalyticsApi();
@@ -21,12 +20,12 @@ client
 
     apiInstance
       .getAnalyticsReportingExports(opts)
-      .then((data) => {  
-         let entities = data['entities']
-    entities.forEach(entry=>{
-      const url = entry['downloadUrl'];
+      .then((data) => {
+        let entities = data["entities"];
+        entities.forEach((entry) => {
+          const url = entry["downloadUrl"];
           const rootpath = `./reports`;
-          const filepath = `./reports/${entry['viewType']}`;
+          const filepath = `./reports/${entry["viewType"]}`;
           if (!fs.existsSync(rootpath)) {
             fs.mkdirSync(rootpath);
           }
@@ -34,7 +33,7 @@ client
             fs.mkdirSync(filepath);
           }
           const fileoption = {
-            filename: `${entry['viewType']}-${entry['id']}.csv`,
+            filename: `${entry["viewType"]}-${entry["id"]}.csv`,
           };
           const options = {
             headers: {
@@ -42,21 +41,19 @@ client
               ContentType: `application/json`,
             },
           };
-           //datacollection
-         fetch(url, options).then(async(res) => {
+          //datacollection
+          fetch(url, options).then(async (res) => {
             const filelink = res.url;
             await download(filelink, filepath, fileoption).then(() => {
-
               console.log(`Complete Downloading -`, Object.values(fileoption));
             });
           });
-    })
-            
+        });
       })
       .catch((err) => {
         console.log("There was a failure calling getAnalyticsReportingExports");
         console.error(err);
-      });   
+      });
   })
   .catch((err) => {
     console.log("Invalid Credentials");
