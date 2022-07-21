@@ -3,8 +3,9 @@ const download = require("download")
 const fs = require("fs")
 const fetch = require("node-fetch")
 const creds = require("./creds.json")
+var moment = require('moment');
 const { createLogger, format, transports } = require('winston');
-const { combine, timestamp, label, printf } = format;
+const { combine, timestamp, printf } = format;
 const client = platformClient.ApiClient.instance
 
 client.setEnvironment("mypurecloud.jp") // Genesys Cloud region
@@ -13,27 +14,26 @@ client
     .then(({ accessToken }) => {
         client.setAccessToken(accessToken)
         let date = new Date()
-        let i = 0
+        let i = 0  //unique id
         date.setDate(date.getDate() - 1)
         yesterday = date.toISOString().split("T")[0]
         let apiInstance = new platformClient.AnalyticsApi()
         let opts = {
             pageNumber: 1, // Number | Page number
             pageSize: 25, // Number | Page size
-        }
+        } 
         getAnalyticsReportingExports()
         function getAnalyticsReportingExports() {
             apiInstance
                 .getAnalyticsReportingExports(opts)
                 .then(async (data) => {
-                    let entities = data.entities                        
+                    let entities = data.entities     
                     //page && loop
                     if (data.pageCount>=data.pageNumber) {
-                        entities.forEach((entry) => {
-                          //yesterdaydate                          
-                          const filepath = `./reports/${entry.viewType}`
+                        entities.forEach((entry) => {                        
+                          const filepath = `./reports/`
                           const fileoption = {
-                              filename: `${entry.viewType}-${Date.now()}.csv`,
+                              filename: `${entry.viewType}_${moment().format('YYYY_MM_DD HHmmss')}_${i++}.csv`,
                           }
                           const options = {
                               headers: {
@@ -41,15 +41,18 @@ client
                                   ContentType: `application/json`,
                               },
                           }
-                          //datefilter
-                          
+                          //datefilter  
                           if (entry.modifiedDateTime.includes("2022")) {
                               if (entry.status.includes("COMPLETED")) {
                                   // datacollection
+                                 
                                   fetch(entry.downloadUrl, options).then(async (res) => {
                                       const filelink = res.url
                                       await download(filelink, filepath, fileoption).then(() => {
+                                          
+                                          console.log()
                                           logger.info(`Complete Downloading - ${Object.values(fileoption)}`)
+                                          return
                                       })
                                   })
                               } else {
@@ -75,6 +78,7 @@ client
     })
 
 // logger
+
 const myFormat = printf(({ message, timestamp }) => {
     return `${timestamp}: ${message}`;
 });
