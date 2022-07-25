@@ -28,6 +28,6 @@ fetch(`https://login.mypurecloud.jp/oauth/token`, {
 })
   .then(jsonResponse => {
     console.log(jsonResponse);
-    handle(jsonResponse);
+    getReport(jsonResponse);
   })
   .catch(e => console.error(e));
