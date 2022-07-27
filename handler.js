@@ -1,36 +1,60 @@
-const fetch = require(`node-fetch`)
-const ent_handle = require(`./exporting/INTERACTION_SEARCH_VIEW.js`)
+const axios = require(`axios`)
+const download = require('download')
+const fetch = require('node-fetch')
+const moment = require(`moment`)
+var datetime = moment().format('YYYY_MM_DD_hh_mm_ss.SSSSS')
+
+let opts = {
+  pageNumber: 1,
+  pageSize: 25,
+}
 
 function getReport(body) {
-  return fetch(`https://apps.mypurecloud.jp/platform/api/v2/analytics/reporting/exports`, {
-    method: 'GET',
+  const options = {
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `${body.token_type} ${body.access_token}`
-    }
-  })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      } else {
-        throw Error(res.statusText);
-      }
-    })
-    .then(jsonResponse => {
+      Authorization: `Bearer ${body.access_token}`,
+      ContentType: `application/json`,
+    },
+  }
 
-      if (jsonResponse.pageCount >= jsonResponse.pageNumber) {
-        //there is data
-        //console.log(jsonResponse.entities)
-        ent_handle( jsonResponse.entities, body.access_token)
-      }
-      else if (jsonResponse.total == 0) {
-        console.log("there is no data")
-      }
-      else {
-
-      }
+  getData()
+  function getData() {
+    axios({
+      method: 'get',
+      url:
+        'https://apps.mypurecloud.jp/platform/api/v2/analytics/reporting/exports',
+      headers: { Authorization: 'Bearer ' + body.access_token },
+      params: opts,
     })
-    .catch(e => console.error(e));
+      .then((response) => {
+        res = response.data
+        entity = res.entities
+        if (res.pageCount >= res.pageNumber) {
+          entity.forEach((entry) => {
+            const fileoption = {
+              filename: `${entry.viewType}_${datetime}.csv`,
+            }
+
+            if (entry.status.includes('COMPLETED')) {
+              fetch(entry.downloadUrl, options)
+                .then((res) => {
+                  download(res.url, './reports', fileoption).then(() => {
+                    console.log(
+                      `Complete Downloading - ${Object.values(fileoption)}`,
+                    )
+                  })
+                })
+                .catch((e) => console.error(e))
+            }
+          })
+          opts.pageNumber = opts.pageNumber + 1
+          getData()
+        } else if ((res.total = 0)) {
+          console.log('there is no data')
+        }
+      })
+      .catch((e) => console.error(e))
+  }
 }
 
 module.exports = getReport
