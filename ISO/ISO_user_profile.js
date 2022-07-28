@@ -11,10 +11,9 @@ let opts = {
   state: 'active', // String | Only list users of this state
 }
 
+var user = []
 
 function getUserProfile(body) {
-  
-
   // Get the list of available users.
   axios({
     method: 'get',
@@ -26,15 +25,14 @@ function getUserProfile(body) {
       //increment and recursion to be added
       res = response.data
       if(res.pageCount>=res.pageNumber){
-        //console.log(res)
         res = response.data
-        
+        user.push(res)
         //console.log("ISO_user_profile EXPORTED SUCCESSFULLY!")  
         opts.pageNumber = opts.pageNumber+1
         getUserProfile(body)
       }
-      const csv = json2csvParser.parse(res);
-      fs.writeFileSync(`./ISO_reports/ISO_user_profile_${datetime}.csv`,csv)
+      const csv = json2csvParser.parse(user);
+      fs.writeFileSync(`./ISO_reports/ISO_User_Profile_${datetime}.csv`,csv)
     })
     .catch((e) => console.error(e))
 }

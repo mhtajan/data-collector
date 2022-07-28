@@ -22,9 +22,9 @@ function get_inactive(body) {
           //console.log("ISO_inactive_users EXPORTED SUCCESSFULLY!")  
        }
       })
-          const csv = json2csvParser.parse(placeholder) 
+          //const csv = json2csvParser.parse(placeholder) 
           //will add catch error since there is no inactive entries this will result in error
-          fs.writeFileSync("./ISO_reports/ISO_inactive_users"+datetime+".csv",csv)
+          //fs.writeFileSync("./ISO_reports/ISO_inactive_users"+datetime+".csv",csv)
            
     })
     .catch((e) => console.error(e))
