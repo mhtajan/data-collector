@@ -19,6 +19,7 @@ fetch(`https://login.mypurecloud.jp/oauth/token`, {
   body: params,
 })
   .then((res) => {
+    
     if (res.ok) {
       return res.json()
     } else {

@@ -1,7 +1,13 @@
 const axios = require('axios').default
+const moment = require('moment')
+var datetime = moment().format('YYYY_MM_DD')
+const { Parser, transforms: { unwind, flatten } } = require('json2csv');
+const json2csvParser = new Parser({ transforms: [unwind({ blankOut: true }), flatten('__')] });
+const fs = require('fs')
+const path = require('path')
 
 const opts = {
-  interval: '2022-07-22T08:00:00/2022-07-27T08:00:00',
+  interval: '2022-07-26T08:00:00/2022-07-27T08:00:00', //test 1 day interval
   paging: {
     pageSize: 100,
     pageNumber: 1,
@@ -16,9 +22,12 @@ function getUserAct(body) {
     data: opts,
   })
     .then((response) => {
-      //increment and recursion to be added
-      //console.log(JSON.stringify(response.data,null,2))
+      res = response.data
+        const csv = json2csvParser.parse(res);
+        fs.writeFileSync(`./ISO_reports/ISO_User_Activities_${datetime}.csv`,csv)
+        //console.log("ISO_User_Activities EXPORTED SUCCESSFULLY!")  
     })
     .catch((e) => console.error(e))
 }
+
 module.exports = getUserAct

@@ -4,6 +4,7 @@ const ISOviewTypes = fs
   .filter((file) => file.endsWith('.js'))
 
 function tokenizer(body) {
+  ensureDirectoryExistence()
   for (const file of ISOviewTypes) {
     const IsoVT = require(`./ISO/${file}`)
     console.log(file)
@@ -11,4 +12,11 @@ function tokenizer(body) {
   }
 }
 
+function ensureDirectoryExistence(){
+  if(fs.existsSync("./ISO_reports/"))
+  {
+    return true;
+  }
+  fs.mkdirSync("./ISO_reports/")
+}
 module.exports = tokenizer
