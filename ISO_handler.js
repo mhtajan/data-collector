@@ -7,7 +7,7 @@ function tokenizer(body) {
   ensureDirectoryExistence()
   for (const file of ISOviewTypes) {
     const IsoVT = require(`./ISO/${file}`)
-    console.log(file)
+    //console.log(file)
     IsoVT(body)
   }
 }

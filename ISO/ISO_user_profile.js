@@ -4,6 +4,7 @@ const json2csvParser = new Parser({ transforms: [unwind({ blankOut: true }), fla
 const fs = require('fs')
 const moment = require('moment')
 var datetime = moment().format('YYYY_MM_DD')
+const logger = require('../logger.js')
 
 let opts = {
   pageSize: 25, // Number | Page size
@@ -33,8 +34,9 @@ function getUserProfile(body) {
       }
       const csv = json2csvParser.parse(user);
       fs.writeFileSync(`./ISO_reports/ISO_User_Profile_${datetime}.csv`,csv)
+      logger.info("ISO_User_Profile EXPORTED SUCCESSFULLY")
     })
-    .catch((e) => console.error(e))
+    .catch((e) => logger.error(e))
 }
 
 module.exports = getUserProfile

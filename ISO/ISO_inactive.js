@@ -5,7 +5,9 @@ const fs = require('fs');
 const moment = require('moment')
 const path = require('path')
 var datetime = moment().format('YYYY_MM_DD_hh')
-var placeholder =[]
+const logger = require('../logger.js')
+
+var inactive_users =[]
 
 function get_inactive(body) {
   axios({
@@ -18,16 +20,22 @@ function get_inactive(body) {
       entities = data.entities
       entities.forEach((entry) => {
        if (entry.state == 'inactive') {
-          placeholder.push(entry)
-          //console.log("ISO_inactive_users EXPORTED SUCCESSFULLY!")  
+          inactive_users.push(entry)
        }
       })
-          //const csv = json2csvParser.parse(placeholder) 
+      if(inactive_users.length!=0){
+          const csv = json2csvParser.parse(inactive_users) 
           //will add catch error since there is no inactive entries this will result in error
-          //fs.writeFileSync("./ISO_reports/ISO_inactive_users"+datetime+".csv",csv)
+          fs.writeFileSync("./ISO_reports/ISO_inactive_users"+datetime+".csv",csv)
+          logger.info("ISO_inactive_users EXPORTED SUCCESSFULLY!")  
+      }
+      else{
+        logger.info("There are no Inactive Users")
+      }
+          
            
     })
-    .catch((e) => console.error(e))
+    .catch((e) => logger.error(e))
 }
 
 module.exports = get_inactive

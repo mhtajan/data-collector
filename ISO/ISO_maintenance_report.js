@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path')
 const moment = require('moment')
 var datetime = moment().format('YYYY_MM_DD')
+const logger = require('../logger.js')
 
 function getMainteReport(body){
     axios({
@@ -15,8 +16,8 @@ function getMainteReport(body){
         res = response.data
         const csv = json2csvParser.parse(res);
         fs.appendFileSync(`./ISO_reports/ISO_Maintenance_Report_${datetime}.csv`,csv)
-        //console.log("ISO_Maintenance_Report EXPORTED SUCCESSFULLY!")  
-      }).catch(e => console.error(e));
+        logger.info("ISO_Maintenance_Report EXPORTED SUCCESSFULLY!")  
+      }).catch(e => logger.error(e));
 }
 
 module.exports = getMainteReport

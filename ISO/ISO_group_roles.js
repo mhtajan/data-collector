@@ -4,8 +4,8 @@ const { Parser, transforms: { unwind, flatten } } = require('json2csv');
 const json2csvParser = new Parser({ transforms: [unwind({ blankOut: true }), flatten('__')] });
 const fs = require('fs');
 const moment = require('moment');
-const { group } = require('console');
 var datetime = moment().format('YYYY_MM_DD')
+const logger = require('../logger.js')
 
 let opts = {
   pageSize: 500,
@@ -34,10 +34,10 @@ function isoDL(token) {
       }
       const csv = json2csvParser.parse(groups);
         fs.writeFileSync(`./ISO_reports/ISO_GroupRoles_${datetime}.csv`,csv) 
-      //console.log(placeholder)
+      logger.info("ISO_GroupRoles EXPORTED SUCCESSFULLY")
         
     })
-    .catch((e) => console.error(e))
+    .catch((e) => logger.error(e))
 }
 
 function getSub(token, id) {
@@ -52,7 +52,7 @@ function getSub(token, id) {
       const csv = json2csvParser.parse(res);
         fs.writeFileSync(`./ISO_reports/ISO_Subjects_${datetime}.csv`,csv) 
     })
-    .catch((e) => console.error(e))
+    .catch((e) => logger.error(e))
 }
 
 function getMember(token, id) {
@@ -67,7 +67,6 @@ function getMember(token, id) {
       if (res.pageCount >= res.pageNumber) {
         entities = res.entities
         entities.forEach((entry) => {
-          //console.log(entry)
           members.push(entry)
         })
         opts.pageNumber = opts.pageNumber + 1
@@ -76,7 +75,7 @@ function getMember(token, id) {
       const csv = json2csvParser.parse(members);
       fs.writeFileSync(`./ISO_reports/ISO_Get_Member_${datetime}.csv`,csv) 
     })
-    .catch((e) => console.error(e))
+    .catch((e) => logger.error(e))
 }
 
 module.exports = isoDL
