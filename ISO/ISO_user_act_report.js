@@ -1,13 +1,17 @@
 const axios = require('axios').default
 const moment = require('moment')
 var datetime = moment().format('YYYY_MM_DD')
-const { Parser, transforms: { unwind, flatten } } = require('json2csv');
-const json2csvParser = new Parser({ transforms: [unwind({ blankOut: true }), flatten('__')] });
+const {
+  Parser,
+  transforms: { unwind, flatten },
+} = require('json2csv')
+const json2csvParser = new Parser({
+  transforms: [unwind({ blankOut: true }), flatten('__')],
+})
 const fs = require('fs')
 const logger = require('../logger.js')
 
 const userAct = []
-let i = 0
 const opts = {
   interval: '2022-07-22T08:00:00/2022-07-27T08:00:00', //test 1 day interval
   paging: {
@@ -24,21 +28,29 @@ function getUserAct(body) {
     data: opts,
   })
     .then((response) => {
-      res = response.data
-      numberofLoops = Math.floor(res.totalHits/opts.paging.pageSize)
-      addCheck = numberofLoops%1!=0
-      if(addCheck=true){
-        numberofLoops=numberofLoops+1
-      }
-      for(i=0;i<numberofLoops;i++)
-      {
-        const csv = json2csvParser.parse(res);
-        fs.writeFileSync(`./ISO_reports/ISO_User_Activities_Page_${i+1}${datetime}.csv`,csv)
-        logger.info(`ISO_User_Activities_Page_${i+1} EXPORTED SUCCESSFULLY`)
-      }
-      
+      Loop(response.data, body)
     })
     .catch((e) => logger.error(e))
 }
-
+function Loop(res, body) {
+  numberofLoops = Math.floor(res.totalHits / 100) + 1
+  if (opts.paging.pageNumber != numberofLoops) {
+    userD = res.userDetails
+    userD.forEach((user) => {
+      userAct.push(user)
+    })
+    opts.paging.pageNumber = opts.paging.pageNumber + 1
+    getUserAct(body)
+  }
+  if (opts.paging.pageNumber >= numberofLoops) {
+    userD = res.userDetails
+    userD.forEach((user) => {
+      userAct.push(user)
+    })
+    csv = json2csvParser.parse(userAct)
+    fs.writeFileSync(`./ISO_reports/ISO_User_Activities_${datetime}.csv`, csv)
+    logger.info(`ISO_User_Activities EXPORTED SUCCESSFULLY`)
+  }
+  return
+}
 module.exports = getUserAct

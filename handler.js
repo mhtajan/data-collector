@@ -4,16 +4,16 @@ const fetch = require('node-fetch')
 const moment = require(`moment`)
 var datetime = moment().format('YYYY_MM_DD_HH_mm_ss')
 const logger = require('./logger.js')
-
+const { workerData, parentPort } = require('worker_threads')
 let opts = {
   pageNumber: 1,
   pageSize: 25,
 }
-
+getReport(workerData)
 function getReport(body) {
   const options = {
     headers: {
-      Authorization: `Bearer ${body.access_token}`,
+      Authorization: `Bearer ${body}`,
       ContentType: `application/json`,
     },
   }
@@ -24,7 +24,7 @@ function getReport(body) {
       method: 'get',
       url:
         'https://apps.mypurecloud.jp/platform/api/v2/analytics/reporting/exports',
-      headers: { Authorization: 'Bearer ' + body.access_token },
+      headers: { Authorization: 'Bearer ' + body },
       params: opts,
     })
       .then((response) => {
@@ -43,21 +43,18 @@ function getReport(body) {
                     logger.info(
                       `Complete Downloading - ${Object.values(fileoption)}`,
                     )
-                    
                   })
                 })
                 .catch((e) => console.error(e))
             }
           })
-          
+
           opts.pageNumber = opts.pageNumber + 1
           getData()
         } else if ((res.total = 0)) {
           logger.info('there is no data')
         }
       })
-      .catch((e) => logger.error(e))
+      .catch((e) => console.error())
   }
 }
-
-module.exports = getReport

@@ -24,19 +24,19 @@ function getUserProfile(body) {
   })
     .then((response) => {
       //increment and recursion to be added
-      res = response.data
-      if(res.pageCount>=res.pageNumber){
-        res = response.data
-        user.push(res)
-        //console.log("ISO_user_profile EXPORTED SUCCESSFULLY!")  
-        opts.pageNumber = opts.pageNumber+1
-        getUserProfile(body)
-      }
-      const csv = json2csvParser.parse(user);
-      fs.writeFileSync(`./ISO_reports/ISO_User_Profile_${datetime}.csv`,csv)
-      logger.info("ISO_User_Profile EXPORTED SUCCESSFULLY")
+      Loop(response.data, body)
     })
     .catch((e) => logger.error(e))
 }
-
+function Loop(res, body)
+{
+  if(res.pageCount>=res.pageNumber){
+    user.push(res)
+    opts.pageNumber = opts.pageNumber+1
+    getUserProfile(body)
+  }
+    const csv = json2csvParser.parse(user);
+    fs.writeFileSync(`./ISO_reports/ISO_User_Profile_${datetime}.csv`,csv)
+    logger.info("ISO_User_Profile EXPORTED SUCCESSFULLY")
+}
 module.exports = getUserProfile

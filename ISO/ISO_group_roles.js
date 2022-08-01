@@ -1,4 +1,3 @@
-const fetch = require(`node-fetch`)
 const axios = require('axios')
 const { Parser, transforms: { unwind, flatten } } = require('json2csv');
 const json2csvParser = new Parser({ transforms: [unwind({ blankOut: true }), flatten('__')] });
@@ -13,6 +12,7 @@ let opts = {
 }
 var groups =[]
 var members =[]
+var subjects =[]
 function isoDL(token) {
   axios({
     method: 'get',
@@ -49,7 +49,8 @@ function getSub(token, id) {
     .then((response) => {
       //console.log(response.data)
       res = response.data
-      const csv = json2csvParser.parse(res);
+      subjects.push(res)
+      const csv = json2csvParser.parse(subjects);
         fs.writeFileSync(`./ISO_reports/ISO_Subjects_${datetime}.csv`,csv) 
     })
     .catch((e) => logger.error(e))

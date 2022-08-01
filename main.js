@@ -1,7 +1,4 @@
-const handle = require('./handler.js')
 const isohandle = require('./ISO_handler.js')
-const { createLogger, format, transports } = require('winston')
-const { combine, timestamp, printf } = format
 const fetch = require(`node-fetch`)
 const creds = require(`./creds.json`)
 const token = `${creds.id}:${creds.secret}`
@@ -27,7 +24,29 @@ fetch(`https://login.mypurecloud.jp/oauth/token`, {
     }
   })
   .then((jsonResponse) => {
-    handle(jsonResponse) //40viewtypes
+    run(jsonResponse.access_token).catch(err => console.error(err))
     isohandle(jsonResponse) //isoviewtypes
   })
   .catch((e) => console.error(e))
+
+  const { Worker } = require('worker_threads')
+  
+  function runService(workerData) {
+      return new Promise((resolve, reject) => {
+          const worker = new Worker(
+                  './handler.js', { workerData });
+          worker.on('message', resolve);
+          worker.on('error', reject);
+          worker.on('exit', (code) => {
+              if (code !== 0)
+                  reject(new Error(
+  `Stopped the Worker Thread with the exit code: ${code}`));
+          })
+      })
+  }
+    
+  async function run(body) {
+      const result = await runService(body)
+      console.log(result);
+  }
+    
