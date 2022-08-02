@@ -4,7 +4,7 @@ const fetch = require('node-fetch')
 const moment = require(`moment`)
 var datetime = moment().format('YYYY_MM_DD_HH_mm_ss')
 const logger = require('./logger.js')
-const { workerData, parentPort } = require('worker_threads')
+const {workerData} = require('worker_threads')
 let opts = {
   pageNumber: 1,
   pageSize: 25,

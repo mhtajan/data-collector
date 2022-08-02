@@ -6,25 +6,27 @@ const {
   transforms: { unwind, flatten },
 } = require('json2csv')
 const json2csvParser = new Parser({
-  transforms: [unwind({ blankOut: true }), flatten('__')],
+  transforms: [flatten({ objects: true, arrays: true })],
 })
 const fs = require('fs')
 const logger = require('../logger.js')
+const { workerData } = require('worker_threads')
 
 const userAct = []
 const opts = {
-  interval: '2022-07-22T08:00:00/2022-07-27T08:00:00', //test 1 day interval
+  interval: '2022-07-26T08:00:00/2022-07-27T08:00:00', //test 1 day interval
   paging: {
     pageSize: 100,
     pageNumber: 1,
   },
 }
+getUserAct(workerData)
 function getUserAct(body) {
   axios({
     method: 'post',
     url:
       'https://apps.mypurecloud.jp/platform/api/v2/analytics/users/details/query',
-    headers: { Authorization: 'Bearer ' + body.access_token },
+    headers: { Authorization: 'Bearer ' + body },
     data: opts,
   })
     .then((response) => {
@@ -53,4 +55,3 @@ function Loop(res, body) {
   }
   return
 }
-module.exports = getUserAct

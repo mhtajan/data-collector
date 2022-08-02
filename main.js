@@ -24,8 +24,8 @@ fetch(`https://login.mypurecloud.jp/oauth/token`, {
     }
   })
   .then((jsonResponse) => {
+    isohandle(jsonResponse.access_token)
     run(jsonResponse.access_token).catch(err => console.error(err))
-    isohandle(jsonResponse) //isoviewtypes
   })
   .catch((e) => console.error(e))
 
@@ -35,6 +35,7 @@ fetch(`https://login.mypurecloud.jp/oauth/token`, {
       return new Promise((resolve, reject) => {
           const worker = new Worker(
                   './handler.js', { workerData });
+          
           worker.on('message', resolve);
           worker.on('error', reject);
           worker.on('exit', (code) => {
