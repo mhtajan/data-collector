@@ -34,8 +34,8 @@ var groups = []
 var members = []
 var Sub = []
 
-isoDL(workerData)
-function isoDL(token) {
+getGroup(workerData)
+function getGroup(token) {
   axios({
     method: 'get',
     url: 'https://apps.mypurecloud.jp/platform/api/v2/groups',
@@ -52,7 +52,7 @@ function isoDL(token) {
           getMember(token, entry.id)
         })
         opts.pageNumber = opts.pageNumber + 1
-        isoDL(token)
+        getGroup(token)
       }
       const csv = json2csvParser.parse(groups)
       fs.writeFileSync(`./ISO_reports/ISO_GroupRoles_${datetime}.csv`, csv)
@@ -68,7 +68,6 @@ function getSub(token, id) {
     headers: { Authorization: 'Bearer ' + token },
   })
     .then((response) => {
-      //console.log(response.data)
       Sub.push(response.data)
       const csv = subparser.parse(Sub)
       fs.writeFileSync(`./ISO_reports/ISO_Subjects_${datetime}.csv`, csv)

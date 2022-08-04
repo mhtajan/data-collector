@@ -4,7 +4,10 @@ const {
   transforms: { unwind, flatten },
 } = require('json2csv')
 const json2csvParser = new Parser({
-  transforms: [unwind({ blankOut: true }), flatten('__')],
+  transforms: [
+    unwind({ paths: ['fieldToUnwind'], blankOut: true }),
+    flatten({ objects: true, arrays: true }),
+  ],
 })
 const fs = require('fs')
 const moment = require('moment')
@@ -30,15 +33,14 @@ function get_inactive(body) {
           inactive_users.push(entry)
         }
       })
-      if (inactive_users.length != 0) {
+      try {
         const csv = json2csvParser.parse(inactive_users)
-        //will add catch error since there is no inactive entries this will result in error
         fs.writeFileSync(
           './ISO_reports/ISO_inactive_users' + datetime + '.csv',
           csv,
         )
-        logger.info('ISO_inactive_users EXPORTED SUCCESSFULLY!')
-      } else {
+        logger.info('ISO_Inactive_Users EXPORTED SUCCESSFULLY!')
+      } catch(err) {
         logger.info('There are no Inactive Users')
       }
     })

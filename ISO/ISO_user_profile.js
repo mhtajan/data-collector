@@ -24,7 +24,6 @@ var user = []
 
 getUserProfile(workerData)
 function getUserProfile(body) {
-  // Get the list of available users.
   axios({
     method: 'get',
     url: 'https://apps.mypurecloud.jp/platform/api/v2/users',
