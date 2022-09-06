@@ -1,20 +1,38 @@
 {
-  "name": "nodejs",
+  "name": "data-collector",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "bin": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prebuild": "rimraf dist",
+    "build": "ncc build src/main.js -o dist && copyfiles -f src/ISO/*.js dist/ISO && copyfiles -f src/handler.js src/logger.js dist",
+    "postbuild": "pkg ."
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "-": "^0.0.1",
+    "@vercel/ncc": "^0.34.0",
     "axios": "^0.27.2",
+    "copyfiles": "^2.4.1",
+    "D": "^1.0.0",
     "download": "^8.0.0",
     "json2csv": "^5.0.7",
     "moment": "^2.29.4",
     "node-fetch": "^2.6.1",
+    "pkg": "^5.8.0",
+    "rimraf": "^3.0.2",
     "winston": "^3.8.1"
+  },
+  "pkg": {
+    "scripts": [
+      "ISO/**/*.js"
+    ],
+    "targets": [
+      "win"
+    ],
+    "outputPath": "dist"
   }
 }
