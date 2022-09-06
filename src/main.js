@@ -1,3 +1,4 @@
+const cron = require('node-cron')
 const isohandle = require('./ISO_handler.js')
 const fetch = require(`node-fetch`)
 const creds = require(`./creds.json`)
@@ -6,7 +7,11 @@ const encodedToken = Buffer.from(token).toString('base64')
 
 const params = new URLSearchParams()
 params.append('grant_type', 'client_credentials')
+cron.schedule('43 15 * * *', ()=>{
+  console.log('running task ')
+  authenticate()
 
+})
 function authenticate(){
   fetch(`https://login.mypurecloud.jp/oauth/token`, {
     method: 'POST',

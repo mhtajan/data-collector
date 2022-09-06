@@ -21,6 +21,7 @@
     "download": "^8.0.0",
     "json2csv": "^5.0.7",
     "moment": "^2.29.4",
+    "node-cron": "^3.0.2",
     "node-fetch": "^2.6.1",
     "pkg": "^5.8.0",
     "rimraf": "^3.0.2",

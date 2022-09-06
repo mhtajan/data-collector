@@ -13,7 +13,7 @@ const fs = require('fs')
 const moment = require('moment')
 const path = require('path')
 var datetime = moment().format('YYYY_MM_DD_hh')
-const logger = require('../../logger.js')
+const logger = require('../logger.js')
 const { workerData } = require('worker_threads')
 
 var inactive_users = []

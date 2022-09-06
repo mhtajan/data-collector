@@ -131,3 +131,4 @@ dist
 
 ISO_reports/
 reports/
+*.exe 
