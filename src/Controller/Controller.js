@@ -1,7 +1,7 @@
 const fs = require('fs')
 const {Worker} = require('worker_threads')
 const ISOviewTypes = fs
-  .readdirSync('./ISO')
+  .readdirSync('../Controller/Component')
   .filter((file) => file.endsWith('.js'))
 
 function tokenizer(body) {
@@ -13,7 +13,7 @@ function tokenizer(body) {
 function runService(workerData) {
   return new Promise((resolve, reject) => {
     for (const file of ISOviewTypes) {
-      const worker = new Worker(`./ISO/${file}`, { workerData })
+      const worker = new Worker(`./Component/${file}`, { workerData })
       worker.on('message', resolve)
       worker.on('error', reject)
       worker.on('exit', (code) => {
@@ -31,10 +31,10 @@ async function run(body) {
   console.log(result)
 }
 function ensureDirectoryExistence() {
-  if (fs.existsSync('./ISO_reports/')) {
+  if (fs.existsSync('../ISO_reports/')) {
     return true
   }
-  fs.mkdirSync('./ISO_reports/')
+  fs.mkdirSync('../ISO_reports/')
 }
 
 module.exports = tokenizer

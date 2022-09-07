@@ -10,7 +10,7 @@ const fs = require('fs')
 const path = require('path')
 const moment = require('moment')
 var datetime = moment().format('YYYY_MM_DD')
-const logger = require('../logger.js')
+const logger = require('../Logger.js')
 const { workerData } = require('worker_threads')
 
 var MainteArr = []
@@ -27,7 +27,7 @@ function getMainteReport(body) {
       MainteArr.push(response.data)
       const csv = json2csvParser.parse(MainteArr)
       fs.writeFileSync(
-        `./ISO_reports/ISO_Maintenance_Report_${datetime}.csv`,
+        `.../ISO_reports/ISO_Maintenance_Report_${datetime}.csv`,
         csv,
       )
       logger.info('ISO_Maintenance_Report EXPORTED SUCCESSFULLY!')

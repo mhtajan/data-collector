@@ -3,7 +3,7 @@ const download = require("download");
 const fetch = require("node-fetch");
 const moment = require(`moment`);
 var datetime = moment().format("YYYY_MM_DD_HH_mm_ss");
-const logger = require("./logger.js");
+const logger = require("./Logger.js");
 const { workerData } = require("worker_threads");
 let opts = {
   pageNumber: 1,
@@ -39,7 +39,7 @@ function getReport(body) {
               //download filter
               fetch(entry.downloadUrl, options)
                 .then((res) => {
-                  download(res.url, "./reports", fileoption).then(() => {
+                  download(res.url, "../reports", fileoption).then(() => {
                     logger.info(
                       `Complete Downloading - ${Object.values(fileoption)}`
                     );
