@@ -8,11 +8,11 @@ const params = new URLSearchParams();
 
 params.append("grant_type", "client_credentials");
 
-cron.schedule("43 15 * * *", () => {
-  console.log("running task ");
-  runScript();
-});
-
+// cron.schedule("43 15 * * *", () => {
+//   console.log("running task ");
+//   runScript();
+// });
+runScript()
 function runScript() {
   fetch(`https://login.mypurecloud.jp/oauth/token`, {
     method: "POST",
@@ -30,7 +30,7 @@ function runScript() {
       }
     })
     .then((jsonResponse) => {
-      //Controller(jsonResponse.access_token);
+      Controller(jsonResponse.access_token);
       run(jsonResponse.access_token).catch((err) => console.error(err));
     })
     .catch((e) => console.error(e));

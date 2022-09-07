@@ -27,7 +27,7 @@ function getMainteReport(body) {
       MainteArr.push(response.data)
       const csv = json2csvParser.parse(MainteArr)
       fs.writeFileSync(
-        `.../ISO_reports/ISO_Maintenance_Report_${datetime}.csv`,
+        `./ISO_reports/ISO_Maintenance_Report_${datetime}.csv`,
         csv,
       )
       logger.info('ISO_Maintenance_Report EXPORTED SUCCESSFULLY!')

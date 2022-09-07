@@ -6,7 +6,7 @@
   "bin": "dist/index.js",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "ncc build src/main.js -o dist && copyfiles -f src/ISO/*.js dist/ISO && copyfiles -f src/handler.js src/logger.js dist",
+    "build": "ncc build src/main.js -o dist && copyfiles -f src/Controller/*.js dist/Controller && copyfiles -f src/Controller/Components/*js dist/Controller/Components",
     "postbuild": "pkg ."
   },
   "keywords": [],

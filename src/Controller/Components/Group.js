@@ -55,7 +55,7 @@ function getGroup(token) {
         getGroup(token)
       }
       const csv = json2csvParser.parse(groups)
-      fs.writeFileSync(`.../ISO_reports/ISO_GroupRoles_${datetime}.csv`, csv)
+      fs.writeFileSync(`./ISO_reports/ISO_GroupRoles_${datetime}.csv`, csv)
       logger.info('ISO_GroupRoles EXPORTED SUCCESSFULLY')
     })
     .catch((e) => logger.error(e))
@@ -70,7 +70,7 @@ function getSub(token, id) {
     .then((response) => {
       Sub.push(response.data)
       const csv = subparser.parse(Sub)
-      fs.writeFileSync(`.../ISO_reports/ISO_Subjects_${datetime}.csv`, csv)
+      fs.writeFileSync(`./ISO_reports/ISO_Subjects_${datetime}.csv`, csv)
     })
     .catch((e) => logger.error(e,"at ISO GET SUBJECTS"))
 }
@@ -93,7 +93,7 @@ function getMember(token, id) {
         getMember(token, id)
       }
       const csv = memberparser.parse(members)
-      fs.writeFileSync(`.../ISO_reports/ISO_Get_Member_${datetime}.csv`, csv)
+      fs.writeFileSync(`./ISO_reports/ISO_Get_Member_${datetime}.csv`, csv)
     })
     .catch((e) => logger.error(e,"at ISO GET MEMBER"))
 }

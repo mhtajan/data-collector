@@ -50,7 +50,7 @@ function Loop(res, body) {
       userAct.push(user)
     })
     csv = json2csvParser.parse(userAct)
-    fs.writeFileSync(`.../ISO_reports/ISO_User_Activities_${datetime}.csv`, csv)
+    fs.writeFileSync(`./ISO_reports/ISO_User_Activities_${datetime}.csv`, csv)
     logger.info(`ISO_User_Activities EXPORTED SUCCESSFULLY`)
   }
   return

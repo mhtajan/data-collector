@@ -36,7 +36,7 @@ function get_inactive(body) {
       try {
         const csv = json2csvParser.parse(inactive_users)
         fs.writeFileSync(
-          '.../ISO_reports/ISO_inactive_users' + datetime + '.csv',
+          './ISO_reports/ISO_inactive_users' + datetime + '.csv',
           csv,
         )
         logger.info('ISO_Inactive_Users EXPORTED SUCCESSFULLY!')

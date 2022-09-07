@@ -27,8 +27,7 @@ function getReport(body) {
       params: opts,
     })
       .then((response) => {
-        res = response.data;
-        logger.info(JSON.stringify(res)); //response logger
+        res = response.data
         entity = res.entities;
         if (res.pageCount >= res.pageNumber) {
           entity.forEach((entry) => {
