@@ -29,11 +29,19 @@ function getReport(body) {
       .then((response) => {
         res = response.data
         entity = res.entities;
+        let date = new Date();
+        date.setDate(date.getDate() - 1);
+        yesterday = date.toISOString().split("T")[0];
         if (res.pageCount >= res.pageNumber) {
           entity.forEach((entry) => {
             const fileoption = {
               filename: `${entry.viewType}_${datetime}_${entry.id}.csv`,
             };
+            //date filter
+            logger.info(yesterday)
+            if (entry.modifiedDateTime.includes(yesterday)) {
+              logger.info(entry.viewType, "\n" + entry.modifiedDateTime);
+              logger.info(yesterday);           
             if (entry.status.includes("COMPLETED")) {
               //download filter
               fetch(entry.downloadUrl, options)
@@ -45,7 +53,7 @@ function getReport(body) {
                   });
                 })
                 .catch((e) => console.error(e));
-            }
+            }}
           });
           opts.pageNumber = opts.pageNumber + 1;
           getData();
