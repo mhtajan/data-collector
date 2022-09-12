@@ -5,35 +5,21 @@
   "main": "index.js",
   "bin": "dist/index.js",
   "scripts": {
-    "prebuild": "rimraf dist",
-    "build": "ncc build src/main.js -o dist && copyfiles -f src/Controller/*.js dist/Controller && copyfiles -f src/Controller/Components/*js dist/Controller/Components",
-    "postbuild": "pkg ."
+    "prebuild": "rimraf myapp.exe",
+    "build": "nexe -i src/main.js -r ./src/Controller/Components/*.js  -o myapp.exe --build"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "-": "^0.0.1",
-    "@vercel/ncc": "^0.34.0",
     "axios": "^0.27.2",
-    "copyfiles": "^2.4.1",
-    "D": "^1.0.0",
     "download": "^8.0.0",
     "json2csv": "^5.0.7",
     "moment": "^2.29.4",
+    "nexe": "^4.0.0-rc.1",
     "node-cron": "^3.0.2",
     "node-fetch": "^2.6.1",
-    "pkg": "^5.8.0",
     "rimraf": "^3.0.2",
     "winston": "^3.8.1"
-  },
-  "pkg": {
-    "scripts": [
-      "ISO/**/*.js"
-    ],
-    "targets": [
-      "win"
-    ],
-    "outputPath": "dist"
   }
 }

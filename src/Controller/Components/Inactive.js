@@ -18,7 +18,6 @@ const { workerData } = require('worker_threads')
 
 var inactive_users = []
 
-get_inactive(workerData)
 function get_inactive(body) {
   axios({
     method: 'get',
@@ -46,3 +45,5 @@ function get_inactive(body) {
     })
     .catch((e) => logger.error(e))
 }
+
+module.exports = get_inactive

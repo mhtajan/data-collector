@@ -22,7 +22,6 @@ let opts = {
 
 var user = []
 
-getUserProfile(workerData)
 function getUserProfile(body) {
   axios({
     method: 'get',
@@ -48,3 +47,5 @@ function Loop(res, body) {
     getUserProfile(body)
   }
 }
+
+module.exports = getUserProfile

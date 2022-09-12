@@ -1,35 +1,23 @@
 const fs = require('fs')
 const {Worker} = require('worker_threads')
-const ISOviewTypes = fs
-  .readdirSync('./Controller/Components')
-  .filter((file) => file.endsWith('.js'))
+const logger = require('./Logger')
+const Act_worker = require(`./Components/Activities.js`)
+const Grp_worker = require(`./Components/Group.js`)
+const Inc_worker = require(`./Components/Inactive.js`)
+const Mnt_worker = require(`./Components/Maintenance.js`)
+const Prf_worker = require(`./Components/Profiles.js`)
 
 function tokenizer(body) {
   ensureDirectoryExistence()
-  run(body).catch(err => console.error(err))
+  logger.info("test")
+  Act_worker(body)
+  Grp_worker(body)
+  Inc_worker(body)
+  Mnt_worker(body)
+  Prf_worker(body)
 }
 
 
-function runService(workerData) {
-  return new Promise((resolve, reject) => {
-    for (const file of ISOviewTypes) {
-      const worker = new Worker(`./Controller/Components/${file}`, { workerData })
-      worker.on('message', resolve)
-      worker.on('error', reject)
-      worker.on('exit', (code) => {
-        if (code !== 0)
-          reject(
-            new Error(`Stopped the Worker Thread with the exit code: ${code}`),
-          )
-      })
-    }
-  })
-}
-
-async function run(body) {
-  const result = await runService(body)
-  console.log(result)
-}
 function ensureDirectoryExistence() {
   if (fs.existsSync('./ISO_reports/')) {
     return true

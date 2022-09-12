@@ -34,7 +34,7 @@ var groups = []
 var members = []
 var Sub = []
 
-getGroup(workerData)
+
 function getGroup(token) {
   axios({
     method: 'get',
@@ -97,3 +97,5 @@ function getMember(token, id) {
     })
     .catch((e) => logger.error(e,"at ISO GET MEMBER"))
 }
+
+module.exports = getGroup

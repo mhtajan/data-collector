@@ -20,7 +20,7 @@ const opts = {
     pageNumber: 1,
   },
 }
-getUserAct(workerData)
+
 function getUserAct(body) {
   axios({
     method: 'post',
@@ -55,3 +55,5 @@ function Loop(res, body) {
   }
   return
 }
+
+module.exports = getUserAct

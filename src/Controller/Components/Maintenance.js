@@ -15,7 +15,6 @@ const { workerData } = require('worker_threads')
 
 var MainteArr = []
 
-getMainteReport(workerData)
 function getMainteReport(body) {
   axios({
     method: 'get',
@@ -34,3 +33,5 @@ function getMainteReport(body) {
     })
     .catch((e) => logger.error(e))
 }
+
+module.exports = getMainteReport

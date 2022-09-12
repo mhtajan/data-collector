@@ -4,12 +4,12 @@ const fetch = require("node-fetch");
 const moment = require(`moment`);
 var datetime = moment().format("YYYY_MM_DD_HH_mm_ss");
 const logger = require("./Logger.js");
-const { workerData } = require("worker_threads");
+
 let opts = {
   pageNumber: 1,
   pageSize: 25,
 };
-getReport(workerData); //function for whole api
+ //function for whole api
 function getReport(body) {
   const options = {
     headers: {
@@ -28,6 +28,7 @@ function getReport(body) {
     })
       .then((response) => {
         res = response.data
+        console.log(res)
         entity = res.entities;
         let date = new Date();
         date.setDate(date.getDate() - 1);
@@ -39,7 +40,7 @@ function getReport(body) {
             };
             //date filter
             logger.info(yesterday)
-            if (entry.modifiedDateTime.includes(yesterday)) {
+            //if (entry.modifiedDateTime.includes(yesterday)) {
               logger.info(entry.viewType, "\n" + entry.modifiedDateTime);
               logger.info(yesterday);           
             if (entry.status.includes("COMPLETED")) {
@@ -53,7 +54,8 @@ function getReport(body) {
                   });
                 })
                 .catch((e) => console.error(e));
-            }}
+            }
+          //}
           });
           opts.pageNumber = opts.pageNumber + 1;
           getData();
@@ -64,3 +66,5 @@ function getReport(body) {
       .catch((e) => console.error());
   }
 }
+
+module.exports = getReport
