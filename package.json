@@ -6,7 +6,7 @@
   "bin": "dist/index.js",
   "scripts": {
     "prebuild": "rimraf myapp.exe",
-    "build": "nexe -i src/main.js -r ./src/Controller/Components/*.js  -o myapp.exe --build"
+    "build": "nexe -i src/main.js -r ./src/Controller/Components/*.js  -o data-collector.exe --build"
   },
   "keywords": [],
   "author": "",

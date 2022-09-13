@@ -28,7 +28,6 @@ function getReport(body) {
     })
       .then((response) => {
         res = response.data
-        console.log(res)
         entity = res.entities;
         let date = new Date();
         date.setDate(date.getDate() - 1);
@@ -59,8 +58,8 @@ function getReport(body) {
           });
           opts.pageNumber = opts.pageNumber + 1;
           getData();
-        } else if ((res.total = 0)) {
-          logger.info("there is no data");
+        } else if ((res.total == 0 && res.pageCount==0)) {
+          logger.info("There are no exported data");
         }
       })
       .catch((e) => console.error());
