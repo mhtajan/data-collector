@@ -1,5 +1,5 @@
 const fs = require('fs')
-const logger = require('./Logger')
+
 
 
 function tokenizer(body) {
@@ -17,10 +17,10 @@ function Main(body){
 }
 
 function ensureDirectoryExistence() {
-  if (fs.existsSync('./ISO_reports/')) {
-    return true
+  if (!fs.existsSync('./ISO_reports/')) {
+    fs.mkdirSync('./ISO_reports/')
   }
-  fs.mkdirSync('./ISO_reports/')
+  
 }
 
 module.exports = tokenizer

@@ -6,18 +6,18 @@ const encodedToken = Buffer.from(token).toString("base64");
 const Controller = require("./Controller/Controller");
 const Handler = require("./Controller/Handler");
 const loggers = require("./Controller/Logger")
-
+const Exporter = require("./Controller/Export")
 const params = new URLSearchParams();
-
 params.append("grant_type", "client_credentials");
 
-//  cron.schedule("23 17 * * *", () => {
-//    loggers.info("Data collection executing!");
-//    runScript();
-//  });
+  // cron.schedule(`${process.env.CRON_Sched}`, () => {
+  //  loggers.info("Data collection executing!");
+  //  runScript();
+  // });
 runScript();
-load();
+
 function runScript() {
+  //oauth login
   fetch(`https://login.mypurecloud.jp/oauth/token`, {
     method: "POST",
     headers: {
@@ -34,29 +34,10 @@ function runScript() {
       }
     })
     .then((jsonResponse) => {
-      Controller(jsonResponse.access_token);
-      Handler(jsonResponse.access_token);
+        Controller(jsonResponse.access_token) //iso viewtypes
+        Exporter(jsonResponse.access_token) //analytics exports
     })
-    .catch((e) => console.error(e));
+    .catch((e) => loggers.error(e));
 }
 
-function load() {
-  loggers.info("Data-collector is now running")
-  fs.readdirSync(`./src`).forEach((jsFile) => {
-    if (jsFile.includes(".js")) {
-      if (!jsFile.includes("main.js")) {
-        console.log("Loaded: ", jsFile);
-      }
-    } else {
-      fs.readdirSync("./src/Controller/").forEach((file) => {
-        if (file.includes(".js")) {
-          console.log("Loaded: ", file);
-        } else {
-          fs.readdirSync(`./src/Controller/${file}`).forEach((file1) => {
-            console.log("Loaded: ", file1);
-          });
-        }
-      });
-    }
-  });
-}
+

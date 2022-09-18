@@ -1,0 +1,45 @@
+{
+
+    "name": "AGENT_STATUS_DETAIL_VIEW",
+ 
+    "timeZone": "Aisa/Singapore",
+ 
+    "exportFormat": "CSV",
+ 
+    "period": "PT30M",
+ 
+    "viewType": "AGENT_STATUS_DETAIL_VIEW",
+ 
+    "read": true,
+ 
+    "filter":{
+ 
+      "mediaTypes":["voice"],
+      "userIds": ["b110b073-a08e-4443-9291-eaad2465a7f4"
+        ]
+ 
+         },
+    "requiredColumnIds": [
+         "agent_status_view_interval_start",
+         "agent_status_view_interval_end",
+         "agent_status_view_interval_complete",
+         "agent_status_view_filters",
+         "agent_status_view_agent_id",
+         "agent_status_view_agent_name"
+     ],
+    "locale": "en-us",
+ 
+    "hasFormatDurations": true,
+ 
+    "hasSplitFilters": false,
+ 
+    "excludeEmptyRows": true,
+ 
+ 
+    "hasSummaryRow": false,
+ 
+    "csvDelimiter": "COMMA",
+ 
+    "hasCustomParticipantAttributes": true
+ 
+ }

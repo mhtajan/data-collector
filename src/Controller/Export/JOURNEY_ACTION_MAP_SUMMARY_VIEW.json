@@ -1,0 +1,43 @@
+{
+
+    "name": "JOURNEY_ACTION_MAP_SUMMARY_VIEW",
+ 
+    "timeZone": "Aisa/Singapore",
+ 
+    "exportFormat": "CSV",
+ 
+    "period": "PT30M",
+ 
+    "viewType": "JOURNEY_ACTION_MAP_SUMMARY_VIEW",
+ 
+    "read": true,
+ 
+    "filter":{
+    
+     },
+    "locale": "en-us",
+   "requiredColumnIds": [
+         "journey_action_map_interval_start",
+         "journey_action_map_interval_end",
+         "journey_action_map_interval_complete",
+         "journey_action_map_aggregateordetailed",
+         "journey_action_map_filters",
+         "journey_action_map_id",
+         "journey_action_map_name",
+         "journey_action_map_outcome_id",
+         "journey_action_map_outcome_name"
+   ],
+    "hasFormatDurations": true,
+ 
+    "hasSplitFilters": false,
+ 
+    "excludeEmptyRows": true,
+    
+ 
+    "hasSummaryRow": false,
+ 
+    "csvDelimiter": "COMMA",
+ 
+    "hasCustomParticipantAttributes": true
+ 
+ }

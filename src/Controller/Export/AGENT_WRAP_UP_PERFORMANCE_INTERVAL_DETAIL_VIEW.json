@@ -1,0 +1,47 @@
+{
+
+    "name": "AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW",
+ 
+    "timeZone": "Aisa/Singapore",
+ 
+    "exportFormat": "CSV",
+ 
+    "period": "PT30M",
+ 
+    "viewType": "AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW",
+ 
+    "read": true,
+ 
+    "filter":{
+ 
+      "mediaTypes":["voice"],
+      "userIds": ["b110b073-a08e-4443-9291-eaad2465a7f4"],
+      "wrapUpCodes":["test"]
+         },
+    "requiredColumnIds": [
+          "wrapup_performance_view_interval_start",
+         "wrapup_performance_view_interval_end",
+         "wrapup_performance_view_interval_complete",
+         "wrapup_performance_view_filters",
+         "wrapup_performance_view_media_type",
+         "wrapup_performance_view_agent_id",
+         "wrapup_performance_view_agent_name",
+         "wrapup_performance_view_wrapup_code",
+         "wrapup_performance_view_wrapup_name"
+     ],
+    "locale": "en-us",
+ 
+    "hasFormatDurations": true,
+ 
+    "hasSplitFilters": false,
+ 
+    "excludeEmptyRows": true,
+ 
+ 
+    "hasSummaryRow": false,
+ 
+    "csvDelimiter": "COMMA",
+ 
+    "hasCustomParticipantAttributes": true
+ 
+ }

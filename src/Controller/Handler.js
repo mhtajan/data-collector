@@ -3,11 +3,11 @@ const download = require("download");
 const fetch = require("node-fetch");
 const moment = require(`moment`);
 var datetime = moment().format("YYYY_MM_DD_HH_mm_ss");
+var yesterday = moment().subtract(1, "days").format("YYYY-MM-DD")
 const logger = require("./Logger.js");
-
 let opts = {
   pageNumber: 1,
-  pageSize: 25,
+  pageSize: 500,
 };
  //function for whole api
 function getReport(body) {
@@ -29,24 +29,18 @@ function getReport(body) {
       .then((response) => {
         res = response.data
         entity = res.entities;
-        let date = new Date();
-        date.setDate(date.getDate() - 1);
-        yesterday = date.toISOString().split("T")[0];
         if (res.pageCount >= res.pageNumber) {
           entity.forEach((entry) => {
             const fileoption = {
               filename: `${entry.viewType}_${datetime}_${entry.id}.csv`,
             };
             //date filter
-            logger.info(yesterday)
-            //if (entry.modifiedDateTime.includes(yesterday)) {
-              logger.info(entry.viewType, "\n" + entry.modifiedDateTime);
-              logger.info(yesterday);           
+            if (entry.interval.includes(yesterday)) {        
             if (entry.status.includes("COMPLETED")) {
               //download filter
               fetch(entry.downloadUrl, options)
                 .then((res) => {
-                  download(res.url, "../reports", fileoption).then(() => {
+                  download(res.url, "./reports", fileoption).then(() => {
                     logger.info(
                       `Complete Downloading - ${Object.values(fileoption)}`
                     );
@@ -54,12 +48,12 @@ function getReport(body) {
                 })
                 .catch((e) => console.error(e));
             }
-          //}
+          }
           });
           opts.pageNumber = opts.pageNumber + 1;
           getData();
         } else if ((res.total == 0 && res.pageCount==0)) {
-          logger.info("There are no exported data");
+          logger.info("There are no available data in Analytics Exports");
         }
       })
       .catch((e) => console.error());

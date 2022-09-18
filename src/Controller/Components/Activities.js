@@ -9,8 +9,7 @@ const json2csvParser = new Parser({
   transforms: [flatten({ objects: true, arrays: true })],
 })
 const fs = require('fs')
-const logger = require('../logger.js')
-const { workerData } = require('worker_threads')
+const loggers = require('../Logger')
 
 const userAct = []
 const opts = {
@@ -32,7 +31,7 @@ function getUserAct(body) {
     .then((response) => {
       Loop(response.data, body)
     })
-    .catch((e) => logger.error(e))
+    .catch((e) => console.error(e))
 }
 function Loop(res, body) {
   numberofLoops = Math.floor(res.totalHits / 100) + 1
@@ -51,7 +50,7 @@ function Loop(res, body) {
     })
     csv = json2csvParser.parse(userAct)
     fs.writeFileSync(`./ISO_reports/ISO_User_Activities_${datetime}.csv`, csv)
-    logger.info(`ISO_User_Activities EXPORTED SUCCESSFULLY`)
+    loggers.info(`ISO_User_Activities EXPORTED SUCCESSFULLY`)
   }
   return
 }

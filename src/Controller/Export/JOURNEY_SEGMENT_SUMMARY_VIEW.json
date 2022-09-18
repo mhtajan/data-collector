@@ -1,0 +1,45 @@
+{
+
+    "name": "JOURNEY_SEGMENT_SUMMARY_VIEW",
+ 
+    "timeZone": "Aisa/Singapore",
+ 
+    "exportFormat": "CSV",
+ 
+    "period": "PT30M",
+ 
+    "viewType": "JOURNEY_SEGMENT_SUMMARY_VIEW",
+ 
+    "read": true,
+ 
+    "filter":{
+    
+     },
+    "locale": "en-us",
+   "requiredColumnIds": [
+         "journey_segment_interval_start",
+         "journey_segment_interval_end",
+         "journey_segment_interval_complete",
+         "journey_segment_filters",
+         "journey_segment_aggregateordetailed",
+         "journey_segment_segment_id",
+         "journey_segment_name",
+         "journey_segment_actionmap_id",
+         "journey_segment_actionmap_name",
+         "journey_segment_outcome_id",
+         "journey_segment_outcome_name"
+   ],
+    "hasFormatDurations": true,
+ 
+    "hasSplitFilters": false,
+ 
+    "excludeEmptyRows": true,
+    
+ 
+    "hasSummaryRow": false,
+ 
+    "csvDelimiter": "COMMA",
+ 
+    "hasCustomParticipantAttributes": true
+ 
+ }

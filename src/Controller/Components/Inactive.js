@@ -13,8 +13,7 @@ const fs = require('fs')
 const moment = require('moment')
 const path = require('path')
 var datetime = moment().format('YYYY_MM_DD_hh')
-const logger = require('../logger.js')
-const { workerData } = require('worker_threads')
+const loggers = require('../Logger')
 
 var inactive_users = []
 
@@ -38,12 +37,12 @@ function get_inactive(body) {
           './ISO_reports/ISO_inactive_users' + datetime + '.csv',
           csv,
         )
-        logger.info('ISO_Inactive_Users EXPORTED SUCCESSFULLY!')
+        loggers.info('ISO_Inactive_Users EXPORTED SUCCESSFULLY!')
       } catch(err) {
-        logger.info('There are no Inactive Users')
+        loggers.info('There are no Inactive Users')
       }
     })
-    .catch((e) => logger.error(e))
+    .catch((e) => loggers.error(e))
 }
 
 module.exports = get_inactive

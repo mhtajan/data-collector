@@ -22,8 +22,8 @@ const memberparser = new Parser({
 const fs = require('fs')
 const moment = require('moment')
 var datetime = moment().format('YYYY_MM_DD')
-const logger = require('../logger.js')
-const { workerData } = require('worker_threads')
+const loggers = require('../Logger')
+
 
 let opts = {
   pageSize: 500,
@@ -56,9 +56,9 @@ function getGroup(token) {
       }
       const csv = json2csvParser.parse(groups)
       fs.writeFileSync(`./ISO_reports/ISO_GroupRoles_${datetime}.csv`, csv)
-      logger.info('ISO_GroupRoles EXPORTED SUCCESSFULLY')
+      loggers.info('ISO_GroupRoles EXPORTED SUCCESSFULLY')
     })
-    .catch((e) => logger.error(e))
+    .catch((e) => console.error(e))
 }
 
 function getSub(token, id) {
@@ -72,7 +72,7 @@ function getSub(token, id) {
       const csv = subparser.parse(Sub)
       fs.writeFileSync(`./ISO_reports/ISO_Subjects_${datetime}.csv`, csv)
     })
-    .catch((e) => logger.error(e,"at ISO GET SUBJECTS"))
+    .catch((e) => loggers.error(e,"at ISO GET SUBJECTS"))
 }
 
 function getMember(token, id) {
@@ -95,7 +95,7 @@ function getMember(token, id) {
       const csv = memberparser.parse(members)
       fs.writeFileSync(`./ISO_reports/ISO_Get_Member_${datetime}.csv`, csv)
     })
-    .catch((e) => logger.error(e,"at ISO GET MEMBER"))
+    .catch((e) => loggers.error(e,"at ISO GET MEMBER"))
 }
 
 module.exports = getGroup

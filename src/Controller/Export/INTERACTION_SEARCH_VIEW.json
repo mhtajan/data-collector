@@ -1,0 +1,37 @@
+{
+
+    "name": "VY-INTERACTION_SEARCH_VIEW",
+ 
+    "timeZone": "Aisa/Singapore",
+ 
+    "exportFormat": "CSV",
+ 
+    "period": "PT30M",
+ 
+    "viewType": "INTERACTION_SEARCH_VIEW",
+ 
+    "read": true,
+ 
+    "filter":{
+ 
+      "mediaTypes":["voice"]
+ 
+         },
+ 
+    "locale": "en-us",
+ 
+    "hasFormatDurations": true,
+ 
+    "hasSplitFilters": false,
+ 
+    "excludeEmptyRows": true,
+ 
+    "hasSplitByMedia": true,
+ 
+    "hasSummaryRow": false,
+ 
+    "csvDelimiter": "COMMA",
+ 
+    "hasCustomParticipantAttributes": true
+ 
+ }

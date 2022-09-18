@@ -1,0 +1,42 @@
+{
+
+    "name": "DNIS_PERFORMANCE_DETAIL_VIEW",
+ 
+    "timeZone": "Aisa/Singapore",
+ 
+    "exportFormat": "CSV",
+ 
+    "period": "PT30M",
+ 
+    "viewType": "DNIS_PERFORMANCE_DETAIL_VIEW",
+ 
+    "read": true,
+ 
+    "filter":{
+      "mediaTypes": ["voice"]
+      },
+   "requiredColumnIds": [
+         "dnis_performance_view_interval_start",
+         "dnis_performance_view_interval_end",
+         "dnis_performance_view_interval_complete",
+         "dnis_performance_view_filters",
+         "dnis_performance_view_media_type",
+         "dnis_performance_view_dnis_id",
+         "dnis_performance_view_dnis_name"
+       ],
+    "locale": "en-us",
+   
+    "hasFormatDurations": true,
+ 
+    "hasSplitFilters": false,
+ 
+    "excludeEmptyRows": true,
+    
+ 
+    "hasSummaryRow": false,
+ 
+    "csvDelimiter": "COMMA",
+ 
+    "hasCustomParticipantAttributes": true
+ 
+ }

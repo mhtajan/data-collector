@@ -1,0 +1,38 @@
+{
+
+    "name": "CONTENT_SEARCH_VIEW",
+ 
+    "timeZone": "Aisa/Singapore",
+ 
+    "exportFormat": "CSV",
+ 
+    "period": "PT30M",
+ 
+    "viewType": "CONTENT_SEARCH_VIEW",
+ 
+    "read": true,
+ 
+    "filter":{
+      },
+   "requiredColumnIds": [
+          "content_search_view_interval_start",
+         "content_search_view_interval_end",
+         "content_search_view_interval_complete",
+         "content_search_view_filters"
+       ],
+    "locale": "en-us",
+   
+    "hasFormatDurations": true,
+ 
+    "hasSplitFilters": false,
+ 
+    "excludeEmptyRows": true,
+    
+ 
+    "hasSummaryRow": false,
+ 
+    "csvDelimiter": "COMMA",
+ 
+    "hasCustomParticipantAttributes": true
+ 
+ }
