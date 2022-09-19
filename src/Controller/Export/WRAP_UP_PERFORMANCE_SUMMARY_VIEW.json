@@ -1,44 +1,31 @@
 {
-
-    "name": "WRAP_UP_PERFORMANCE_SUMMARY_VIEW",
- 
-    "timeZone": "Aisa/Singapore",
- 
-    "exportFormat": "CSV",
- 
-    "period": "PT30M",
- 
-    "viewType": "WRAP_UP_PERFORMANCE_SUMMARY_VIEW",
- 
-    "read": true,
- 
-    "filter":{
-      "mediaTypes": ["voice"]
-    },
-    "locale": "en-us",
-   "requiredColumnIds": [
-         "wrapup_performance_view_interval_start",
-         "wrapup_performance_view_interval_end",
-         "wrapup_performance_view_interval_complete",
-         "wrapup_performance_view_filters",
-         "wrapup_performance_view_media_type",
-         "wrapup_performance_view_aggregate_or_detail",
-         "wrapup_performance_view_wrapup_code",
-         "wrapup_performance_view_wrapup_name",
-         "wrapup_performance_view_queue_id",
-         "wrapup_performance_view_queue_name"
-   ],
-    "hasFormatDurations": true,
- 
-    "hasSplitFilters": false,
- 
-    "excludeEmptyRows": true,
-    
- 
-    "hasSummaryRow": false,
- 
-    "csvDelimiter": "COMMA",
- 
-    "hasCustomParticipantAttributes": true
- 
- }
+  "timeZone": "Aisa/Singapore",
+  "exportFormat": "CSV",
+  "period": "PT30M",
+  "viewType": "WRAP_UP_PERFORMANCE_SUMMARY_VIEW",
+  "read": true,
+  "filter": {
+    "mediaTypes": [
+      "voice"
+    ]
+  },
+  "locale": "en-us",
+  "requiredColumnIds": [
+    "wrapup_performance_view_interval_start",
+    "wrapup_performance_view_interval_end",
+    "wrapup_performance_view_interval_complete",
+    "wrapup_performance_view_filters",
+    "wrapup_performance_view_media_type",
+    "wrapup_performance_view_aggregate_or_detail",
+    "wrapup_performance_view_wrapup_code",
+    "wrapup_performance_view_wrapup_name",
+    "wrapup_performance_view_queue_id",
+    "wrapup_performance_view_queue_name"
+  ],
+  "hasFormatDurations": true,
+  "hasSplitFilters": false,
+  "excludeEmptyRows": true,
+  "hasSummaryRow": false,
+  "csvDelimiter": "COMMA",
+  "hasCustomParticipantAttributes": true
+}

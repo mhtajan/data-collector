@@ -1,43 +1,28 @@
 {
-
-    "name": "QUEUE_INTERACTION_DETAIL_VIEW",
- 
-    "timeZone": "Aisa/Singapore",
- 
-    "exportFormat": "CSV",
- 
-    "period": "PT30M",
- 
-    "viewType": "QUEUE_INTERACTION_DETAIL_VIEW",
- 
-    "read": true,
- 
-    "filter":{
- 
-      "mediaTypes":["voice"],
-      "queueIds": ["b110b073-a08e-4443-9291-eaad2465a7f4"
-        ]
- 
-         },
-    "requiredColumnIds": [
-         "interaction_full_export_completed",
-         "interaction_partial_result_timestamp",
-         "interaction_view_filters"
-     ],
-    "locale": "en-us",
- 
-    "hasFormatDurations": true,
- 
-    "hasSplitFilters": false,
- 
-    "excludeEmptyRows": true,
- 
-    "hasSplitByMedia": true,
- 
-    "hasSummaryRow": false,
- 
-    "csvDelimiter": "COMMA",
- 
-    "hasCustomParticipantAttributes": true
- 
- }
+  "timeZone": "Aisa/Singapore",
+  "exportFormat": "CSV",
+  "period": "PT30M",
+  "viewType": "QUEUE_INTERACTION_DETAIL_VIEW",
+  "read": true,
+  "filter": {
+    "mediaTypes": [
+      "voice"
+    ],
+    "queueIds": [
+      "b110b073-a08e-4443-9291-eaad2465a7f4"
+    ]
+  },
+  "requiredColumnIds": [
+    "interaction_full_export_completed",
+    "interaction_partial_result_timestamp",
+    "interaction_view_filters"
+  ],
+  "locale": "en-us",
+  "hasFormatDurations": true,
+  "hasSplitFilters": false,
+  "excludeEmptyRows": true,
+  "hasSplitByMedia": true,
+  "hasSummaryRow": false,
+  "csvDelimiter": "COMMA",
+  "hasCustomParticipantAttributes": true
+}
