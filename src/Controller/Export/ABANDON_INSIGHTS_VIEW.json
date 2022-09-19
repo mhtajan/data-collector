@@ -1,45 +1,32 @@
 {
-
-    "name": "ABANDON_INSIGHTS_VIEW",
- 
-    "timeZone": "Aisa/Singapore",
- 
-    "exportFormat": "CSV",
- 
-    "period": "PT30M",
- 
-    "viewType": "ABANDON_INSIGHTS_VIEW",
- 
-    "read": true,
- 
-    "filter":{
- 
-      "mediaTypes":["voice"],
-      "queueIds": ["30e491af-15f9-498c-899c-f86a733b30fd"]
-         },
-    "requiredColumnIds": [
-         "abandon_insight_view_interval_start",
-         "abandon_insight_view_interval_end",
-         "abandon_insight_view_interval_complete",
-         "abandon_insight_view_filters",
-         "abandon_insight_view_media_type",
-         "abandon_insight_view_queue_id",
-         "abandon_insight_view_queue_name"
-     ],
-    "locale": "en-us",
- 
-    "hasFormatDurations": true,
- 
-    "hasSplitFilters": false,
- 
-    "excludeEmptyRows": true,
- 
-    "hasSplitByMedia": true,
- 
-    "hasSummaryRow": false,
- 
-    "csvDelimiter": "COMMA",
- 
-    "hasCustomParticipantAttributes": true
- 
- }
+  "timeZone": "Aisa/Singapore",
+  "exportFormat": "CSV",
+  "period": "PT30M",
+  "viewType": "ABANDON_INSIGHTS_VIEW",
+  "read": true,
+  "filter": {
+    "mediaTypes": [
+      "voice"
+    ],
+    "queueIds": [
+      "30e491af-15f9-498c-899c-f86a733b30fd"
+    ]
+  },
+  "requiredColumnIds": [
+    "abandon_insight_view_interval_start",
+    "abandon_insight_view_interval_end",
+    "abandon_insight_view_interval_complete",
+    "abandon_insight_view_filters",
+    "abandon_insight_view_media_type",
+    "abandon_insight_view_queue_id",
+    "abandon_insight_view_queue_name"
+  ],
+  "locale": "en-us",
+  "hasFormatDurations": true,
+  "hasSplitFilters": false,
+  "excludeEmptyRows": true,
+  "hasSplitByMedia": true,
+  "hasSummaryRow": false,
+  "csvDelimiter": "COMMA",
+  "hasCustomParticipantAttributes": true
+}

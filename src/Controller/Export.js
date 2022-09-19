@@ -7,13 +7,14 @@ const logger = require('./Logger')
 const platformClient = require("purecloud-platform-client-v2")
 const client = platformClient.ApiClient.instance
 const {setTimeout} = require('timers/promises')
+const uuid = require('uuid')
 
 async function Export(token){
   client.setAccessToken(token);
     const Components = fs
     .readdirSync('./src/Controller/Export')
- 
     await process(Components)
+    await setTimeout(5000)
     handler(token)
   }
   async function process(components){
@@ -21,7 +22,9 @@ async function Export(token){
       components.map(async(component)=>{
              var jsonData = fs.readFileSync(`./src/Controller/Export/${component}`);
              var jsonBody = JSON.parse(jsonData);
+             const id = uuid.v4()
              Object.assign(jsonBody, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
+             Object.assign(jsonBody, { name: `${jsonBody.viewType}_${datetime}_${id}`})
              logger.info(`Exporting ${jsonBody.viewType}`)
              await exportdata(jsonBody)
              await setTimeout(1000)

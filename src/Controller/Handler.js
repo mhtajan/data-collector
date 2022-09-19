@@ -3,6 +3,7 @@ const download = require("download");
 const fetch = require("node-fetch");
 const moment = require(`moment`);
 var datetime = moment().format("YYYY_MM_DD_HH_mm_ss");
+var today = moment().format("YYYY-MM-DD")
 var yesterday = moment().subtract(1, "days").format("YYYY-MM-DD")
 const logger = require("./Logger.js");
 let opts = {
@@ -30,24 +31,32 @@ function getReport(body) {
         res = response.data
         entity = res.entities;
         if (res.pageCount >= res.pageNumber) {
-          entity.forEach((entry) => {
-            const fileoption = {
-              filename: `${entry.viewType}_${datetime}_${entry.id}.csv`,
-            };
+          entity.forEach(async(entry) => {
             //date filter
-            if (entry.interval.includes(yesterday)) {        
+            if (entry.interval.includes(`${yesterday}T00:00:00.000Z/${today}T00:00:00.000Z`)) {        
             if (entry.status.includes("COMPLETED")) {
               //download filter
-              fetch(entry.downloadUrl, options)
-                .then((res) => {
-                  download(res.url, "./reports", fileoption).then(() => {
-                    logger.info(
-                      `Complete Downloading - ${Object.values(fileoption)}`
-                    );
-                  });
+              try {
+                await fetch(entry.downloadUrl, options)
+                .then(async (res) => {
+                  try {
+                      await download(res.url, "./reports/").then(() => {
+                      logger.info(
+                        `Complete Downloading - ${entry.name}`
+                      );
+                    });
+                  } catch (error) {
+                    logger.error(error)
+                  }  
                 })
                 .catch((e) => console.error(e));
+              } catch (error) {
+                logger.error(error)
+              }           
             }
+          }
+          else if(entry.status.includes("FAILED")){
+            logger.error(`FAILED: ${entry.viewType}\n ERROR: ${entry.exportErrorMessagesType}`)
           }
           });
           opts.pageNumber = opts.pageNumber + 1;

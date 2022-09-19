@@ -1,19 +1,22 @@
 const fs = require('fs')
 
-
-
-function tokenizer(body) {
+async function tokenizer(token) {
   ensureDirectoryExistence()
-  Main(body)
+  await Main(token)
 }
 
-function Main(body){
+async function Main(token){
   const Components = fs
   .readdirSync('./src/Controller/Components')
-  .forEach((file)=>{
-    const Worker = require(`./Components/${file}`)
-    Worker(body)
-  })
+  await process(Components, token)
+}
+async function process(components,token){
+  await Promise.all(
+    components.map(async(component)=>{
+      const Worker = require(`./Components/${component}`)
+      Worker(token)
+    })
+  )
 }
 
 function ensureDirectoryExistence() {
