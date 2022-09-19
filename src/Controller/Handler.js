@@ -5,6 +5,7 @@ const fetch = require("node-fetch");
 const moment = require(`moment`);
 var datetime = moment().format("YYYY_MM_DD_HH_mm_ss");
 var today = moment().format("YYYY-MM-DD")
+var today = moment().format("YYYY-MM-DD")
 var yesterday = moment().subtract(1, "days").format("YYYY-MM-DD")
 const logger = require("./Logger.js");
 let opts = {

@@ -24,6 +24,7 @@ async function Export(token){
              var jsonBody = JSON.parse(jsonData);
              Object.assign(jsonBody, { name: `${jsonBody.viewType}_${datetime}_${id}`})
              Object.assign(jsonBody, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
+             Object.assign(jsonBody, { name: `${jsonBody.viewType}_${datetime}_${id}`})
              logger.info(`Exporting ${jsonBody.viewType}`)
              await exportdata(jsonBody)
              await setTimeout(1000)
