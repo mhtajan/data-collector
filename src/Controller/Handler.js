@@ -35,26 +35,23 @@ function getReport(body) {
         if (res.pageCount >= res.pageNumber) {
           entity.forEach(async (entry) => {
             //date filter
-
             if (entry.interval.includes(`${yesterday}T00:00:00.000Z/${today}T00:00:00.000Z`)) {
-              if (entry.status.includes("COMPLETED")) {
+            if (entry.status.includes("COMPLETED")) {
                 //download filter
                 try {
                   await fetch(entry.downloadUrl, options)
-                    .then(async (res) => {
+                  .then(async (res) => {
                       if (res.ok) {
                         try {
                           await download(res.url, "./reports").then(() => {
-                            logger.info(
-                              `Complete Downloading - ${entry.viewType}`
-                            );
+                          logger.info(`Complete Downloading - ${entry.viewType}`);
                           });
                         } catch (error) {
                           logger.error(error)
                         }
                       }
-                    })
-                    .catch((e) => console.error(e));
+                  })
+                  .catch((e) => console.error(e));
                 } catch (error) {
                   logger.error(error)
                 }

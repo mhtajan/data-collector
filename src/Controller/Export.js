@@ -6,31 +6,32 @@ const handler = require('./Handler')
 const logger = require('./Logger')
 const platformClient = require("purecloud-platform-client-v2")
 const client = platformClient.ApiClient.instance
-const {setTimeout} = require('timers/promises')
+const sleep = require('sleep-promise')
 const uuid = require('uuid');
 
 async function Export(token){
   client.setAccessToken(token);
-    const Components = fs
-    .readdirSync('./src/Controller/Export')
-    //await process(Components)
+    await process()
+    await download(token)
+  }
+  async function download(token){
+    await sleep(8000*41)
     handler(token)
   }
-  async function process(components){
-    await Promise.all(
-      components.map(async(component)=>{
-             const id = uuid.v4()
-             var jsonData = fs.readFileSync(`./src/Controller/Export/${component}`);
-             var jsonBody = JSON.parse(jsonData);
+  async function process(){
+    const Components = fs.readdirSync('./src/Controller/Export/')
+    .forEach((component, index)=>{
+      const id = uuid.v4()
+      var jsonData = fs.readFileSync(`./Controller/Export/${component}`)
+      var jsonBody = JSON.parse(jsonData);
              Object.assign(jsonBody, { name: `${jsonBody.viewType}_${datetime}_${id}`})
              Object.assign(jsonBody, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-             Object.assign(jsonBody, { name: `${jsonBody.viewType}_${datetime}_${id}`})
              logger.info(`Exporting ${jsonBody.viewType}`)
-             await exportdata(jsonBody)
-             await setTimeout(1000)
-      })
-    )
-
+             
+             setTimeout(()=>{
+              exportdata(jsonBody)
+             },8000*(index+1))
+    })
   }
   client.setEnvironment("mypurecloud.jp")
 

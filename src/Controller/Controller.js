@@ -7,7 +7,7 @@ async function tokenizer(token) {
 
 async function Main(token){
   const Components = fs
-  .readdirSync('./src/Controller/Components')
+  .readdirSync('./src/Controller/Components/')
   await process(Components, token)
 }
 async function process(components,token){
