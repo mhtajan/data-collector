@@ -11,18 +11,18 @@ const uuid = require('uuid');
 
 async function Export(token){
   client.setAccessToken(token);
-    await process()
+    //await process()
     await download(token)
   }
   async function download(token){
-    await sleep(8000*41)
+    //await sleep(8000*41)
     handler(token)
   }
   async function process(){
     const Components = fs.readdirSync('./src/Controller/Export/')
     .forEach((component, index)=>{
       const id = uuid.v4()
-      var jsonData = fs.readFileSync(`./Controller/Export/${component}`)
+      var jsonData = fs.readFileSync(`./src/Controller/Export/${component}`)
       var jsonBody = JSON.parse(jsonData);
              Object.assign(jsonBody, { name: `${jsonBody.viewType}_${datetime}_${id}`})
              Object.assign(jsonBody, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })

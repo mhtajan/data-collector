@@ -8,6 +8,11 @@ var today = moment().format("YYYY-MM-DD")
 var today = moment().format("YYYY-MM-DD")
 var yesterday = moment().subtract(1, "days").format("YYYY-MM-DD")
 const logger = require("./Logger.js");
+var sql = require("mssql");
+var dbConn = require("./config");
+const { sqlconfig } = require("./config");
+const sleep = require('sleep-promise');
+
 let opts = {
   pageNumber: 1,
   pageSize: 500,
@@ -43,8 +48,40 @@ function getReport(body) {
                   .then(async (res) => {
                       if (res.ok) {
                         try {
-                          await download(res.url, "./reports").then(() => {
+                          await download(res.url, "./reports").then(async() => {
                           logger.info(`Complete Downloading - ${entry.viewType}`);
+                          var path = process.cwd() + '\\reports\\' + entry.name
+                          var file_path = path + '.csv';
+                        var data = fs.readFileSync(file_path)
+                        var res = data.toString().split('\n').length;
+                        const rowcount = res - 2
+                        sql.connect(sqlconfig, function (res,err) {
+                          const ps = new sql.PreparedStatement();
+                          ps.input("file_name", sql.NVarChar);
+                          ps.input("run_date",sql.DateTime);
+                          ps.input("file_path", sql.NVarChar);
+                          ps.input("extracted_quantity", sql.BigInt)
+                          ps.prepare(
+                            "exec sp_insertTasks 'tasks', @file_name, @run_date, @file_path, @extracted_quantity",
+                            (err) => {
+                              ps.execute(
+                                { 
+                                  file_name: entry.name,
+                                  run_date: entry.createdDateTime,
+                                  file_path: path,
+                                  extracted_quantity: rowcount,
+                                },
+                                function (err, res) {
+                                  if (err) {
+                                    console.log("error:", err);
+                                  } else {
+                                    console.log(`Tasks added successfully - ${entry.name}`);
+                                  }
+                                  ps.unprepare((err) => {});
+                                });
+                            });
+                            
+                        });
                           });
                         } catch (error) {
                           logger.error(error)
@@ -57,7 +94,9 @@ function getReport(body) {
                 }
               }
             }
+            await sleep(2000)
           });
+          await sleep(2000)
           opts.pageNumber = opts.pageNumber + 1;
           getData();
         } else if ((res.total == 0 && res.pageCount == 0)) {
