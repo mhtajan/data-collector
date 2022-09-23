@@ -5,6 +5,9 @@
   "viewType": "AGENT_DEVELOPMENT_DETAIL_ME_VIEW",
   "read": true,
   "filter": {
+    "mediaTypes": [
+      "voice"
+    ],
     "userIds": [
       "af209680-d752-48bb-a2e7-cadf6dfd730e"
     ]

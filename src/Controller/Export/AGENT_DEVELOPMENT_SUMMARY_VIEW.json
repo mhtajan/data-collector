@@ -4,7 +4,11 @@
    "period": "PT30M",
    "viewType": "AGENT_DEVELOPMENT_SUMMARY_VIEW",
    "read": true,
-   "filter": {},
+   "filter": {
+      "mediaTypes": [
+         "voice"
+       ]
+   },
    "requiredColumnIds": [
       "agent_development_interval_start",
       "agent_development_interval_end",

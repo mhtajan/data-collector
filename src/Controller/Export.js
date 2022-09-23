@@ -11,11 +11,11 @@ const uuid = require('uuid');
 
 async function Export(token){
   client.setAccessToken(token);
-    //await process()
+    await process()
     await download(token)
   }
   async function download(token){
-    //await sleep(8000*41)
+    await sleep(8000*41)
     handler(token)
   }
   async function process(){
@@ -48,7 +48,40 @@ async function Export(token){
     }
   }
 
+async function exportUser(body){
+  const user = []
+  getUserProfile(body)
+  function getUserProfile(body) {
+    axios({
+      method: 'get',
+      url: 'https://apps.mypurecloud.jp/platform/api/v2/users',
+      headers: { Authorization: 'Bearer ' + body },
+      params: opts,
+    })
+      .then((response) => {
+        Loop(response.data, body)
+      })
+      .catch((e) => console.error(e))
+  }
+  function Loop(res, body) {
+    if (res.pageCount >= res.pageNumber) {
+      console.log(user)
+      entities = res.entities
+      entities.forEach((entry) => {
+        json.userIds.user.push(entry.id)
+      })
+  
+      opts.pageNumber = opts.pageNumber + 1
+      getUserProfile(body)
+  
+    }
+    console.log(json)
+  }
+  Object.assign()
+}
+async function expFilters(){
 
+}
 
 
 module.exports = Export;

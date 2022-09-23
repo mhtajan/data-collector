@@ -94,9 +94,9 @@ function getReport(body) {
                 }
               }
             }
-            await sleep(2000)
+           // await sleep(2000)
           });
-          await sleep(2000)
+         // await sleep(2000)
           opts.pageNumber = opts.pageNumber + 1;
           getData();
         } else if ((res.total == 0 && res.pageCount == 0)) {
