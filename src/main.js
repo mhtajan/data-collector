@@ -7,6 +7,8 @@ const Controller = require("./Controller/Controller");
 const Handler = require("./Controller/Handler");
 const loggers = require("./Controller/Logger")
 const Exporter = require("./Controller/Export")
+const exp_user = require("./Controller/exp_user")
+const exp_quser = require("./Controller/exp_quser")
 const params = new URLSearchParams();
 params.append("grant_type", "client_credentials");
 
@@ -16,7 +18,7 @@ params.append("grant_type", "client_credentials");
   // });
 runScript();
 
-function runScript() {
+async function runScript() {
   //oauth login
   fetch(`https://login.mypurecloud.jp/oauth/token`, {
     method: "POST",
@@ -26,16 +28,17 @@ function runScript() {
     },
     body: params,
   })
-    .then((res) => {
+    .then(async(res) => {
       if (res.ok) {
         return res.json();
       } else {
         throw Error(res.statusText);
       }
     })
-    .then((jsonResponse) => {
-        Controller(jsonResponse.access_token) //iso viewtypes
-        Exporter(jsonResponse.access_token) //analytics exports
+    .then(async(jsonResponse) => {
+      //exp_quser(jsonResponse.access_token)
+        //Controller(jsonResponse.access_token) //iso viewtypes
+        await Exporter(jsonResponse.access_token) //analytics exports
     })
     .catch((e) => loggers.error(e));
 }

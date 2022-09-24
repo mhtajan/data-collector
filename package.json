@@ -6,7 +6,7 @@
   "bin": "dist/index.js",
   "scripts": {
     "prebuild": "rimraf ./dist/*",
-    "build": "nexe -i ./src/main.js -r ./src/Controller/Export -r ./src/Controller/Components/*.js -r ./src/Controller/*.js -r ./src/Controller/Export/*.json -r ./node_modules -o dist/data-collector.exe --build"
+    "build": "nexe -i ./src/main.js -r ./src/Controller/Export -r ./src/Controller/Components/*.js -r ./src/Controller/*.js -r ./src/Controller/Export/*.json -r ./src/Controller/exp_user/*.json -r ./src/Controller/exp_filtquser/*.json -r ./node_modules -o dist/data-collector.exe --build"
   },
   "keywords": [],
   "author": "",

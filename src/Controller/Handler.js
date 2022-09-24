@@ -18,7 +18,7 @@ let opts = {
   pageSize: 500,
 };
 //function for whole api
-function getReport(body) {
+async function getReport(body) {
   const options = {
     headers: {
       Authorization: `Bearer ${body}`,
@@ -27,14 +27,14 @@ function getReport(body) {
   };
   const log = new console.Console(fs.createWriteStream("./logs.txt"))
   getData(); //getting data from api
-  function getData() {
+ async  function getData() {
     axios({
       method: "get",
       url: "https://apps.mypurecloud.jp/platform/api/v2/analytics/reporting/exports",
       headers: { Authorization: "Bearer " + body },
       params: opts,
     })
-      .then((response) => {
+      .then(async(response) => {
         res = response.data
         entity = res.entities;
         if (res.pageCount >= res.pageNumber) {
@@ -49,7 +49,7 @@ function getReport(body) {
                       if (res.ok) {
                         try {
                           await download(res.url, "./reports").then(async() => {
-                          logger.info(`Complete Downloading - ${entry.viewType}`);
+                          logger.info(`Complete Downloading - ${entry.name}`);
                           var path = process.cwd() + '\\reports\\' + entry.name
                           var file_path = path + '.csv';
                         var data = fs.readFileSync(file_path)
@@ -66,9 +66,9 @@ function getReport(body) {
                             (err) => {
                               ps.execute(
                                 { 
-                                  file_name: entry.name,
+                                  file_name: entry.viewType,
                                   run_date: entry.createdDateTime,
-                                  file_path: path,
+                                  file_path: file_path,
                                   extracted_quantity: rowcount,
                                 },
                                 function (err, res) {
@@ -94,7 +94,7 @@ function getReport(body) {
                 }
               }
             }
-           // await sleep(2000)
+            await sleep(2000)
           });
          // await sleep(2000)
           opts.pageNumber = opts.pageNumber + 1;
