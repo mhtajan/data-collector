@@ -17,7 +17,7 @@ const loggers = require('../Logger')
 
 var inactive_users = []
 
-function get_inactive(body) {
+async function get_inactive(body) {
   axios({
     method: 'get',
     url: 'https://apps.mypurecloud.jp/platform/api/v2/users',

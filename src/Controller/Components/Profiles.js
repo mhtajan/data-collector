@@ -22,7 +22,7 @@ let opts = {
 
 var user = []
 
-function getUserProfile(body) {
+async function getUserProfile(body) {
   axios({
     method: 'get',
     url: 'https://apps.mypurecloud.jp/platform/api/v2/users',

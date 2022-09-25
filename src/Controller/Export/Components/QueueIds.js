@@ -4,7 +4,7 @@ const moment = require(`moment`);
 var datetime = moment().format("YYYY-MM-DD")
 var yesterday = moment().subtract(1, "days").format("YYYY-MM-DD")
 const fetch = require('node-fetch')
-const logger = require('./Logger')
+const logger = require('../../Logger')
 const axios = require('axios').default
 const sleep = require('sleep-promise')
 
@@ -18,10 +18,10 @@ let opts = {
   pageNumber: 1, // Number | Page number
   state: 'active', // String | Only list users of this state
 }
-const user = []
+const queue = []
 
 async function loader(token){
-  logger.info('Exporting viewtype with FilterbyQueueId')
+  logger.info('Exporting viewtype with QueueId')
   client.setAccessToken(token);
   await getUserProfile(token)
   await sleep(3000)
@@ -31,7 +31,7 @@ async function loader(token){
 async function getUserProfile(body) {
   axios({
     method: 'get',
-    url: 'https://apps.mypurecloud.jp/platform/api/v2/users',
+    url: 'https://apps.mypurecloud.jp/platform/api/v2/routing/queues',
     headers: { Authorization: 'Bearer ' + body },
     params: opts,
   })
@@ -44,7 +44,7 @@ async function Loop(res, body) {
   if (res.pageCount >= res.pageNumber) {
     entities = res.entities
     entities.forEach((entry) => {
-      user.push(entry.id)
+      queue.push(entry.id)
     })
     
     opts.pageNumber = opts.pageNumber + 1
@@ -52,26 +52,26 @@ async function Loop(res, body) {
     
   }
 }
-async function pusher(payload){
-    for(const userid of user){
+async function pusher(payload,_callback){
+    for(const queueid of queue){
       const id = uuid.v4()
       Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}`})
-      Object.assign(payload.filter,{filterQueuesByUserIds: [`${userid}`]})
+      Object.assign(payload.filter,{queueIds: [`${queueid}`]})
       //console.log(payload)
-      await exportdata(payload,userid)
+      await exportdata(payload,queueid)
       await sleep(8000)
 }
 }
 async function process(){
-    const Components = fs.readdirSync('./src/Controller/exp_filtquser/')
+    const Components = fs.readdirSync('./src/Controller/Export/Payload/QueueIds/')
     for (const component of Components){
       
-      var jsonData = fs.readFileSync(`./src/Controller/exp_filtquser/${component}`)
+      var jsonData = fs.readFileSync(`./src/Controller/Export/Payload/QueueIds/${component}`)
       var jsonBody = JSON.parse(jsonData);
              
-             Object.assign(jsonBody, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-                await pusher(jsonBody)
-                logger.info(`Done exporting for ${jsonBody.viewType}`)
+            Object.assign(jsonBody, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
+            await pusher(jsonBody)
+
     }
   }
 
@@ -79,12 +79,12 @@ async function process(){
 
   let apiInstance = new platformClient.AnalyticsApi()
 
-  async function exportdata(payload,user) {
+  async function exportdata(payload,queueid) {
     apiInstance.postAnalyticsReportingExports(payload).then(()=>{
-      logger.info(`Done Exporting ${payload.viewType}-${user}`);
+      logger.info(`Done Exporting ${payload.viewType}-${queueid}`);
   }).catch((err)=>{
-      console.log(user)
-      logger.error(`Failed at ${payload.viewType} for user:${user}`);
+      console.log(queueid)
+      logger.error(`Failed at ${payload.viewType} for user:${queueid}`);
       logger.error(err);
   })
   }

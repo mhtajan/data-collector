@@ -7,9 +7,6 @@
   "filter": {
     "mediaTypes": [
       "voice"
-    ],
-    "filterUsersByQueueIds": [
-      "9e1bd7f4-0552-4c7d-9b90-073b5042de9f"
     ]
   },
   "locale": "en-us",

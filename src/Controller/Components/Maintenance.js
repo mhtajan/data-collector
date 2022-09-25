@@ -14,7 +14,7 @@ const loggers = require('../Logger')
 
 var MainteArr = []
 
-function getMainteReport(body) {
+async function getMainteReport(body) {
   axios({
     method: 'get',
     url:

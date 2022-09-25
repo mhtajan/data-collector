@@ -7,9 +7,6 @@
    "filter": {
       "mediaTypes": [
          "voice"
-      ],
-      "filterQueuesByUserIds": [
-         "1ef3218f-cb99-4f3f-8921-44a69a64e274"
       ]
    },
    "requiredColumnIds": [

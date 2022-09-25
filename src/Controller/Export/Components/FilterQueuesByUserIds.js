@@ -4,11 +4,11 @@ const moment = require(`moment`);
 var datetime = moment().format("YYYY-MM-DD")
 var yesterday = moment().subtract(1, "days").format("YYYY-MM-DD")
 const fetch = require('node-fetch')
-const logger = require('./Logger')
+const logger = require('../../Logger')
 const axios = require('axios').default
 const sleep = require('sleep-promise')
 
-const platformClient = require("purecloud-platform-client-v2")
+const platformClient = require("purecloud-platform-client-v2");
 const client = platformClient.ApiClient.instance
 const params = new URLSearchParams();
 
@@ -19,12 +19,13 @@ let opts = {
   state: 'active', // String | Only list users of this state
 }
 const user = []
-async function load(token){
-  logger.info('Exporting viewtype with UserId')
+
+async function loader(token){
+  
   client.setAccessToken(token);
   await getUserProfile(token)
   await sleep(3000)
-  process()
+  await process()
 }
 
 async function getUserProfile(body) {
@@ -52,20 +53,26 @@ async function Loop(res, body) {
   }
 }
 async function pusher(payload){
-  Object.assign(payload.filter.userIds,user)
+    for(const userid of user){
+      const id = uuid.v4()
+      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}`})
+      Object.assign(payload.filter,{filterQueuesByUserIds: [`${userid}`]})
+      //console.log(payload)
+      await exportdata(payload,userid)
+      await sleep(8000)
+}
 }
 async function process(){
-    const Components = fs.readdirSync('./src/Controller/exp_user/')
+  logger.info('Exporting viewtype with FilterbyQueueId')
+    const Components = fs.readdirSync('./src/Controller/Export/Payload/FilterQueuesbyUserIds/')
     for (const component of Components){
-      const id = uuid.v4()
-      var jsonData = fs.readFileSync(`./src/Controller/exp_user/${component}`)
+      
+      var jsonData = fs.readFileSync(`./src/Controller/Export/Payload/FilterQueuesbyUserIds/${component}`)
       var jsonBody = JSON.parse(jsonData);
-             Object.assign(jsonBody, { name: `${jsonBody.viewType}_${datetime}_${id}`})
+             
              Object.assign(jsonBody, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-             logger.info(`Exporting ${jsonBody.viewType}`)
              await pusher(jsonBody)
-             await exportdata(jsonBody)
-             await sleep(8000)
+              
     }
   }
 
@@ -73,13 +80,14 @@ async function process(){
 
   let apiInstance = new platformClient.AnalyticsApi()
 
-  async function exportdata(payload) {
+  async function exportdata(payload,user) {
     apiInstance.postAnalyticsReportingExports(payload).then(()=>{
-      logger.info(`Done Exporting ${payload.viewType}`);
+      logger.info(`Done Exporting ${payload.viewType}-${user}`);
   }).catch((err)=>{
-      logger.error(`Failed at ${payload.viewType}`);
+      console.log(user)
+      logger.error(`Failed at ${payload.viewType} for user:${user}`);
       logger.error(err);
   })
   }
 
-module.exports = load;
+module.exports = loader;

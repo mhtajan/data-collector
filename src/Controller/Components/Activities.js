@@ -20,7 +20,7 @@ const opts = {
   },
 }
 
-function getUserAct(body) {
+async function getUserAct(body) {
   axios({
     method: 'post',
     url:
@@ -28,12 +28,12 @@ function getUserAct(body) {
     headers: { Authorization: 'Bearer ' + body },
     data: opts,
   })
-    .then((response) => {
+    .then(async(response) => {
       Loop(response.data, body)
     })
     .catch((e) => console.error(e))
 }
-function Loop(res, body) {
+async function Loop(res, body) {
   numberofLoops = Math.floor(res.totalHits / 100) + 1
   if (opts.paging.pageNumber != numberofLoops) {
     userD = res.userDetails

@@ -3,12 +3,8 @@ const fetch = require(`node-fetch`);
 const fs = require("fs");
 const token = `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`;
 const encodedToken = Buffer.from(token).toString("base64");
-const Controller = require("./Controller/Controller");
-const Handler = require("./Controller/Handler");
-const loggers = require("./Controller/Logger")
-const Exporter = require("./Controller/Export")
-const exp_user = require("./Controller/exp_user")
-const exp_quser = require("./Controller/exp_quser")
+const Pipe = require('./Controller/Pipe')
+const logger = require('./Controller/Logger')
 const params = new URLSearchParams();
 params.append("grant_type", "client_credentials");
 
@@ -36,11 +32,9 @@ async function runScript() {
       }
     })
     .then(async(jsonResponse) => {
-      //exp_quser(jsonResponse.access_token)
-        //Controller(jsonResponse.access_token) //iso viewtypes
-        await Exporter(jsonResponse.access_token) //analytics exports
+        await Pipe(jsonResponse.access_token) //analytics exports
     })
-    .catch((e) => loggers.error(e));
+    .catch((e) => logger.error(e));
 }
 
 

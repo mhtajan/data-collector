@@ -6,15 +6,13 @@
   "bin": "dist/index.js",
   "scripts": {
     "prebuild": "rimraf ./dist/*",
-    "build": "nexe -i ./src/main.js -r ./src/Controller/Export -r ./src/Controller/Components/*.js -r ./src/Controller/*.js -r ./src/Controller/Export/*.json -r ./src/Controller/exp_user/*.json -r ./src/Controller/exp_filtquser/*.json -r ./node_modules -o dist/data-collector.exe --build"
+    "build": "nexe -i ./src/main.js -r ./src/**/*.js -r ./src/Controller/*.js -r ./src/**/*.json -r ./node_modules -o dist/data-collector.exe --build"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@vercel/ncc": "^0.34.0",
     "axios": "^0.27.2",
-    "D": "^1.0.0",
     "download": "^8.0.0",
     "json2csv": "^5.0.7",
     "moment": "^2.29.4",
@@ -22,7 +20,6 @@
     "nexe": "^4.0.0-rc.1",
     "node-cron": "^3.0.2",
     "node-fetch": "^2.6.1",
-    "pkg": "^5.8.0",
     "purecloud-platform-client-v2": "^147.0.0",
     "rimraf": "^3.0.2",
     "sleep-promise": "^9.1.0",

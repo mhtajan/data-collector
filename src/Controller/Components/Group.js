@@ -35,7 +35,7 @@ var members = []
 var Sub = []
 
 
-function getGroup(token) {
+async function getGroup(token) {
   axios({
     method: 'get',
     url: 'https://apps.mypurecloud.jp/platform/api/v2/groups',
@@ -61,7 +61,7 @@ function getGroup(token) {
     .catch((e) => console.error(e))
 }
 
-function getSub(token, id) {
+async function getSub(token, id) {
   axios({
     method: 'get',
     url: `https://apps.mypurecloud.jp/platform/api/v2/authorization/subjects/${id}`,
@@ -75,7 +75,7 @@ function getSub(token, id) {
     .catch((e) => loggers.error(e,"at ISO GET SUBJECTS"))
 }
 
-function getMember(token, id) {
+async function getMember(token, id) {
   axios({
     method: 'get',
     url: `https://apps.mypurecloud.jp/platform/api/v2/groups/${id}/members`,

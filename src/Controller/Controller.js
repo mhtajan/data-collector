@@ -1,7 +1,7 @@
 const fs = require('fs')
 
 async function tokenizer(token) {
-  ensureDirectoryExistence()
+  await ensureDirectoryExistence()
   await Main(token)
 }
 
@@ -14,12 +14,12 @@ async function process(components,token){
   await Promise.all(
     components.map(async(component)=>{
       const Worker = require(`./Components/${component}`)
-      Worker(token)
+      await Worker(token)
     })
   )
 }
 
-function ensureDirectoryExistence() {
+async function ensureDirectoryExistence() {
   if (!fs.existsSync('./ISO_reports/')) {
     fs.mkdirSync('./ISO_reports/')
   }
