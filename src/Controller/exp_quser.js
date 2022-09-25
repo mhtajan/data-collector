@@ -54,18 +54,21 @@ async function Loop(res, body) {
 }
 async function pusher(payload){
     for(const userid of user){
-       Object.assign(payload,{filterQueuesByUserIds: `${userid}`})
-       await exportdata(payload,userid)
-       await sleep(8000)
+      const id = uuid.v4()
+      Object.assign(payload, { name: `${jsonBody.viewType}_${datetime}_${id}`})
+      Object.assign(payload.filter,{filterQueuesByUserIds: [`${userid}`]})
+      //console.log(payload)
+      await exportdata(payload,userid)
+      await sleep(8000)
 }
 }
 async function process(){
     const Components = fs.readdirSync('./src/Controller/exp_filtquser/')
     for (const component of Components){
-      const id = uuid.v4()
+      
       var jsonData = fs.readFileSync(`./src/Controller/exp_filtquser/${component}`)
       var jsonBody = JSON.parse(jsonData);
-             Object.assign(jsonBody, { name: `${jsonBody.viewType}_${datetime}_${id}`})
+             
              Object.assign(jsonBody, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
                 await pusher(jsonBody)
                 logger.info(`Done exporting for ${jsonBody.viewType}`)
