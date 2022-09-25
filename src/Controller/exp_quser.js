@@ -55,7 +55,7 @@ async function Loop(res, body) {
 async function pusher(payload){
     for(const userid of user){
       const id = uuid.v4()
-      Object.assign(payload, { name: `${jsonBody.viewType}_${datetime}_${id}`})
+      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}`})
       Object.assign(payload.filter,{filterQueuesByUserIds: [`${userid}`]})
       //console.log(payload)
       await exportdata(payload,userid)
