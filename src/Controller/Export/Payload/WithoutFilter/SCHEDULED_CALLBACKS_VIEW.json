@@ -1,0 +1,19 @@
+{
+    "timeZone": "Aisa/Singapore",
+    "exportFormat": "CSV",
+    "period": "PT30M",
+    "viewType": "SCHEDULED_CALLBACKS_VIEW",
+    "read": true,
+    "filter": {},
+    "locale": "en-us",
+    "requiredColumnIds": [
+        "scheduled_callbacks_view_filters",
+        "scheduled_callbacks_view_callback_name"
+    ],
+    "hasFormatDurations": true,
+    "hasSplitFilters": false,
+    "excludeEmptyRows": true,
+    "hasSummaryRow": false,
+    "csvDelimiter": "COMMA",
+    "hasCustomParticipantAttributes": true
+}

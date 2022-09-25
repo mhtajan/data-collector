@@ -1,26 +1,29 @@
 const fs = require('fs')
-const logger = require('./Logger')
 
-
-function tokenizer(body) {
-  ensureDirectoryExistence()
-  Main(body)
+async function tokenizer(token) {
+  await ensureDirectoryExistence()
+  await Main(token)
 }
 
-function Main(body){
+async function Main(token){
   const Components = fs
-  .readdirSync('./src/Controller/Components')
-  .forEach((file)=>{
-    const Worker = require(`./Components/${file}`)
-    Worker(body)
-  })
+  .readdirSync('./src/Controller/Components/')
+  await process(Components, token)
+}
+async function process(components,token){
+  await Promise.all(
+    components.map(async(component)=>{
+      const Worker = require(`./Components/${component}`)
+      await Worker(token)
+    })
+  )
 }
 
-function ensureDirectoryExistence() {
-  if (fs.existsSync('./ISO_reports/')) {
-    return true
+async function ensureDirectoryExistence() {
+  if (!fs.existsSync('./ISO_reports/')) {
+    fs.mkdirSync('./ISO_reports/')
   }
-  fs.mkdirSync('./ISO_reports/')
+  
 }
 
 module.exports = tokenizer

@@ -9,8 +9,7 @@ const json2csvParser = new Parser({
   transforms: [flatten({ objects: true, arrays: true })],
 })
 const fs = require('fs')
-const logger = require('../logger.js')
-const { workerData } = require('worker_threads')
+const loggers = require('../Logger')
 
 const userAct = []
 const opts = {
@@ -21,7 +20,7 @@ const opts = {
   },
 }
 
-function getUserAct(body) {
+async function getUserAct(body) {
   axios({
     method: 'post',
     url:
@@ -29,12 +28,12 @@ function getUserAct(body) {
     headers: { Authorization: 'Bearer ' + body },
     data: opts,
   })
-    .then((response) => {
+    .then(async(response) => {
       Loop(response.data, body)
     })
-    .catch((e) => logger.error(e))
+    .catch((e) => console.error(e))
 }
-function Loop(res, body) {
+async function Loop(res, body) {
   numberofLoops = Math.floor(res.totalHits / 100) + 1
   if (opts.paging.pageNumber != numberofLoops) {
     userD = res.userDetails
@@ -51,7 +50,7 @@ function Loop(res, body) {
     })
     csv = json2csvParser.parse(userAct)
     fs.writeFileSync(`./ISO_reports/ISO_User_Activities_${datetime}.csv`, csv)
-    logger.info(`ISO_User_Activities EXPORTED SUCCESSFULLY`)
+    loggers.info(`ISO_User_Activities EXPORTED SUCCESSFULLY`)
   }
   return
 }

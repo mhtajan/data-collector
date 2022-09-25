@@ -10,12 +10,11 @@ const fs = require('fs')
 const path = require('path')
 const moment = require('moment')
 var datetime = moment().format('YYYY_MM_DD')
-const logger = require('../Logger.js')
-const { workerData } = require('worker_threads')
+const loggers = require('../Logger')
 
 var MainteArr = []
 
-function getMainteReport(body) {
+async function getMainteReport(body) {
   axios({
     method: 'get',
     url:
@@ -29,9 +28,9 @@ function getMainteReport(body) {
         `./ISO_reports/ISO_Maintenance_Report_${datetime}.csv`,
         csv,
       )
-      logger.info('ISO_Maintenance_Report EXPORTED SUCCESSFULLY!')
+      loggers.info('ISO_Maintenance_Report EXPORTED SUCCESSFULLY!')
     })
-    .catch((e) => logger.error(e))
+    .catch((e) => loggers.error(e))
 }
 
 module.exports = getMainteReport

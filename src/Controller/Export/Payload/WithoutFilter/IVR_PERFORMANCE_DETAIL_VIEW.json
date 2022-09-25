@@ -1,0 +1,28 @@
+{
+      "timeZone": "Aisa/Singapore",
+      "exportFormat": "CSV",
+      "period": "PT30M",
+      "viewType": "IVR_PERFORMANCE_DETAIL_VIEW",
+      "read": true,
+      "filter": {
+            "flowIds": [
+                  "d9a69c78-5506-4327-ab41-8950d1e8b6f4"
+            ]
+      },
+      "locale": "en-us",
+      "requiredColumnIds": [
+            "flow_performance_view_interval_start",
+            "flow_performance_view_interval_end",
+            "flow_performance_view_interval_complete",
+            "flow_performance_view_filters",
+            "flow_performance_view_media_type",
+            "flow_performance_view_flow_id",
+            "flow_performance_view_flow_name"
+      ],
+      "hasFormatDurations": true,
+      "hasSplitFilters": false,
+      "excludeEmptyRows": true,
+      "hasSummaryRow": false,
+      "csvDelimiter": "COMMA",
+      "hasCustomParticipantAttributes": true
+}

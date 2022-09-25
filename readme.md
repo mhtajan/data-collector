@@ -18,19 +18,25 @@ Chinabank Data-Collector
 
 ## Pre-requisite
 node-js <br />
-nssm <br />
-
+Download Latest NSSM Release [here](https://nssm.cc/download)<br />
 
 ## Installation
 
 Run `npm install`<br />
-After installing npm packages run `node run build`
+After installing npm packages run `npm run build`
 
 
 ## Windows Service Installation
-Download Latest NSSM Release [here](https://nssm.cc/download)<br />
 Run `nssm install data-collector`<br />
 Target data-collector.exe<br />
+
+
+## Windows Environment Setup
+Run `sysdm.cpl` <br />
+Create a new System Environment variable for Client Credentials <br/>
+* Client_ID: <`Client ID Credential`>
+* Client_SECRET: <`Client Secret Credential`>
+* CRON_Sched <`CRON schedule format configuration`>
 
 ## Updates
 Now using environment variables for Client Credentials instead of JSON <br/>

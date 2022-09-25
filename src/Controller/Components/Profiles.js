@@ -12,8 +12,8 @@ const json2csvParser = new Parser({
 const fs = require('fs')
 const moment = require('moment')
 var datetime = moment().format('YYYY_MM_DD')
-const logger = require('../logger.js')
-const { workerData } = require('worker_threads')
+const loggers = require('../Logger')
+
 let opts = {
   pageSize: 25, // Number | Page size
   pageNumber: 1, // Number | Page number
@@ -22,7 +22,7 @@ let opts = {
 
 var user = []
 
-function getUserProfile(body) {
+async function getUserProfile(body) {
   axios({
     method: 'get',
     url: 'https://apps.mypurecloud.jp/platform/api/v2/users',
@@ -32,7 +32,7 @@ function getUserProfile(body) {
     .then((response) => {
       Loop(response.data, body)
     })
-    .catch((e) => logger.error(e))
+    .catch((e) => loggers.error(e))
 }
 function Loop(res, body) {
   if (res.pageCount >= res.pageNumber) {
@@ -42,7 +42,7 @@ function Loop(res, body) {
     })
     const csv = json2csvParser.parse(user)
     fs.writeFileSync(`./ISO_reports/ISO_User_Profile_${datetime}.csv`, csv)
-    logger.info('ISO_User_Profile EXPORTED SUCCESSFULLY')
+    loggers.info('ISO_User_Profile EXPORTED SUCCESSFULLY')
     opts.pageNumber = opts.pageNumber + 1
     getUserProfile(body)
   }

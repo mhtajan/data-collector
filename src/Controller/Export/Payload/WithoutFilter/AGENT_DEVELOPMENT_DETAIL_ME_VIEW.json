@@ -1,0 +1,29 @@
+{
+  "timeZone": "Aisa/Singapore",
+  "exportFormat": "CSV",
+  "period": "PT30M",
+  "viewType": "AGENT_DEVELOPMENT_DETAIL_ME_VIEW",
+  "read": true,
+  "filter": {
+    "mediaTypes": [
+      "voice"
+    ],
+    "userIds": [
+      "af209680-d752-48bb-a2e7-cadf6dfd730e"
+    ]
+  },
+  "requiredColumnIds": [
+    "agent_development_interval_start",
+    "agent_development_interval_end",
+    "agent_development_interval_complete",
+    "agent_development_filters"
+  ],
+  "locale": "en-us",
+  "hasFormatDurations": true,
+  "hasSplitFilters": false,
+  "excludeEmptyRows": true,
+  "hasSplitByMedia": true,
+  "hasSummaryRow": false,
+  "csvDelimiter": "COMMA",
+  "hasCustomParticipantAttributes": true
+}

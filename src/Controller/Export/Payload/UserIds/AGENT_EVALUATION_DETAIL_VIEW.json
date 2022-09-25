@@ -1,0 +1,30 @@
+{
+  "timeZone": "Aisa/Singapore",
+  "exportFormat": "CSV",
+  "period": "PT30M",
+  "viewType": "AGENT_EVALUATION_DETAIL_VIEW",
+  "read": true,
+  "filter": {
+    "mediaTypes": [
+      "voice"
+    ],
+    "userIds": [
+      
+    ]
+  },
+  "requiredColumnIds": [
+    "agent_evaluations_detail_interval_start",
+    "agent_evaluations_detail_interval_end",
+    "agent_evaluations_detail_interval_complete",
+    "agent_evaluations_detail_filters",
+    "agent_evaluations_detail_agent_id",
+    "agent_evaluations_detail_agent_name"
+  ],
+  "locale": "en-us",
+  "hasFormatDurations": true,
+  "hasSplitFilters": false,
+  "excludeEmptyRows": true,
+  "hasSummaryRow": false,
+  "csvDelimiter": "COMMA",
+  "hasCustomParticipantAttributes": true
+}

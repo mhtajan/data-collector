@@ -9,8 +9,6 @@ function error(body){
     logger.error(body)
 }
 
-
-
 const myFormat = printf(({ message, timestamp }) => {
     return `${timestamp}: ${message}`;
 });
