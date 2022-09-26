@@ -12,6 +12,7 @@ var sql = require("mssql");
 var dbConn = require("./config");
 const { sqlconfig } = require("./config");
 const sleep = require('sleep-promise');
+const blobUpload = require('./BlobUpload')
 
 let opts = {
   pageNumber: 1,
@@ -42,7 +43,7 @@ async function getReport(body) {
             //date filter
             if (entry.interval.includes(`${yesterday}T00:00:00.000Z/${today}T00:00:00.000Z`)) {
             if (entry.status.includes("COMPLETED")) {
-                //download filter
+                //download filter             
                 try {
                   await fetch(entry.downloadUrl, options)
                   .then(async (res) => {
@@ -55,33 +56,14 @@ async function getReport(body) {
                         var data = fs.readFileSync(file_path)
                         var res = data.toString().split('\n').length;
                         const rowcount = res - 2
-                        sql.connect(sqlconfig, function (res,err) {
-                          const ps = new sql.PreparedStatement();
-                          ps.input("file_name", sql.NVarChar);
-                          ps.input("run_date",sql.DateTime);
-                          ps.input("file_path", sql.NVarChar);
-                          ps.input("extracted_quantity", sql.BigInt)
-                          ps.prepare(
-                            "exec sp_insertTasks 'tasks', @file_name, @run_date, @file_path, @extracted_quantity",
-                            (err) => {
-                              ps.execute(
-                                { 
-                                  file_name: entry.viewType,
-                                  run_date: entry.createdDateTime,
-                                  file_path: file_path,
-                                  extracted_quantity: rowcount,
-                                },
-                                function (err, res) {
-                                  if (err) {
-                                    console.log("error:", err);
-                                  } else {
-                                    console.log(`Tasks added successfully - ${entry.name}`);
-                                  }
-                                  ps.unprepare((err) => {});
-                                });
-                            });
-                            
-                        });
+                        if (rowcount < 0) {
+                          rowcount = 0
+                        }
+                        await blobUpload.main(entry.viewType,entry.createdDateTime,entry.name,rowcount,file_path)
+                        .then( (res) => {
+                          console.log('Done upload and insert')
+                        })
+                        .catch((ex) => console.log(ex.message));
                           });
                         } catch (error) {
                           logger.error(error)
