@@ -18,19 +18,19 @@ let opts = {
   pageNumber: 1, // Number | Page number
   state: 'active', // String | Only list users of this state
 }
-const flow = []
+const survey = []
 async function load(token){
   logger.info('Exporting viewtype with UserId')
   client.setAccessToken(token);
-  await getFlow(token)
+  await getSurvey(token)
   await sleep(3000)
   process()
 }
 
-async function getFlow(body) {
+async function getSurvey(body) {
   axios({
     method: 'get',
-    url: 'https://apps.mypurecloud.jp/platform/api/v2/flows',
+    url: 'https://apps.mypurecloud.jp/platform/api/v2/users',
     headers: { Authorization: 'Bearer ' + body },
     params: opts,
   })
@@ -43,22 +43,22 @@ async function Loop(res, body) {
   if (res.pageCount >= res.pageNumber) {
     entities = res.entities
     entities.forEach((entry) => {
-      flow.push(entry.id)
+      survey.push(entry.id)
     })
     
     opts.pageNumber = opts.pageNumber + 1
-    getFlow(body)
+    getSurvey(body)
     
   }
 }
 async function pusher(payload){
-  Object.assign(payload.filter.flowIds,flow)
+  Object.assign(payload.filter.surveyFormIds,survey)
 }
 async function process(){
-    const Components = fs.readdirSync('./src/Controller/Export/Payload/FlowIds/')
+    const Components = fs.readdirSync('./src/Controller/Export/Payload/surveyFormIds/')
     for (const component of Components){
       const id = uuid.v4()
-      var jsonData = fs.readFileSync(`./src/Controller/Export/Payload/FlowIds/${component}`)
+      var jsonData = fs.readFileSync(`./src/Controller/Export/Payload/surveyFormIds/${component}`)
       var jsonBody = JSON.parse(jsonData);
              Object.assign(jsonBody, { name: `${jsonBody.viewType}_${datetime}_${id}`})
              Object.assign(jsonBody, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })

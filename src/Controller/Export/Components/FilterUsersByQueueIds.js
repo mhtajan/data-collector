@@ -8,29 +8,30 @@ const logger = require('../../Logger')
 const axios = require('axios').default
 const sleep = require('sleep-promise')
 
-const platformClient = require("purecloud-platform-client-v2")
+const platformClient = require("purecloud-platform-client-v2");
 const client = platformClient.ApiClient.instance
 const params = new URLSearchParams();
 
 
 let opts = {
-  pageSize: 500, // Number | Page size
+  pageSize: 25, // Number | Page size
   pageNumber: 1, // Number | Page number
   state: 'active', // String | Only list users of this state
 }
-const flow = []
-async function load(token){
-  logger.info('Exporting viewtype with UserId')
+const queue = []
+
+async function loader(token){
+  
   client.setAccessToken(token);
-  await getFlow(token)
+  await getQueue(token)
   await sleep(3000)
-  process()
+  await process()
 }
 
-async function getFlow(body) {
+async function getQueue(body) {
   axios({
     method: 'get',
-    url: 'https://apps.mypurecloud.jp/platform/api/v2/flows',
+    url: 'https://apps.mypurecloud.jp/platform/api/v2/routing/queues',
     headers: { Authorization: 'Bearer ' + body },
     params: opts,
   })
@@ -43,29 +44,34 @@ async function Loop(res, body) {
   if (res.pageCount >= res.pageNumber) {
     entities = res.entities
     entities.forEach((entry) => {
-      flow.push(entry.id)
+      queue.push(entry.id)
     })
     
     opts.pageNumber = opts.pageNumber + 1
-    getFlow(body)
+    getQueue(body)
     
   }
 }
 async function pusher(payload){
-  Object.assign(payload.filter.flowIds,flow)
+    for(const queueid of queue){
+      const id = uuid.v4()
+      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}`})
+      Object.assign(payload.filter,{filterUsersByQueueIds: [`${queueid}`]})
+      await exportdata(payload,queueid)
+      await sleep(8000)
+}
 }
 async function process(){
-    const Components = fs.readdirSync('./src/Controller/Export/Payload/FlowIds/')
+  logger.info('Exporting viewtype with FilterbyQueueId')
+    const Components = fs.readdirSync('./src/Controller/Export/Payload/FilterUsersByQueueIds/')
     for (const component of Components){
-      const id = uuid.v4()
-      var jsonData = fs.readFileSync(`./src/Controller/Export/Payload/FlowIds/${component}`)
+      
+      var jsonData = fs.readFileSync(`./src/Controller/Export/Payload/FilterUsersByQueueIds/${component}`)
       var jsonBody = JSON.parse(jsonData);
-             Object.assign(jsonBody, { name: `${jsonBody.viewType}_${datetime}_${id}`})
+             
              Object.assign(jsonBody, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-             logger.info(`Exporting ${jsonBody.viewType}`)
              await pusher(jsonBody)
-             await exportdata(jsonBody)
-             await sleep(8000)
+              
     }
   }
 
@@ -73,13 +79,14 @@ async function process(){
 
   let apiInstance = new platformClient.AnalyticsApi()
 
-  async function exportdata(payload) {
+  async function exportdata(payload,user) {
     apiInstance.postAnalyticsReportingExports(payload).then(()=>{
-      logger.info(`Done Exporting ${payload.viewType}`);
+      logger.info(`Done Exporting ${payload.viewType}-${user}`);
   }).catch((err)=>{
-      logger.error(`Failed at ${payload.viewType}`);
+      console.log(user)
+      logger.error(`Failed at ${payload.viewType} for user:${user}`);
       logger.error(err);
   })
   }
 
-module.exports = load;
+module.exports = loader;
