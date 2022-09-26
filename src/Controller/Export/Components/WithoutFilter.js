@@ -7,9 +7,12 @@ const platformClient = require("purecloud-platform-client-v2")
 const client = platformClient.ApiClient.instance
 const sleep = require('sleep-promise')
 const uuid = require('uuid');
+client.setEnvironment("mypurecloud.jp")
 
+let apiInstance = new platformClient.AnalyticsApi()
 
   async function process(token){
+    client.setAccessToken(token);
     logger.info('Exporting viewtype without filters')
     const Components = fs.readdirSync('./src/Controller/Export/Payload/WithoutFilter')
     for (const component of Components){
@@ -22,9 +25,7 @@ const uuid = require('uuid');
              await sleep(8000)
     }
   }
-  client.setEnvironment("mypurecloud.jp")
-
-  let apiInstance = new platformClient.AnalyticsApi()
+ 
 
   async function exportdata(payload) {
     apiInstance.postAnalyticsReportingExports(payload).then(()=>{

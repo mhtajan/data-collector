@@ -43,7 +43,7 @@ async function getReport(body) {
             //date filter
             if (entry.interval.includes(`${yesterday}T00:00:00.000Z/${today}T00:00:00.000Z`)) {
             if (entry.status.includes("COMPLETED")) {
-                //download filter
+                //download filter             
                 try {
                   await fetch(entry.downloadUrl, options)
                   .then(async (res) => {
@@ -59,7 +59,7 @@ async function getReport(body) {
                         if (rowcount < 0) {
                           rowcount = 0
                         }
-                        blobUpload.main(entry.viewType,entry.createdDateTime,entry.name,rowcount,file_path)
+                        await blobUpload.main(entry.viewType,entry.createdDateTime,entry.name,rowcount,file_path)
                         .then( (res) => {
                           console.log('Done upload and insert')
                         })

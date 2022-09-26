@@ -28,10 +28,10 @@ async function controller(token,_callback){
  }
  
  async function main(token){
-   await controller(token);
-   await filterQueuesByUserIds(token);
-   await userIds(token);
-   await withoutFilter(token);
+  //  await controller(token);
+  //  await filterQueuesByUserIds(token);
+  //  await userIds(token);
+  //await withoutFilter(token);
    await downloader(token);
  }
 
