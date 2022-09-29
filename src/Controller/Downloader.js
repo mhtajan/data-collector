@@ -40,7 +40,6 @@ async function getReport(body) {
         entity = res.entities;
         if (res.pageCount >= res.pageNumber) {
           entity.forEach(async (entry) => {
-            //date filter
             if (entry.interval.includes(`${yesterday}T00:00:00.000Z/${today}T00:00:00.000Z`)) {
             if (entry.status.includes("COMPLETED")) {
                 //download filter             
@@ -76,9 +75,7 @@ async function getReport(body) {
                 }
               }
             }
-            await sleep(2000)
           });
-         // await sleep(2000)
           opts.pageNumber = opts.pageNumber + 1;
           getData();
         } else if ((res.total == 0 && res.pageCount == 0)) {

@@ -20,7 +20,7 @@ const blobServiceClient = BlobServiceClient.fromConnectionString(
 module.exports = {
   async main(viewType,createdDateTime,filename,rowcount,file_path) {
     // Create a unique name for the container
-    const containerName = "reportfiles";
+    const containerName = "datasource";
 
     // console.log("\nCreating container...");
     // console.log("\t", containerName);

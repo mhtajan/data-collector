@@ -14,15 +14,15 @@ let apiInstance = new platformClient.AnalyticsApi()
   async function process(token){
     client.setAccessToken(token);
     logger.info('Exporting viewtype without filters')
-    const Components = fs.readdirSync(__dirname+`/../Payload/WithoutFilter`)
-    for await (const component of Components){
+    const Components = fs.readdirSync('./src/Controller/Export/Payload/WithoutFilter')
+    for (const component of Components){
       const id = uuid.v4()
-      var jsonData = fs.readFileSync(__dirname+`/../Payload/WithoutFilter/${component}`)
+      var jsonData = fs.readFileSync(`./src/Controller/Export/Payload/WithoutFilter/${component}`)
       var jsonBody = JSON.parse(jsonData);
              Object.assign(jsonBody, { name: `${jsonBody.viewType}_${datetime}_${id}`})
              Object.assign(jsonBody, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
              await exportdata(jsonBody)
-             await sleep(2000)
+             await sleep(8000)
     }
   }
  

@@ -35,11 +35,11 @@ async function getFlow(body) {
     params: opts,
   })
     .then((response) => {
-      Loop(response.data, body)
+      LoopFlow(response.data, body)
     })
     .catch((e) => console.error(e))
 }
-async function Loop(res, body) {
+async function LoopFlow(res, body) {
   if (res.pageCount >= res.pageNumber) {
     entities = res.entities
     entities.forEach((entry) => {
@@ -63,11 +63,10 @@ async function process(){
              Object.assign(jsonBody, { name: `${jsonBody.viewType}_${datetime}_${id}`})
              Object.assign(jsonBody, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
              logger.info(`Exporting ${jsonBody.viewType}`)
-             await pusher(jsonBody)
-             await exportdata(jsonBody)
-             await sleep(8000)
+             pusher(jsonBody)
+             exportdata(jsonBody)
     }
-  }
+}
 
   client.setEnvironment("mypurecloud.jp")
 

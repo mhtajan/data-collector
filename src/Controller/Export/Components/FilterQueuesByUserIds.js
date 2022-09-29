@@ -7,7 +7,7 @@ const fetch = require('node-fetch')
 const logger = require('../../Logger')
 const axios = require('axios').default
 const sleep = require('sleep-promise')
-
+const userIds = require('./UserIds')
 const platformClient = require("purecloud-platform-client-v2");
 const client = platformClient.ApiClient.instance
 const params = new URLSearchParams();
@@ -21,10 +21,8 @@ let opts = {
 const user = []
 
 async function loader(token){
-  
-  client.setAccessToken(token);
   await getUserProfile(token)
-  await sleep(3000)
+  await sleep(20000)
   await process()
 }
 
@@ -35,7 +33,7 @@ async function getUserProfile(body) {
     headers: { Authorization: 'Bearer ' + body },
     params: opts,
   })
-    .then((response) => {
+    .then(async(response) => {
       Loop(response.data, body)
     })
     .catch((e) => console.error(e))
@@ -53,35 +51,33 @@ async function Loop(res, body) {
   }
 }
 async function pusher(payload){
-    for(const userid of user){
+    for await (const userid of user){
       const id = uuid.v4()
       Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}`})
       Object.assign(payload.filter,{filterQueuesByUserIds: [`${userid}`]})
       //console.log(payload)
-      await exportdata(payload,userid)
-      await sleep(8000)
+      exportdata(payload,userid)
 }
 }
 async function process(){
   logger.info('Exporting viewtype with FilterbyQueueId')
-    const Components = fs.readdirSync('./src/Controller/Export/Payload/FilterQueuesbyUserIds/')
-    for (const component of Components){
+    const Components = fs.readdirSync(__dirname+'/../Payload/FilterQueuesbyUserIds/')
+    for await (const component of Components){
       
-      var jsonData = fs.readFileSync(`./src/Controller/Export/Payload/FilterQueuesbyUserIds/${component}`)
+      var jsonData = fs.readFileSync(__dirname+`/../Payload/FilterQueuesbyUserIds/${component}`)
       var jsonBody = JSON.parse(jsonData);
              
-             Object.assign(jsonBody, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-             await pusher(jsonBody)
-              
+       Object.assign(jsonBody, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
+            pusher(jsonBody)
     }
-  }
+}
 
   client.setEnvironment("mypurecloud.jp")
 
   let apiInstance = new platformClient.AnalyticsApi()
 
   async function exportdata(payload,user) {
-    apiInstance.postAnalyticsReportingExports(payload).then(()=>{
+     apiInstance.postAnalyticsReportingExports(payload).then(()=>{
       logger.info(`Done Exporting ${payload.viewType}-${user}`);
   }).catch((err)=>{
       console.log(user)

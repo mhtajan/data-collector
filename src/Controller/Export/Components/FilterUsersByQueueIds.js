@@ -7,7 +7,6 @@ const fetch = require('node-fetch')
 const logger = require('../../Logger')
 const axios = require('axios').default
 const sleep = require('sleep-promise')
-
 const platformClient = require("purecloud-platform-client-v2");
 const client = platformClient.ApiClient.instance
 const params = new URLSearchParams();
@@ -21,11 +20,10 @@ let opts = {
 const queue = []
 
 async function loader(token){
-  
-  client.setAccessToken(token);
   await getQueue(token)
-  await sleep(3000)
+  await sleep(20000)
   await process()
+  
 }
 
 async function getQueue(body) {
@@ -53,24 +51,23 @@ async function Loop(res, body) {
   }
 }
 async function pusher(payload){
-    for(const queueid of queue){
+    for await (const queueid of queue){
       const id = uuid.v4()
       Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}`})
       Object.assign(payload.filter,{filterUsersByQueueIds: [`${queueid}`]})
-      await exportdata(payload,queueid)
-      await sleep(8000)
+      exportdata(payload,queueid)
 }
 }
 async function process(){
   logger.info('Exporting viewtype with FilterbyQueueId')
-    const Components = fs.readdirSync('./src/Controller/Export/Payload/FilterUsersByQueueIds/')
-    for (const component of Components){
+    const Components = fs.readdirSync(__dirname+'/../Payload/FilterUsersByQueueIds/')
+    for await (const component of Components){
       
-      var jsonData = fs.readFileSync(`./src/Controller/Export/Payload/FilterUsersByQueueIds/${component}`)
+      var jsonData = fs.readFileSync(__dirname+`/../Payload/FilterUsersByQueueIds/${component}`)
       var jsonBody = JSON.parse(jsonData);
              
-             Object.assign(jsonBody, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-             await pusher(jsonBody)
+       Object.assign(jsonBody, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
+              pusher(jsonBody)
               
     }
   }
@@ -80,12 +77,15 @@ async function process(){
   let apiInstance = new platformClient.AnalyticsApi()
 
   async function exportdata(payload,user) {
-    apiInstance.postAnalyticsReportingExports(payload).then(()=>{
+     apiInstance.postAnalyticsReportingExports(payload).then(()=>{
       logger.info(`Done Exporting ${payload.viewType}-${user}`);
   }).catch((err)=>{
-      console.log(user)
       logger.error(`Failed at ${payload.viewType} for user:${user}`);
-      logger.error(err);
+      //logger.error(err.message);
+      console.log("msg"+err.message)
+      if (err.message.includes('Rate limit')) {
+        return 1000*(err.message.match(/\[(.*)\]/).pop())
+      } 
   })
   }
 

@@ -23,8 +23,8 @@ async function load(token){
   logger.info('Exporting viewtype with UserId')
   client.setAccessToken(token);
   await getUserProfile(token)
-  await sleep(3000)
-  process()
+  await sleep(1000)
+  await process()
 }
 
 async function getUserProfile(body) {
@@ -34,8 +34,8 @@ async function getUserProfile(body) {
     headers: { Authorization: 'Bearer ' + body },
     params: opts,
   })
-    .then((response) => {
-      Loop(response.data, body)
+    .then(async(response) => {
+      await Loop(response.data, body)
     })
     .catch((e) => console.error(e))
 }
@@ -47,25 +47,24 @@ async function Loop(res, body) {
     })
     
     opts.pageNumber = opts.pageNumber + 1
-    getUserProfile(body)
+    await getUserProfile(body)
     
   }
 }
 async function pusher(payload){
-  Object.assign(payload.filter.userIds,user)
+ await Object.assign(payload.filter.userIds,user)
 }
 async function process(){
-    const Components = fs.readdirSync('./src/Controller/Export/Payload/UserIds/')
-    for (const component of Components){
+     const Components = fs.readdirSync(__dirname+'/../Payload/UserIds/')
+    for await (const component of Components){
       const id = uuid.v4()
-      var jsonData = fs.readFileSync(`./src/Controller/Export/Payload/UserIds/${component}`)
+      var jsonData = fs.readFileSync(__dirname+`/../Payload/UserIds/${component}`)
       var jsonBody = JSON.parse(jsonData);
-             Object.assign(jsonBody, { name: `${jsonBody.viewType}_${datetime}_${id}`})
-             Object.assign(jsonBody, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-             logger.info(`Exporting ${jsonBody.viewType}`)
+      await Object.assign(jsonBody, { name: `${jsonBody.viewType}_${datetime}_${id}`})
+      await  Object.assign(jsonBody, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
              await pusher(jsonBody)
              await exportdata(jsonBody)
-             await sleep(8000)
+            
     }
   }
 
@@ -74,7 +73,7 @@ async function process(){
   let apiInstance = new platformClient.AnalyticsApi()
 
   async function exportdata(payload) {
-    apiInstance.postAnalyticsReportingExports(payload).then(()=>{
+    await apiInstance.postAnalyticsReportingExports(payload).then(()=>{
       logger.info(`Done Exporting ${payload.viewType}`);
   }).catch((err)=>{
       logger.error(`Failed at ${payload.viewType}`);

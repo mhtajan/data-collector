@@ -28,7 +28,7 @@ async function loader(token){
   await process()
 }
 
-async function getUserProfile(body) {
+async function getQueue(body) {
   axios({
     method: 'get',
     url: 'https://apps.mypurecloud.jp/platform/api/v2/routing/queues',
@@ -48,23 +48,23 @@ async function Loop(res, body) {
     })
     
     opts.pageNumber = opts.pageNumber + 1
-    getUserProfile(body)
+    getQueue(body)
     
   }
 }
 async function pusher(payload,_callback){
-    for(const queueid of queue){
+    for await (const queueid of queue){
       const id = uuid.v4()
       Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}`})
       Object.assign(payload.filter,{queueIds: [`${queueid}`]})
       //console.log(payload)
       await exportdata(payload,queueid)
-      await sleep(8000)
+      //await sleep(8000)
 }
 }
 async function process(){
     const Components = fs.readdirSync('./src/Controller/Export/Payload/QueueIds/')
-    for (const component of Components){
+    for await (const component of Components){
       
       var jsonData = fs.readFileSync(`./src/Controller/Export/Payload/QueueIds/${component}`)
       var jsonBody = JSON.parse(jsonData);
