@@ -71,7 +71,7 @@ async function pipeLoader(token){
     await getQueue(token)
     await sleep(10*second)
     await getFlow(token)
-    client.setAccessToken(token);
+    //client.setAccessToken(token);
     await sleep(10*second)
     await exportFlowIdwith()
     await sleep(100*second)
