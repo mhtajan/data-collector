@@ -25,7 +25,9 @@ async function deleter(token, _callback) {
 async function main(token) {
   client.setAccessToken(token);
   await sleep(20000)
-  test(token)
+  await test(token)
+  await downloader(token)
+  deleter(token)
 }
 
 module.exports = main;

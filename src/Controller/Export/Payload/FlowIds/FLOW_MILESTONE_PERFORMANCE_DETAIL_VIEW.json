@@ -5,7 +5,6 @@
   "viewType": "FLOW_MILESTONE_PERFORMANCE_DETAIL_VIEW",
   "read": true,
   "filter": {
-    "flowIds":[]
   },
   "locale": "en-us",
   "requiredColumnIds": [
