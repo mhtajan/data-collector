@@ -132,3 +132,4 @@ dist
 ISO_reports/
 reports/
 *.exe 
+__blobstorage__/

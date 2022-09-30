@@ -28,7 +28,8 @@ const filter = {
     Dnis:["DNIS_PERFORMANCE_DETAIL_VIEW.json",
     "DNIS_PERFORMANCE_SUMMARY_VIEW.json"],
     FlowIdsMulti:["IVR_PERFORMANCE_DETAIL_VIEW.json"],
-    FlowMileStone:["FLOW_MILESTONE_PERFORMANCE_DETAIL_VIEW.json","FLOW_MILESTONE_PERFORMANCE_INTERVAL_DETAIL_VIEW"],
+    FlowMileStone:["FLOW_MILESTONE_PERFORMANCE_DETAIL_VIEW.json",
+    "FLOW_MILESTONE_PERFORMANCE_INTERVAL_DETAIL_VIEW.json"],
     FlowIds:["FLOW_OUTCOME_PERFORMANCE_DETAIL_VIEW.json"],
     FlowOutCome:["FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW.json"],
     QueueIds:["ABANDON_INSIGHTS_VIEW.json",
@@ -53,7 +54,6 @@ const filter = {
     "BOT_PERFORMANCE_SUMMARY_VIEW.json",
     "CONTENT_SEARCH_VIEW.json",
     "FLOW_DESTINATION_SUMMARY_VIEW.json",
-    "FLOW_MILESTONE_PERFORMANCE_INTERVAL_DETAIL_VIEW.json",
     "FLOW_OUTCOME_SUMMARY_VIEW.json",
     "IVR_PERFORMANCE_SUMMARY_VIEW.json",
     "JOURNEY_ACTION_MAP_SUMMARY_VIEW.json",
@@ -180,7 +180,7 @@ function LoopSurvey(res, body){
   if (res.pageCount >= res.pageNumber) {
     entities = res.entities
     entities.forEach((entry) => {
-      wrapup.push(entry.id)
+      survey.push(entry.id)
     })   
     opts.pageNumber = opts.pageNumber + 1
     getSurvey(body)   
@@ -322,11 +322,11 @@ async function exportSurvey(){
     await sleep(1000)
           for (const component of filter.SurveyFormIds){
             const id = uuid.v4()
-            var jsonData = fs.readFileSync(__dirname+`/../Payload/FlowIds/${component}`)
+            var jsonData = fs.readFileSync(__dirname+`/../Payload/SurveyFormIds/${component}`)
             var payload = JSON.parse(jsonData);
                    Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}`})
                    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-                   Object.assign(payload.filter.SurveyFormIds,survey)
+                   Object.assign(payload.filter.surveyFormIds,survey)
                    exportdata(payload)
           } 
 }
@@ -335,7 +335,7 @@ async function exportWrapUp(){
     await sleep(1000)
           for (const component of filter.WrapUpCodes){
             const id = uuid.v4()
-            var jsonData = fs.readFileSync(__dirname+`/../Payload/FlowIds/${component}`)
+            var jsonData = fs.readFileSync(__dirname+`/../Payload/WrapUpCodes/${component}`)
             var payload = JSON.parse(jsonData);
                    Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}`})
                    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
