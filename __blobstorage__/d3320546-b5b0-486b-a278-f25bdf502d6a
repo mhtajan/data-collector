@@ -1,5 +1,0 @@
-"Interval Start","Interval End","Interval Complete","Filters","Media Type","Entry","Entry Count Unfiltered","Entry % Unfiltered","Entry Count Filtered","Entry % Filtered","Entry Reason","Entry Reason Count Unfiltered","Entry Reason % Unfiltered","Entry Reason Count Filtered","Entry Reason % Filtered","Exit","Exit Count Unfiltered","Exit % Unfiltered","Exit Count Filtered","Exit % Filtered","Exit Entity Id","Exit Entity Name","Exit Entity Count Filtered","Exit Entity % Filtered","Disconnect","Disconnect Count Unfiltered","Disconnect % Unfiltered","Disconnect Count Filtered","Disconnect % Filtered"
-"9/29/22 12:00 AM","9/30/22 12:00 AM","TRUE","","voice","dnis","4","1.0","","","","","","","","","","","","","","","","","","","","",""
-"9/29/22 12:00 AM","9/30/22 12:00 AM","TRUE","","voice","","","","","","tel:+63288632066","4","1.0","","","","","","","","","","","","","","","",""
-"9/29/22 12:00 AM","9/30/22 12:00 AM","TRUE","","voice","","","","","","","","","","","NUMBER","3","0.75","","","","","","","","","","",""
-"9/29/22 12:00 AM","9/30/22 12:00 AM","TRUE","","voice","","","","","","","","","","","","","","","","","","","","FLOW_DISCONNECT","1","0.25","",""

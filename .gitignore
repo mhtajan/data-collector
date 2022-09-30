@@ -41,6 +41,7 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
+__blobstorage__/
 
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
@@ -132,4 +133,4 @@ dist
 ISO_reports/
 reports/
 *.exe 
-__blobstorage__/
+.__blobstorage__/

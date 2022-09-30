@@ -1,3 +1,0 @@
-"Interval Start","Interval End","Interval Complete","Filters","Media Type","Aggregate or Detailed","WrapUp Code Id","WrapUp Code Name","Queue Id","Queue Name","Avg Handle","Avg Talk","Avg Hold","Avg ACW","Total Handle","Total Talk","Total Hold","Total ACW","Hold","Handle","% Handle","% Total Handle","% Total Talk Time"
-"9/29/22 12:00 AM","9/30/22 12:00 AM","TRUE","","voice","Aggregate","","None","",""," 00:00:06.494"," 00:00:03.086","",""," 00:04:19.782"," 00:01:17.151","","","","40","1.0","1.0","1.0"
-"9/29/22 12:00 AM","9/30/22 12:00 AM","TRUE","","voice","Detailed","","None","","None"," 00:00:06.494"," 00:00:03.086","",""," 00:04:19.782"," 00:01:17.151","","","","40","1.0","1.0","1.0"
