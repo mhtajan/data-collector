@@ -7,7 +7,6 @@ const fetch = require('node-fetch')
 const logger = require('../../Logger')
 const axios = require('axios').default
 const sleep = require('sleep-promise')
-
 const platformClient = require('purecloud-platform-client-v2')
 const client = platformClient.ApiClient.instance
 const params = new URLSearchParams()
@@ -22,7 +21,7 @@ const did = []
 const directions = ['Inbound']
 const survey = []
 const wrapup = []
-const filter = {
+const inactive_filter = {
   QueuesByUserIds: ['AGENT_QUEUE_DETAIL_VIEW.json'],
   UsersByQueueIds: ['QUEUE_AGENT_DETAIL_VIEW.json'],
   Dnis: [
@@ -58,7 +57,7 @@ const filter = {
     'AGENT_EVALUATION_SUMMARY_VIEW.json',
     'AGENT_PERFORMANCE_SUMMARY_VIEW.json',
     'AGENT_STATUS_SUMMARY_VIEW.json',
-    'AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW.json',
+    
     'BOT_PERFORMANCE_DETAIL_VIEW.json',
     'BOT_PERFORMANCE_SUMMARY_VIEW.json',
     'CONTENT_SEARCH_VIEW.json',
@@ -73,6 +72,24 @@ const filter = {
     'SKILLS_PERFORMANCE_VIEW.json',
   ],
   WrapUpCodes: ['WRAP_UP_PERFORMANCE_SUMMARY_VIEW.json'],
+  AgentWrap:['AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW.json']
+}
+mediatypes = ["callback","voice","chat","email","message","cobrowse","screenshare","video"]
+withMediatype = ['QUEUE_PERFORMANCE_DETAIL_VIEW.json','QUEUE_PERFORMANCE_SUMMARY_VIEW.json','AGENT_PERFORMANCE_DETAIL_VIEW.json']
+const filter = {
+  QueueIds: [
+    'QUEUE_INTERACTION_DETAIL_VIEW.json',
+    'QUEUE_PERFORMANCE_DETAIL_VIEW.json',
+  ],
+  UserIds: [
+    'AGENT_PERFORMANCE_DETAIL_VIEW.json',
+    'AGENT_STATUS_DETAIL_VIEW.json',
+    'INTERACTION_SEARCH_VIEW.json',
+  ],
+  WithoutFilter: [
+    'AGENT_STATUS_SUMMARY_VIEW.json',
+    'QUEUE_PERFORMANCE_SUMMARY_VIEW.json',
+  ]
 }
 let opts = {
   pageSize: 25,
@@ -83,33 +100,35 @@ const second = 1000
 async function pipeLoader(token) {
   getUserProfile()
   getQueue()
-  getFlow()
-  getFlowMilestone()
-  getFlowOutCome()
-  getSurvey()
-  getDid()
-  getWrapUp()
-  await sleep(10 * second)
-  await exportFlowOutcome()
-  await sleep(100 * second)
-  await exportFlowIdwith()
-  await sleep(100 * second)
-  await exportDnis()
-  await sleep(100 * second)
-  await exportFlowId()
-  await sleep(100 * second)
-  await exportFlowMileStone()
-  await sleep(100 * second)
+  //getFlow()
+  // getFlowMilestone()
+  // getFlowOutCome()
+  // getSurvey()
+  // getDid()
+  // getWrapUp()
+  await sleep(20 * second)
+  // await exportAgentWrap()
+  // await sleep(100 * second)
+  // await exportFlowOutcome()
+  // await sleep(100 * second)
+  // await exportFlowIdwith()
+  // await sleep(100 * second)
+  // await exportDnis()
+  // await sleep(100 * second)
+  // await exportFlowId()
+  // await sleep(100 * second)
+  // await exportFlowMileStone()
+  // await sleep(100 * second)
   await exportUser()
   await sleep(100 * second)
   await exportQueue()
   await sleep(100 * second)
-  await exportSurvey()
-  await sleep(100 * second)
-  await exportFilterQueues()
-  await sleep(100 * second)
-  await exportWrapUp()
-  await sleep(100 * sleep)
+  // await exportSurvey()
+  // await sleep(100 * second)
+  // await exportFilterQueues()
+  // await sleep(100 * second)
+  // await exportWrapUp()
+  //await sleep(100 * sleep)
   await exportNoFilter()
 }
 function getUserProfile(body) {
@@ -273,17 +292,32 @@ async function exportUser() {
   await process()
   async function process() {
     for await (const component of filter.UserIds) {
-      const id = uuid.v4()
       var jsonData = fs.readFileSync(
         __dirname + `/../Payload/UserIds/${component}`,
       )
       var payload = JSON.parse(jsonData)
-      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-      Object.assign(payload, {
-        interval: `${yesterday}T00:00:00/${datetime}T00:00:00`,
-      })
-      Object.assign(payload.filter.userIds, user)
-      exportdata(payload)
+      const array = withMediatype
+      if(await array.includes(component)){
+        mediatypes.map(async(media)=>{
+          const id = uuid.v4()
+          payload.filter.mediaTypes = [media]
+          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+          Object.assign(payload, {
+            interval: `${yesterday}T00:00:00/${datetime}T00:00:00`,
+            })
+          Object.assign(payload.filter.userIds, user)
+          await exportdata(payload)
+        })
+      }
+      else{
+        const id = uuid.v4()
+        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+        Object.assign(payload, {
+              interval: `${yesterday}T00:00:00/${datetime}T00:00:00`,
+              })
+        Object.assign(payload.filter.userIds, user)
+        exportdata(payload)
+      } 
     }
   }
 }
@@ -301,12 +335,26 @@ async function exportQueue() {
         interval: `${yesterday}T00:00:00/${datetime}T00:00:00`,
       })
       for await (const queueid of queue) {
-        const id = uuid.v4()
+        const array = withMediatype
+        if(await array.includes(component)){
+          mediatypes.map(async(media)=>{
+            const id = uuid.v4()
+          payload.filter.mediaTypes = [media]
         Object.assign(payload, {
           name: `${payload.viewType}_${datetime}_${id}`,
         })
         Object.assign(payload.filter, { queueIds: [`${queueid}`] })
         exportdata(payload)
+          })
+        }
+        else{
+          const id = uuid.v4()
+          Object.assign(payload, {
+            name: `${payload.viewType}_${datetime}_${id}`,
+          })
+          Object.assign(payload.filter, { queueIds: [`${queueid}`] })
+          await exportdata(payload)
+        }
       }
     }
   }
@@ -503,6 +551,27 @@ async function exportNoFilter() {
       interval: `${yesterday}T00:00:00/${datetime}T00:00:00`,
     })
     exportdata(payload)
+  }
+}
+async function exportAgentWrap(){
+  logger.info('Exporting viewtype with UserID and WrapUp')
+  await sleep(1000)
+  await process()
+  async function process() {
+    for await (const component of filter.AgentWrap) {
+      const id = uuid.v4()
+      var jsonData = fs.readFileSync(
+        __dirname + `/../Payload/AgentWrapUp/${component}`,
+      )
+      var payload = JSON.parse(jsonData)
+      
+      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+      Object.assign(payload, {interval: `${yesterday}T00:00:00/${datetime}T00:00:00`})
+      Object.assign(payload.filter.userIds, user)
+      Object.assign(payload.filter.WrapUpCodes, wrapup)
+      console.log(payload)
+      exportdata(payload)
+    }
   }
 }
 function exportdata(payload) {

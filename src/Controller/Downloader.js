@@ -26,8 +26,7 @@ async function getReport(body) {
       ContentType: `application/json`,
     },
   };
-  const log = new console.Console(fs.createWriteStream("./logs.txt"))
-  getData(); //getting data from api
+getData(); //getting data from api
  async  function getData() {
     axios({
       method: "get",
@@ -60,7 +59,7 @@ async function getReport(body) {
                         }
                         await blobUpload.main(entry.viewType,entry.createdDateTime,entry.name,rowcount,file_path)
                         .then( (res) => {
-                          console.log('Done upload and insert')
+                          logger.info('Done')
                         })
                         .catch((ex) => console.log(ex.message));
                           });

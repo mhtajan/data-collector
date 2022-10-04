@@ -6,7 +6,6 @@
   "read": true,
   "filter": {
     "mediaTypes": [
-      "email"
     ]
   },
   "requiredColumnIds": [

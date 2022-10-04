@@ -21,6 +21,7 @@ async function deleter() {
       process.env.CLIENT_SECRET
     )
     .then(async (token) => {
+      logger.info("Removing all successful export")
       await deleteExport(token.accessToken);
     });
 }
@@ -38,7 +39,6 @@ async function Loop(res, token) {
   }
   if (res.pageCount >= res.pageNumber) {
     entities = res.entities;
-    console.log(res);
     entities.forEach(async (entity) => {
       array.push({ id: entity.id, runId: entity.runId });
     });
@@ -70,7 +70,7 @@ async function deleteReport(token) {
           console.log(err.message);
         });
     }
-    console.log("Deleted all export");
+    logger.info("Deleted all export");
   } else if (array.length == 0) {
     console.log("No export to delete");
   }
