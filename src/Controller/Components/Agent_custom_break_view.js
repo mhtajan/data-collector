@@ -1,5 +1,6 @@
 const axios = require('axios').default
 const moment = require(`moment`)
+let createdDateTime = new Date();
 var datetime = moment().format('YYYY-MM-DD')
 var yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD')
 const {
@@ -20,6 +21,9 @@ const loggers = require('../Logger')
 
 const sleep = require('sleep-promise')
 const platformClient = require('purecloud-platform-client-v2')
+const BlobUpload = require('../BlobUpload')
+const { emitWarning } = require('process')
+const { logger } = require('@azure/storage-blob')
 const client = platformClient.ApiClient.instance
 client.setEnvironment('mypurecloud.jp')
 
@@ -91,13 +95,27 @@ function AgentCustom(token){
       //console.log(JSON.stringify(jsonPayload, null, 2))
     GetApi(token,jsonPayload)
 }
-function GetApi(token,jsonPayload){
+async function GetApi(token,jsonPayload){
     let apiInstance = new platformClient.AnalyticsApi();
     apiInstance.postAnalyticsUsersAggregatesQuery(jsonPayload)
-    .then((response)=>{
+    .then(async(response)=>{
         res = response.data
         const csv = json2csvParser.parse(response.results)
-        fs.writeFileSync(`./reports/AGENT_CUSTOM_BREAK_VIEW_${datetime}.csv`,csv)
+        var viewType = "AGENT_CUSTOM_BREAK_VIEW"
+        var filename = `AGENT_CUSTOM_BREAK_VIEW_${datetime}`
+        fs.writeFileSync(`./reports/AGENT_CUSTOM_BREAK_VIEW_${datetime}.csv`,`${csv} \n `)
+        var path = process.cwd() + `\\reports\\` + filename
+        var file_path = path + '.csv'
+        var data = fs.readFileSync(file_path)
+        var resp = data.toString().split('\n').length;
+        const rowcount = resp - 2
+        if (rowcount<0){
+          rowcount = 0
+        }
+        await BlobUpload.main(viewType,createdDateTime,filename,rowcount,file_path)
+        .then((res)=>{
+        })
+        .catch((ex)=> logger.error(ex.message))
         loggers.info('Done Exporting AGENT_CUSTOM_BREAK_VIEW')
     }).catch((e)=> loggers.error(e,"at AGENT_CUSTOM_BREAK_VIEW"))
 }
