@@ -30,8 +30,10 @@ async function main(token) {
   await ensureDirectoryExistence()
   await agentcustom(token)
   await presence(token)
+  await sleep(2000)
   await test(token)
   await downloader(token)
+  await sleep(2000)
   await deleter(token)
 }
 async function ensureDirectoryExistence() {

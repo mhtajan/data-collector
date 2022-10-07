@@ -1,6 +1,7 @@
 const logger = require(`./Logger`);
 const axios = require(`axios`);
 const sleep = require("sleep-promise");
+const Downloader = require("./Downloader");
 const tokeni = `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`;
 const encodedToken = Buffer.from(tokeni).toString("base64");
 
@@ -23,17 +24,20 @@ async function deleter() {
     .then(async (token) => {
       logger.info("Removing all successful export")
       await deleteExport(token.accessToken);
+      console.log(token)
+      await sleep(10000)
+      await deleteReport(token.accessToken);
     });
 }
-async function deleteExport(token) {
+async function deleteExport(accessToken) {
   apiInstance
     .getAnalyticsReportingExports(opts)
     .then((res) => {
-      Loop(res, token);
+      Loop(res, accessToken);
     })
     .catch((e) => console.error(e));
 }
-async function Loop(res, token) {
+async function Loop(res, accessToken) {
   if ((res.total = 0)) {
     console.log("Reports now empty");
   }
@@ -44,26 +48,27 @@ async function Loop(res, token) {
     });
     opts.pageNumber = opts.pageNumber + 1;
     deleteExport();
-    console.log(opts.pageCount);
-    console.log(opts.pageNumber);
+    console.log();
+    console.log();
   }
   if (res.pageCount == res.pageNumber) {
     await sleep(100);
-    deleteReport(token);
+    
+    
   }
 }
-async function deleteReport(token) {
+async function deleteReport(accessToken) {
   if (array.length != 0) {
-    console.log(array.length);
+    console.log();
     for (const report of array) {
       await sleep(200);
       axios({
         method: "delete",
         url: `https://apps.mypurecloud.jp/platform/api/v2/analytics/reporting/exports/${report.id}/history/${report.runId}`,
-        headers: { Authorization: "Bearer " + token },
+        headers: { Authorization: "Bearer " + accessToken },
       })
         .then(() => {
-          console.log(array.length);
+          console.log();
           console.log("success delete");
         })
         .catch((err) => {

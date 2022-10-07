@@ -2,10 +2,10 @@
 const sql = require('mssql');
 
 const sqlconfig = {
-  user: "sa",
-  password: "P@ssw0rd",
-  server: "localhost",
-  database: "datacollector_db",
+  user: "saadmin",
+  password: "@!13$GCBC@dm!n2o22!!",
+  server: "historicalstaging.database.windows.net",
+  database: "collector",
   options: {
     trustedConnection: true,
     encrypt: true,
@@ -16,10 +16,10 @@ const sqlconfig = {
 
 //local mssql db connection
 const dbConn = new sql.ConnectionPool({
-    user: 'sa',
-    password: 'P@ssw0rd',
-    server: 'localhost',
-    database: 'datacollector_db',
+    user: 'saadmin',
+    password: '@!13$GCBC@dm!n2o22!!',
+    server: 'historicalstaging.database.windows.net',
+    database: 'collector',
     options: {
         trustedConnection: true,
         encrypt: true,

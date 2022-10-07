@@ -2,20 +2,29 @@ const axios = require('axios').default
 const moment = require(`moment`)
 let createdDateTime = new Date();
 var datetime = moment().format('YYYY-MM-DD')
-var yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD')
+var yesterday = moment().subtract(6, 'days').format('YYYY-MM-DD')
+const eol = require('eol')
 const {
     Parser,
     transforms: { unwind, flatten },
+    formatters: {string: stringFormatter,
+      stringQuoteOnlyIfNecessary: stringQuoteOnlyIfNecessaryFormatter}
   } = require('json2csv')
 //   const json2csvParser = new Parser({
 //     transforms: [unwind({ blankOut: true }), flatten('__')],
 //   })
+
 const json2csvParser = new Parser({
     transforms: [
       unwind({ paths: ['fieldToUnwind'], blankOut: true }),
-      flatten({ objects: true, arrays: true }),
+      flatten({ objects: true, arrays: true, separator: "_"}),
     ],
+    formatters: {  string: stringQuoteOnlyIfNecessaryFormatter({ eol: '\n' }),
+    string: stringFormatter(),}
   })
+csvOpts = {
+  encoding: 'utf-8'
+}
 const fs = require('fs')
 const loggers = require('../Logger')
 
@@ -23,7 +32,8 @@ const sleep = require('sleep-promise')
 const platformClient = require('purecloud-platform-client-v2')
 const BlobUpload = require('../BlobUpload')
 const { emitWarning } = require('process')
-const { logger } = require('@azure/storage-blob')
+const { logger } = require('@azure/storage-blob');
+const { formatters } = require('json2csv');
 const client = platformClient.ApiClient.instance
 client.setEnvironment('mypurecloud.jp')
 
@@ -101,9 +111,11 @@ async function GetApi(token,jsonPayload){
     .then(async(response)=>{
         res = response.data
         const csv = json2csvParser.parse(response.results)
+        String(eol.lf)
+        
         var viewType = "AGENT_CUSTOM_BREAK_VIEW"
         var filename = `AGENT_CUSTOM_BREAK_VIEW_${datetime}`
-        fs.writeFileSync(`./reports/AGENT_CUSTOM_BREAK_VIEW_${datetime}.csv`,`${csv} \n `)
+        fs.writeFileSync(`./reports/AGENT_CUSTOM_BREAK_VIEW_${datetime}.csv`,eol.split(csv).join(eol.lf))
         var path = process.cwd() + `\\reports\\` + filename
         var file_path = path + '.csv'
         var data = fs.readFileSync(file_path)

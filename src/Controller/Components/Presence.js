@@ -1,10 +1,15 @@
 const {
     Parser,
     transforms: { unwind, flatten },
+    formatters: {string: stringFormatter,
+      stringQuoteOnlyIfNecessary: stringQuoteOnlyIfNecessaryFormatter}
   } = require('json2csv')
   const json2csvParser = new Parser({
-    transforms: [unwind({ blankOut: true }), flatten('__')],
+    transforms: [unwind({ blankOut: true }), flatten({separator: "_"})],
+    formatters: {  string: stringQuoteOnlyIfNecessaryFormatter({ eol: '\n' }),
+    string: stringFormatter()}
   })
+  const eol = require('eol')
   const moment = require(`moment`)
 var datetime = moment().format('YYYY-MM-DD')
 const fs = require('fs')
@@ -31,7 +36,7 @@ function getPresence(){
       let createdDateTime = new Date();
       var viewType = "AGENT_PRESENCE_CONFIG_DEFINITIONS"
         var filename = `AGENT_PRESENCE_CONFIG_DEFINITIONS_${datetime}`
-          await fs.writeFileSync(`./reports/AGENT_PRESENCE_CONFIG_DEFINITIONS_${datetime}.csv`,`${csv} \n `)
+          await fs.writeFileSync(`./reports/AGENT_PRESENCE_CONFIG_DEFINITIONS_${datetime}.csv`,eol.split(csv).join(eol.lf))
           var path = process.cwd() + `\\reports\\` + filename
           loggers.info('Done Exporting AGENT_PRESENCE_CONFIG_DEFINITIONS')
           var file_path = path + '.csv'
