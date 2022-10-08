@@ -36,7 +36,7 @@ function getPresence(){
       let createdDateTime = new Date();
       var viewType = "AGENT_PRESENCE_CONFIG_DEFINITIONS"
         var filename = `AGENT_PRESENCE_CONFIG_DEFINITIONS_${datetime}`
-          await fs.writeFileSync(`./reports/AGENT_PRESENCE_CONFIG_DEFINITIONS_${datetime}.csv`,eol.split(csv).join(eol.lf))
+          await fs.writeFileSync(`./reports/AGENT_PRESENCE_CONFIG_DEFINITIONS_${datetime}.csv`,`${eol.split(csv).join(eol.lf)}\n`)
           var path = process.cwd() + `\\reports\\` + filename
           loggers.info('Done Exporting AGENT_PRESENCE_CONFIG_DEFINITIONS')
           var file_path = path + '.csv'

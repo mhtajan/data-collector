@@ -115,7 +115,7 @@ async function GetApi(token,jsonPayload){
         
         var viewType = "AGENT_CUSTOM_BREAK_VIEW"
         var filename = `AGENT_CUSTOM_BREAK_VIEW_${datetime}`
-        fs.writeFileSync(`./reports/AGENT_CUSTOM_BREAK_VIEW_${datetime}.csv`,eol.split(csv).join(eol.lf))
+        fs.writeFileSync(`./reports/AGENT_CUSTOM_BREAK_VIEW_${datetime}.csv`,`${eol.split(csv).join(eol.lf)}\n`)
         var path = process.cwd() + `\\reports\\` + filename
         var file_path = path + '.csv'
         var data = fs.readFileSync(file_path)

@@ -347,7 +347,7 @@ async function export_AGENT_STATUS_DETAIL_VIEW(){
             payload.filter.mediaTypes = [media]
             Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
             Object.assign(payload.filter, {userIds: [`${userid}`]})
-            await exportdata(payload)
+            exportdata(payload)
           }
       }
   }
@@ -370,7 +370,7 @@ async function export_AGENT_PERFORMANCE_DETAIL_VIEW(){
             payload.filter.mediaTypes = [media]
             Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
             Object.assign(payload.filter, {userIds: [`${userid}`]})
-            await exportdata(payload)
+            exportdata(payload)
           }
       }
   }
@@ -393,7 +393,7 @@ async function export_INTERACTION_SEARCH_VIEW(){
             payload.filter.mediaTypes = [media]
             Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
             Object.assign(payload.filter, {userIds: [`${userid}`]})
-            await exportdata(payload)
+            exportdata(payload)
           }
       }
   }
@@ -416,7 +416,7 @@ async function export_QUEUE_INTERACTION_DETAIL_VIEW(){
             payload.filter.mediaTypes = [media]
             Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
             Object.assign(payload.filter, {queueIds: [`${queueid}`]})
-            await exportdata(payload)
+            exportdata(payload)
           }
       }
   }
@@ -439,7 +439,7 @@ async function export_QUEUE_PERFORMANCE_DETAIL_VIEW(){
             payload.filter.mediaTypes = [media]
             Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
             Object.assign(payload.filter, {queueIds: [`${queueid}`]})
-            await exportdata(payload)
+            exportdata(payload)
           }
       }
   }
@@ -465,7 +465,7 @@ async function export_QUEUE_PERFORMANCE_SUMMARY_VIEW(){
   await process()
   async function process(){
     var jsonData = fs.readFileSync(
-      __dirname + '/../Payload/WithoutFilter/AGENT_STATUS_SUMMARY_VIEW.json',
+      __dirname + '/../Payload/WithoutFilter/QUEUE_PERFORMANCE_SUMMARY_VIEW.json',
     )
     var payload = JSON.parse(jsonData)
     Object.assign(payload, {
