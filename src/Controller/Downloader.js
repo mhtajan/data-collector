@@ -39,7 +39,10 @@ getData(); //getting data from api
         entity = res.entities;
         if (res.pageCount >= res.pageNumber) {
           entity.forEach(async (entry) => {
-            if (entry.interval.includes(`${yesterday}T00:00:00.000Z/${today}T00:00:00.000Z`)) {
+            if (entry.status.includes("FAILED")){
+              console.log(`Failed at: `+entry.name)
+            }
+            //if (entry.interval.includes(`${yesterday}T00:00:00.000Z/${today}T00:00:00.000Z`)) {
             if (entry.status.includes("COMPLETED")) {
                 //download filter             
                 try {
@@ -73,7 +76,7 @@ getData(); //getting data from api
                   logger.error(error)
                 }
               }
-            }
+            //}
           });
           opts.pageNumber = opts.pageNumber + 1;
           getData();

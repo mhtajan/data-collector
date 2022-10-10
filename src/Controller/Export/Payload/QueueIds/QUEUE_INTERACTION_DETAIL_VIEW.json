@@ -7,7 +7,7 @@
   "filter": {
     "mediaTypes": [
     ],"period": [
-      "PT30M"
+      "P1D"
     ]
   },
   "requiredColumnIds": [

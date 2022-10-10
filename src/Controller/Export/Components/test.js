@@ -78,12 +78,16 @@ mediatypes = ["voice","chat","email","message"]
 withMediatype = ['QUEUE_PERFORMANCE_DETAIL_VIEW.json',
 'QUEUE_PERFORMANCE_SUMMARY_VIEW.json',
 'AGENT_PERFORMANCE_DETAIL_VIEW.json',
-'AGENT_STATUS_DETAIL_VIEW.json']
+'AGENT_STATUS_DETAIL_VIEW.json',]
 const filter = {
 
 }
 let opts = {
-  pageSize: 25,
+  pageSize: 500,
+  pageNumber: 1,
+}
+let optsqueue = {
+  pageSize: 500,
   pageNumber: 1,
 }
 let optsF = {}
@@ -109,21 +113,21 @@ async function pipeLoader(token) {
   // await exportFlowId()
   // await sleep(100 * second)
   // await exportFlowMileStone()
-  await sleep(50*second)
+   await sleep(50*second)
+   await export_QUEUE_INTERACTION_DETAIL_VIEW()
+    await sleep(100*second)
    await export_AGENT_STATUS_DETAIL_VIEW()
    await sleep(100*second)
  await export_AGENT_PERFORMANCE_DETAIL_VIEW()
  await sleep(100*second)
    await export_INTERACTION_SEARCH_VIEW()
    await sleep(100*second)
-   await export_QUEUE_INTERACTION_DETAIL_VIEW()
-   await sleep(100*second)
    await export_AGENT_STATUS_SUMMARY_VIEW()
    await sleep(100*second)
-   await export_QUEUE_PERFORMANCE_SUMMARY_VIEW()
+   await export_QUEUE_PERFORMANCE_DETAIL_VIEW()
    await sleep(100*second)
-  await export_INTERACTION_SEARCH_VIEW()
-  await sleep(100*second)
+  await export_AGENT_INTERACTION_DETAIL_VIEW()
+   await sleep(100*second)
   // await sleep(100 * second)
   // await exportUser()
   // await sleep(100 * second)
@@ -149,7 +153,7 @@ async function getUserProfile(body) {
 async function getQueue(body) {
   let queueInstance = new platformClient.RoutingApi()
   await queueInstance
-    .getRoutingQueues(opts)
+    .getRoutingQueues(optsqueue)
     .then((data) => {
       LoopQueue(data, body)
     })
@@ -278,7 +282,7 @@ function LoopQueue(res, body) {
       queue.push(entry.id)
     })
 
-    opts.pageNumber = opts.pageNumber + 1
+    optsqueue.pageNumber = optsqueue.pageNumber + 1
     getQueue(body)
   }
 }
@@ -331,10 +335,33 @@ async function exportUser() {
 }
 async function export_AGENT_STATUS_DETAIL_VIEW(){
   logger.info("Exporting AGENT_STATUS_DETAIL_VIEW")
-  await process()
+  process()
   async function process(){
     var jsonData = fs.readFileSync(
       __dirname + `/../Payload/UserIds/AGENT_STATUS_DETAIL_VIEW.json`,
+    )
+    var payload = JSON.parse(jsonData)
+    Object.assign(payload, {
+      interval: `${yesterday}T00:00:00/${datetime}T00:00:00`,
+      })
+      const array = withMediatype
+      for await (const userid of user){
+          for await (const media of mediatypes){
+            const id = uuid.v4()
+            payload.filter.mediaTypes = [media]
+            Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
+            Object.assign(payload.filter, {userIds: [`${userid}`]})
+            exportdata(payload)
+          }
+      }
+  }
+}
+async function export_AGENT_INTERACTION_DETAIL_VIEW(){
+  logger.info("Exporting AGENT_INTERACTION_DETAIL_VIEW")
+  process()
+  async function process(){
+    var jsonData = fs.readFileSync(
+      __dirname + `/../Payload/UserIds/AGENT_INTERACTION_DETAIL_VIEW.json`,
     )
     var payload = JSON.parse(jsonData)
     Object.assign(payload, {
@@ -400,7 +427,7 @@ async function export_INTERACTION_SEARCH_VIEW(){
 }
 async function export_QUEUE_INTERACTION_DETAIL_VIEW(){
   logger.info("Exporting QUEUE_INTERACTION_DETAIL_VIEW")
-  await process()
+  process()
   async function process(){
     var jsonData = fs.readFileSync(
       __dirname + `/../Payload/QueueIds/QUEUE_INTERACTION_DETAIL_VIEW.json`,
@@ -411,11 +438,13 @@ async function export_QUEUE_INTERACTION_DETAIL_VIEW(){
       })
       const array = withMediatype
       for await (const queueid of queue){
+        console.log(queueid)
           for await (const media of mediatypes){
             const id = uuid.v4()
             payload.filter.mediaTypes = [media]
             Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
             Object.assign(payload.filter, {queueIds: [`${queueid}`]})
+            console.log(payload)
             exportdata(payload)
           }
       }
@@ -423,7 +452,7 @@ async function export_QUEUE_INTERACTION_DETAIL_VIEW(){
 }
 async function export_QUEUE_PERFORMANCE_DETAIL_VIEW(){
   logger.info("Exporting QUEUE_PERFORMANCE_DETAIL_VIEW")
-  await process()
+  process()
   async function process(){
     var jsonData = fs.readFileSync(
       __dirname + `/../Payload/QueueIds/QUEUE_PERFORMANCE_DETAIL_VIEW.json`,
@@ -446,7 +475,7 @@ async function export_QUEUE_PERFORMANCE_DETAIL_VIEW(){
 }
 async function export_AGENT_STATUS_SUMMARY_VIEW(){
   logger.info("Exporting AGENT_STATUS_SUMMARY_VIEW")
-  await process()
+  process()
   async function process(){
     var jsonData = fs.readFileSync(
       __dirname + '/../Payload/WithoutFilter/AGENT_STATUS_SUMMARY_VIEW.json',
@@ -462,10 +491,10 @@ async function export_AGENT_STATUS_SUMMARY_VIEW(){
 }
 async function export_QUEUE_PERFORMANCE_SUMMARY_VIEW(){
   logger.info("Exporting QUEUE_PERFORMANCE_SUMMARY_VIEW")
-  await process()
+  process()
   async function process(){
     var jsonData = fs.readFileSync(
-      __dirname + '/../Payload/WithoutFilter/QUEUE_PERFORMANCE_SUMMARY_VIEW.json',
+      __dirname + '/../Payload/WithoutFilter/AGENT_STATUS_SUMMARY_VIEW.json',
     )
     var payload = JSON.parse(jsonData)
     Object.assign(payload, {
@@ -508,7 +537,7 @@ async function exportQueue() {
             name: `${payload.viewType}_${datetime}_${id}`,
           })
           Object.assign(payload.filter, { queueIds: [`${queueid}`] })
-          await exportdata(payload)
+          exportdata(payload)
         }
       }
     }

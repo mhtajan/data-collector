@@ -8,7 +8,8 @@ const {
     Parser,
     transforms: { unwind, flatten },
     formatters: {string: stringFormatter,
-      stringQuoteOnlyIfNecessary: stringQuoteOnlyIfNecessaryFormatter}
+      stringQuoteOnlyIfNecessary: stringQuoteOnlyIfNecessaryFormatter,object: objectFormatter,number:numberFormatter}
+      
   } = require('json2csv')
 //   const json2csvParser = new Parser({
 //     transforms: [unwind({ blankOut: true }), flatten('__')],
@@ -16,11 +17,13 @@ const {
 
 const json2csvParser = new Parser({
     transforms: [
-      unwind({ paths: ['fieldToUnwind'], blankOut: true }),
+      unwind({ paths: ['fieldToUnwind'], blankOut: false }),
       flatten({ objects: true, arrays: true, separator: "_"}),
+      flatten('__')
     ],
     formatters: {  string: stringQuoteOnlyIfNecessaryFormatter({ eol: '\n' }),
-    string: stringFormatter(),}
+  string:stringFormatter(), object: objectFormatter(), number:numberFormatter(stringFormatter({qoute:'\"'}))}
+    
   })
 csvOpts = {
   encoding: 'utf-8'
