@@ -118,16 +118,16 @@ async function pipeLoader(token) {
     await sleep(100*second)
    await export_AGENT_STATUS_DETAIL_VIEW()
    await sleep(100*second)
- await export_AGENT_PERFORMANCE_DETAIL_VIEW()
- await sleep(100*second)
-   await export_INTERACTION_SEARCH_VIEW()
-   await sleep(100*second)
-   await export_AGENT_STATUS_SUMMARY_VIEW()
-   await sleep(100*second)
-   await export_QUEUE_PERFORMANCE_DETAIL_VIEW()
-   await sleep(100*second)
-  await export_AGENT_INTERACTION_DETAIL_VIEW()
-   await sleep(100*second)
+//  await export_AGENT_PERFORMANCE_DETAIL_VIEW()
+//  await sleep(100*second)
+//    await export_INTERACTION_SEARCH_VIEW()
+//    await sleep(100*second)
+  //  await export_AGENT_STATUS_SUMMARY_VIEW()
+  //  await sleep(100*second)
+  //  await export_QUEUE_PERFORMANCE_DETAIL_VIEW()
+  //  await sleep(100*second)
+  // await export_AGENT_INTERACTION_DETAIL_VIEW()
+  //  await sleep(100*second)
   // await sleep(100 * second)
   // await exportUser()
   // await sleep(100 * second)
@@ -438,13 +438,11 @@ async function export_QUEUE_INTERACTION_DETAIL_VIEW(){
       })
       const array = withMediatype
       for await (const queueid of queue){
-        console.log(queueid)
           for await (const media of mediatypes){
             const id = uuid.v4()
             payload.filter.mediaTypes = [media]
             Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
             Object.assign(payload.filter, {queueIds: [`${queueid}`]})
-            console.log(payload)
             exportdata(payload)
           }
       }

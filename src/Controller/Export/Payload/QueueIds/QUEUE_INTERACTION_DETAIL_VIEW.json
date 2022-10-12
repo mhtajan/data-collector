@@ -5,8 +5,7 @@
   "viewType": "QUEUE_INTERACTION_DETAIL_VIEW",
   "read": true,
   "filter": {
-    "mediaTypes": [
-    ],"period": [
+  "period": [
       "P1D"
     ]
   },

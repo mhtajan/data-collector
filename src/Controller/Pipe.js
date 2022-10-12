@@ -5,6 +5,7 @@ const Controller = require("./Controller");
 const Deleter = require('./Delete')
 const logger = require("./Logger");
 const test = require("./Export/Components/test")
+const exporter = require("./Export/Components/export")
 const agentcustom = require("./Components/Agent_custom_break_view")
 const presence = require("./Components/Presence")
 const platformClient = require("purecloud-platform-client-v2");
@@ -31,9 +32,11 @@ async function main(token) {
   await agentcustom(token)
   await presence(token)
   await sleep(2000)
-  await test(token)
-  await downloader(token)
+  await exporter(token)
+  // await test(token)
   await sleep(2000)
+  await downloader(token)
+  await sleep(90000)
   await deleter(token)
 }
 async function ensureDirectoryExistence() {
