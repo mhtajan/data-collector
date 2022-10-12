@@ -6,10 +6,7 @@ var yesterday = moment().subtract(6, 'days').format('YYYY-MM-DD')
 const eol = require('eol')
 const {
     Parser,
-    transforms: { unwind, flatten },
-    formatters: {string: stringFormatter,
-      stringQuoteOnlyIfNecessary: stringQuoteOnlyIfNecessaryFormatter,object: objectFormatter,number:numberFormatter}
-      
+    transforms: { unwind, flatten }  
   } = require('json2csv')
 //   const json2csvParser = new Parser({
 //     transforms: [unwind({ blankOut: true }), flatten('__')],
@@ -20,23 +17,15 @@ const json2csvParser = new Parser({
       unwind({ paths: ['fieldToUnwind'], blankOut: false }),
       flatten({ objects: true, arrays: true, separator: "_"}),
       flatten('__')
-    ],
-    formatters: {  string: stringQuoteOnlyIfNecessaryFormatter({ eol: '\n' }),
-  string:stringFormatter(), object: objectFormatter(), number:numberFormatter(stringFormatter({qoute:'\"'}))}
-    
+    ]
   })
-csvOpts = {
-  encoding: 'utf-8'
-}
+
 const fs = require('fs')
 const loggers = require('../Logger')
 
 const sleep = require('sleep-promise')
 const platformClient = require('purecloud-platform-client-v2')
 const BlobUpload = require('../BlobUpload')
-const { emitWarning } = require('process')
-const { logger } = require('@azure/storage-blob');
-const { formatters } = require('json2csv');
 const client = platformClient.ApiClient.instance
 client.setEnvironment('mypurecloud.jp')
 
@@ -96,7 +85,6 @@ function LoopUser(res, body) {
 
 function AgentCustom(token){
     user.map((entry, index) => {
-        //console.log(JSON.stringify(arraytemp[0]))
         array.push({
           "type": "dimension",
           "dimension": "userId",
@@ -105,7 +93,6 @@ function AgentCustom(token){
         })    
       })
       Object.assign(jsonPayload.filter.predicates, array)
-      //console.log(JSON.stringify(jsonPayload, null, 2))
     GetApi(token,jsonPayload)
 }
 async function GetApi(token,jsonPayload){

@@ -8,6 +8,15 @@ const test = require("./Export/Components/test")
 const exporter = require("./Export/Components/export")
 const agentcustom = require("./Components/Agent_custom_break_view")
 const presence = require("./Components/Presence")
+const did = require("./LookUp/Did")
+const flow = require("./LookUp/Flow")
+const flowmilestone = require("./LookUp/FlowMilestone")
+const flowoutcome = require("./LookUp/FlowOutcome")
+const mediatype = require("./LookUp/MediaTypes")
+const queue = require("./LookUp/Queue")
+const survey = require("./LookUp/Survey")
+const user = require("./LookUp/User")
+const wrapup = require("./LookUp/Wrapup")
 const platformClient = require("purecloud-platform-client-v2");
 const client = platformClient.ApiClient.instance
 function _callback() {
@@ -31,13 +40,22 @@ async function main(token) {
   await ensureDirectoryExistence()
   await agentcustom(token)
   await presence(token)
-  await sleep(2000)
+  await did(token)
+  await flow(token)
+  await flowmilestone(token)
+  await flowoutcome(token)
+  await mediatype(token)
+  await queue(token)
+  await survey(token)
+  await user(token)
+  await wrapup(token)
+  await sleep(10000)
   await exporter(token)
-  // await test(token)
   await sleep(2000)
   await downloader(token)
   await sleep(90000)
   await deleter(token)
+  
 }
 async function ensureDirectoryExistence() {
   if (!fs.existsSync('./reports/')) {

@@ -32,6 +32,7 @@ module.exports = {
               },
               function (err, res) {
                 if (err) {
+                  console.log(err)
                   logger.error("error:", err);
                 } else {
                   logger.info(`Tasks added successfully - ${filename}`);
