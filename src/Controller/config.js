@@ -15,10 +15,10 @@ const sql = require('mssql');
 // };
 
 const sqlconfig = {
-  user: `${process.env.DB_USER}`,
-  password:  `${process.env.DB_PASSWORD}`,
-  server:  `${process.env.DB_SVR_MAIN}`,
-  database:  `${process.env.DB_NAME}`,
+  user: process.env.DB_USER,
+  password:  process.env.DB_PASSWORD,
+  server:  process.env.DB_SVR_MAIN,
+  database:  process.env.DB_NAME,
   options: {
     trustedConnection: true,
     encrypt: true,
@@ -28,10 +28,10 @@ const sqlconfig = {
 };
 //local mssql db connection
 const dbConn = new sql.ConnectionPool({
-  user: `${process.env.DB_USER}`,
-  password:  `${process.env.DB_PASSWORD}`,
-  server:  `${process.env.DB_SVR_MAIN}`,
-  database:  `${process.env.DB_NAME}`,
+  user: process.env.DB_USER,
+  password:  process.env.DB_PASSWORD,
+  server:  process.env.DB_SVR_MAIN,
+  database:  process.env.DB_NAME,
   options: {
     trustedConnection: true,
     encrypt: true,
