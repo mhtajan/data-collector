@@ -6,7 +6,7 @@ const moment = require(`moment`);
 var datetime = moment().format("YYYY_MM_DD_HH_mm_ss");
 var today = moment().format("YYYY-MM-DD")
 var today = moment().format("YYYY-MM-DD")
-var yesterday = moment().subtract(1, "days").format("YYYY-MM-DD")
+var yesterday = moment().subtract(6, "days").format("YYYY-MM-DD")
 const logger = require("./Logger.js");
 var sql = require("mssql");
 var dbConn = require("./config");
@@ -26,8 +26,7 @@ async function getReport(body) {
       ContentType: `application/json`,
     },
   };
-  const log = new console.Console(fs.createWriteStream("./logs.txt"))
-  getData(); //getting data from api
+getData(); //getting data from api
  async  function getData() {
     axios({
       method: "get",
@@ -40,7 +39,9 @@ async function getReport(body) {
         entity = res.entities;
         if (res.pageCount >= res.pageNumber) {
           entity.forEach(async (entry) => {
-            //date filter
+            if (!entry.status.includes("COMPLETED")){
+              console.log(entry)
+            }
             if (entry.interval.includes(`${yesterday}T00:00:00.000Z/${today}T00:00:00.000Z`)) {
             if (entry.status.includes("COMPLETED")) {
                 //download filter             
@@ -61,7 +62,7 @@ async function getReport(body) {
                         }
                         await blobUpload.main(entry.viewType,entry.createdDateTime,entry.name,rowcount,file_path)
                         .then( (res) => {
-                          console.log('Done upload and insert')
+                          logger.info('Done')
                         })
                         .catch((ex) => console.log(ex.message));
                           });
@@ -76,9 +77,7 @@ async function getReport(body) {
                 }
               }
             }
-            await sleep(2000)
           });
-         // await sleep(2000)
           opts.pageNumber = opts.pageNumber + 1;
           getData();
         } else if ((res.total == 0 && res.pageCount == 0)) {

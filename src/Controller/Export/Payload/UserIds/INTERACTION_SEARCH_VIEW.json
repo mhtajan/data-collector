@@ -5,11 +5,7 @@
    "viewType": "INTERACTION_SEARCH_VIEW",
    "read": true,
    "filter": {
-      "mediaTypes": [
-         "voice"
-      ],
       "userIds": [
-        
       ]
    },
    "locale": "en-us",

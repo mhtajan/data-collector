@@ -5,11 +5,7 @@
   "viewType": "AGENT_PERFORMANCE_DETAIL_VIEW",
   "read": true,
   "filter": {
-    "mediaTypes": [
-      "voice"
-    ],
-    "userIds": [
-      
+    "userIds": [    
     ]
   },
   "requiredColumnIds": [

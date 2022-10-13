@@ -3,7 +3,7 @@ const moment = require('moment')
 var datetime = moment().format('YYYY_MM_DD')
 const {
   Parser,
-  transforms: { unwind, flatten },
+  transforms: { unwind, flatten},
 } = require('json2csv')
 const json2csvParser = new Parser({
   transforms: [flatten({ objects: true, arrays: true })],
