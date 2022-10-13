@@ -48,13 +48,8 @@ async function Loop(res, accessToken) {
     });
     opts.pageNumber = opts.pageNumber + 1;
     deleteExport();
+    console.log(array.length);
     console.log();
-    console.log();
-  }
-  if (res.pageCount == res.pageNumber) {
-    await sleep(100);
-    
-    
   }
 }
 async function deleteReport(accessToken) {
