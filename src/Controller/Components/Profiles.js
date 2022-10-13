@@ -9,6 +9,7 @@ const json2csvParser = new Parser({
     flatten({ objects: true, arrays: true }),
   ],
 })
+const eol = require('eol')
 const fs = require('fs')
 const moment = require('moment')
 var datetime = moment().format('YYYY_MM_DD')
@@ -41,7 +42,7 @@ function Loop(res, body) {
       user.push(entry)
     })
     const csv = json2csvParser.parse(user)
-    fs.writeFileSync(`./ISO_reports/ISO_User_Profile_${datetime}.csv`, csv)
+    fs.writeFileSync(`./ISO_reports/ISO_User_Profile_${datetime}.csv`, `${eol.split(csv).join(eol.lf)}\n`)
     loggers.info('ISO_User_Profile EXPORTED SUCCESSFULLY')
     opts.pageNumber = opts.pageNumber + 1
     getUserProfile(body)

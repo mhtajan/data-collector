@@ -14,9 +14,11 @@
   "dependencies": {
     "@azure/storage-blob": "^12.11.0",
     "axios": "^0.27.2",
+    "build": "^0.1.4",
     "dotenv": "^16.0.2",
     "download": "^8.0.0",
-    "json2csv": "^5.0.7",
+    "eol": "^0.9.1",
+    "json2csv": "github:mhtajan/json2csv#master",
     "moment": "^2.29.4",
     "mssql": "^9.0.1",
     "nexe": "^4.0.0-rc.1",

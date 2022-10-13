@@ -5,10 +5,8 @@
   "viewType": "QUEUE_INTERACTION_DETAIL_VIEW",
   "read": true,
   "filter": {
-    "mediaTypes": [
-      "voice"
-    ],"period": [
-      "PT30M"
+  "period": [
+      "P1D"
     ]
   },
   "requiredColumnIds": [

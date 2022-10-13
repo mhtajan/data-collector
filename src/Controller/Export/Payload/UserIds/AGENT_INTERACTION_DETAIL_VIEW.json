@@ -5,9 +5,6 @@
   "viewType": "AGENT_INTERACTION_DETAIL_VIEW",
   "read": true,
   "filter": {
-    "mediaTypes": [
-      "voice"
-    ],
     "userIds": [
       
     ]

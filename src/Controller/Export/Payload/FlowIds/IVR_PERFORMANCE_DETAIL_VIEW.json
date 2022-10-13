@@ -7,8 +7,7 @@
       "filter": {
             "mediaTypes": [
                   "voice"
-                ],
-            "flowIds":[]
+                ]
       },
       "locale": "en-us",
       "requiredColumnIds": [

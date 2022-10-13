@@ -5,11 +5,7 @@
   "viewType": "AGENT_STATUS_DETAIL_VIEW",
   "read": true,
   "filter": {
-    "mediaTypes": [
-      "voice"
-    ],
     "userIds": [
-      
     ]
   },
   "requiredColumnIds": [

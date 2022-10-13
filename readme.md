@@ -12,7 +12,6 @@ Chinabank Data-Collector
 |nexe            |`4.0.0-rc.1`            
 |node-cron       |`3.0.2`            
 |node-fetch      |`2.6.1`
-|pkg		     |`5.8.0`
 |rimraf		     |`3.0.2`
 |winston         |`3.8.1` 
 
@@ -38,9 +37,3 @@ Create a new System Environment variable for Client Credentials <br/>
 * Client_SECRET: <`Client Secret Credential`>
 * CRON_Sched <`CRON schedule format configuration`>
 
-## Updates
-Now using environment variables for Client Credentials instead of JSON <br/>
-Loads JS files on execution <br/>
-Compiled all JS files into one executable <br/>
-Removed worker_threads <br/>
-Now using Nexe instead of ncc/vercel and PKG for building executable
