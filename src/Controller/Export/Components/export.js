@@ -8,7 +8,9 @@ const logger = require('../../Logger')
 const axios = require('axios').default
 const sleep = require('sleep-promise')
 const platformClient = require('purecloud-platform-client-v2')
-
+const download = require('../../newDownloader')
+const downloadr = require('../../Downloader')
+const deletr = require('../../Delete')
 
 const client = platformClient.ApiClient.instance
 const params = new URLSearchParams()
@@ -33,24 +35,25 @@ let opts = {
     pageSize: 500,
     pageNumber: 1,
   }
-mediatypes = ["voice","chat","email","message"]
+mediatypes = ["chat","email","message","callback"]
 async function load(){
     lookup()
-    await sleep(10*second)
+    await sleep(5000)
+    console.log(queue.length)
     await export_AGENT_STATUS_SUMMARY_VIEW()
-    await sleep(100*second)
+     await sleep(5000)
     await export_QUEUE_INTERACTION_DETAIL_VIEW()
-    await sleep(100*second)
+    await sleep(100000)
     await export_AGENT_STATUS_DETAIL_VIEW()
-    await sleep(100*second)
+    await sleep(100000)
     await export_AGENT_PERFORMANCE_DETAIL_VIEW()
-    await sleep(100*second)
+    await sleep(100000)
     await export_INTERACTION_SEARCH_VIEW()
-    await sleep(100*second)
+    await sleep(100000)
     await export_AGENT_INTERACTION_DETAIL_VIEW()
-    await sleep(100*second)
+    await sleep(100000)
     await export_QUEUE_PERFORMANCE_DETAIL_VIEW()
-    await sleep(100*second)
+
 }
 async function lookup(){
     getUserProfile()
@@ -98,7 +101,7 @@ async function lookup(){
 }
 async function export_AGENT_PERFORMANCE_DETAIL_VIEW(){
     logger.info("Exporting AGENT_PERFORMANCE_DETAIL_VIEW")
-    process()
+    await process()
     async function process(){
       var jsonData = fs.readFileSync(
         __dirname + `/../Payload/UserIds/AGENT_PERFORMANCE_DETAIL_VIEW.json`,
@@ -120,7 +123,7 @@ async function export_AGENT_PERFORMANCE_DETAIL_VIEW(){
 }
 async function export_AGENT_STATUS_DETAIL_VIEW(){
     logger.info("Exporting AGENT_STATUS_DETAIL_VIEW")
-    process()
+    await process()
     async function process(){
       var jsonData = fs.readFileSync(
         __dirname + `/../Payload/UserIds/AGENT_STATUS_DETAIL_VIEW.json`,
@@ -139,7 +142,7 @@ async function export_AGENT_STATUS_DETAIL_VIEW(){
 }
 async function export_QUEUE_INTERACTION_DETAIL_VIEW(){
     logger.info("Exporting QUEUE_INTERACTION_DETAIL_VIEW")
-    process()
+    await process()
     async function process(){
       var jsonData = fs.readFileSync(
         __dirname + `/../Payload/QueueIds/QUEUE_INTERACTION_DETAIL_VIEW.json`,
@@ -177,7 +180,7 @@ async function export_INTERACTION_SEARCH_VIEW(){
 }
 async function export_AGENT_STATUS_SUMMARY_VIEW(){
     logger.info("Exporting AGENT_STATUS_SUMMARY_VIEW")
-    process()
+    await process()
     async function process(){
       var jsonData = fs.readFileSync(
         __dirname + '/../Payload/WithoutFilter/AGENT_STATUS_SUMMARY_VIEW.json',
@@ -193,7 +196,7 @@ async function export_AGENT_STATUS_SUMMARY_VIEW(){
 }
 async function export_AGENT_INTERACTION_DETAIL_VIEW(){
     logger.info("Exporting AGENT_INTERACTION_DETAIL_VIEW")
-    process()
+    await process()
     async function process(){
       var jsonData = fs.readFileSync(
         __dirname + `/../Payload/UserIds/AGENT_INTERACTION_DETAIL_VIEW.json`,
@@ -212,7 +215,7 @@ async function export_AGENT_INTERACTION_DETAIL_VIEW(){
 }
 async function export_QUEUE_PERFORMANCE_DETAIL_VIEW(){
     logger.info("Exporting QUEUE_PERFORMANCE_DETAIL_VIEW")
-    process()
+    await process()
     async function process(){
       var jsonData = fs.readFileSync(
         __dirname + `/../Payload/QueueIds/QUEUE_PERFORMANCE_DETAIL_VIEW.json`,
