@@ -18,6 +18,7 @@
     "dotenv": "^16.0.2",
     "download": "^8.0.0",
     "eol": "^0.9.1",
+    "exponential-backoff": "^3.1.0",
     "json2csv": "github:mhtajan/json2csv#master",
     "moment": "^2.29.4",
     "mssql": "^9.0.1",

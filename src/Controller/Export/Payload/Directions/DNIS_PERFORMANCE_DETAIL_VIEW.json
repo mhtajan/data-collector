@@ -6,8 +6,8 @@
    "read": true,
    "filter": {
       "mediaTypes": [
-         "voice"
-      ]
+      ],"directions":["inbound"],
+      "dnisList":[]
    },
    "requiredColumnIds": [
       "dnis_performance_view_interval_start",

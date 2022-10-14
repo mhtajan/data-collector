@@ -6,10 +6,8 @@
   "read": true,
   "filter": {
     "mediaTypes": [
-      "voice"
     ],
-    "userIds": [
-      
+    "userIds": [  
     ]
   },
   "requiredColumnIds": [

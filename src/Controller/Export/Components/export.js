@@ -11,6 +11,7 @@ const platformClient = require('purecloud-platform-client-v2')
 const download = require('../../newDownloader')
 const downloadr = require('../../Downloader')
 const deletr = require('../../Delete')
+const { backOff } = require("exponential-backoff");
 
 const client = platformClient.ApiClient.instance
 const params = new URLSearchParams()
@@ -40,19 +41,20 @@ async function load(){
     lookup()
     await sleep(5000)
     console.log(queue.length)
-    await export_AGENT_STATUS_SUMMARY_VIEW()
-     await sleep(5000)
-    await export_QUEUE_INTERACTION_DETAIL_VIEW()
-    await sleep(100000)
-    await export_AGENT_STATUS_DETAIL_VIEW()
-    await sleep(100000)
-    await export_AGENT_PERFORMANCE_DETAIL_VIEW()
-    await sleep(100000)
-    await export_INTERACTION_SEARCH_VIEW()
-    await sleep(100000)
-    await export_AGENT_INTERACTION_DETAIL_VIEW()
-    await sleep(100000)
+    // await export_AGENT_STATUS_SUMMARY_VIEW()
+      await sleep(5000)
+    // await export_QUEUE_INTERACTION_DETAIL_VIEW()
+    // await sleep(100000)
+    // await export_AGENT_STATUS_DETAIL_VIEW()
+    // await sleep(100000)
+    // await export_AGENT_PERFORMANCE_DETAIL_VIEW()
+    // await sleep(100000)
+    // await export_INTERACTION_SEARCH_VIEW()
+    // await sleep(100000)
+    // await export_AGENT_INTERACTION_DETAIL_VIEW()
+    // await sleep(100000)
     await export_QUEUE_PERFORMANCE_DETAIL_VIEW()
+    await sleep(25*second)
 
 }
 async function lookup(){
@@ -236,7 +238,7 @@ async function export_QUEUE_PERFORMANCE_DETAIL_VIEW(){
     }
 }
 async function exportdata(payload) {
-    apiInstance
+  apiInstance
      .postAnalyticsReportingExports(payload)
      .then(() => {
        logger.info(`Done Exporting ${payload.viewType}`)
