@@ -1,5 +1,4 @@
-const { BlobServiceClient } = require('@azure/storage-blob');
-const { v1: uuidv1} = require('uuid');
+
 const fs = require("fs")
 var sql = require("mssql");
 var dbConn = require("./config");
@@ -7,7 +6,6 @@ const { sqlconfig } = require("./config");
 const logger = require("./Logger")
 require('dotenv').config()
 
-// Create the BlobServiceClient object which will be used to create a container client
 
 module.exports = {
 
@@ -46,6 +44,49 @@ module.exports = {
     catch(error) {
       logger.error(error)
     }
-  }
-}
+  },
+  async export(viewType,payLoad) {
+    try {
 
+      sql.connect(sqlconfig, function (res,err) {
+        const ps = new sql.PreparedStatement();
+        ps.input("viewtype", sql.NVarChar);
+        ps.input("payload", sql.NVarChar);
+        ps.prepare(
+          "exec sp_insertExports 'exports', @viewtype, @payload",
+          (err) => {
+            ps.execute(
+              { 
+                viewtype: viewType,
+                payload: payLoad
+              },
+              function (err, res) {
+                if (err) {
+                  console.log(err)
+                  logger.error("error:", err);
+                } else {
+                  logger.info(`Exported - ${viewType}`);
+                }
+                ps.unprepare((err) => {});
+              });
+          });
+      })
+
+    }
+    catch(error) {
+      logger.error(error)
+    }
+  },
+  async doneExport(viewType,ID){
+    try {
+      sql.connect(sqlconfig).then((pool) => {
+        return pool
+          .request()
+          .query(`UPDATE dbo.exports SET is_exported = 1 WHERE id = ${ID}`);
+      });
+        }
+catch(error) {
+  logger.error(error)
+}
+}
+}

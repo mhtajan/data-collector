@@ -8,7 +8,7 @@ let createdDateTime = new Date();
 const Downloader = require("./Downloader");
 const tokeni = `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`;
 const encodedToken = Buffer.from(tokeni).toString("base64");
-const blobUpload = require('./BlobUpload')
+const blobUpload = require('./sql_conn')
 
 let opts = {
   pageNumber: 1,
@@ -17,6 +17,7 @@ let opts = {
 const array = [];
 const platformClient = require("purecloud-platform-client-v2");
 const download = require("download");
+const sql_conn = require('./sql_conn');
 const client = platformClient.ApiClient.instance;
 let apiInstance = new platformClient.AnalyticsApi();
 client.setEnvironment("mypurecloud.jp");

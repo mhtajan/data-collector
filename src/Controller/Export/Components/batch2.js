@@ -47,11 +47,10 @@ mediatypes = ["chat","email","message","callback"]
 async function load(){
     lookup()
     await sleep(5000)
-    console.log(queue.length)
     await export_AGENT_PERFORMANCE_SUMMARY_VIEW()
-    await sleep(100000)
+    await sleep(100*second)
     await export_QUEUE_PERFORMANCE_SUMMARY_VIEW()
-    await sleep(100000)
+    await sleep(100*second)
     await export_AGENT_QUEUE_DETAIL_VIEW()
     await sleep(100*second)
     await export_QUEUE_AGENT_DETAIL_VIEW()
@@ -303,7 +302,7 @@ async function export_DNIS_PERFORMANCE_DETAIL_VIEW(){
           for await (const media of mediatypes){
             const id = uuid.v4()
             payload.filter.mediaTypes = [media]
-            payload.filter.dnisList = [did]
+            payload.filter.dnisList = did
             Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
             await exportdata(payload)
           }

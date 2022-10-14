@@ -25,7 +25,7 @@ const loggers = require('../Logger')
 
 const sleep = require('sleep-promise')
 const platformClient = require('purecloud-platform-client-v2')
-const BlobUpload = require('../BlobUpload')
+const BlobUpload = require('../sql_conn')
 const client = platformClient.ApiClient.instance
 client.setEnvironment('mypurecloud.jp')
 

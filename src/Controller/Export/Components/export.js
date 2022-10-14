@@ -12,7 +12,10 @@ const download = require('../../newDownloader')
 const downloadr = require('../../Downloader')
 const deletr = require('../../Delete')
 const { backOff } = require("exponential-backoff");
-
+var sql = require("mssql");
+var dbConn = require("../../config");
+const { sqlconfig } = require("../../config");
+const sql_conn = require("../../sql_conn")
 const client = platformClient.ApiClient.instance
 const params = new URLSearchParams()
 client.setEnvironment('mypurecloud.jp')
@@ -38,23 +41,17 @@ let opts = {
   }
 mediatypes = ["chat","email","message","callback"]
 async function load(){
-    lookup()
-    await sleep(5000)
-    console.log(queue.length)
-    // await export_AGENT_STATUS_SUMMARY_VIEW()
-      await sleep(5000)
-    // await export_QUEUE_INTERACTION_DETAIL_VIEW()
-    // await sleep(100000)
-    // await export_AGENT_STATUS_DETAIL_VIEW()
-    // await sleep(100000)
-    // await export_AGENT_PERFORMANCE_DETAIL_VIEW()
-    // await sleep(100000)
-    // await export_INTERACTION_SEARCH_VIEW()
-    // await sleep(100000)
-    // await export_AGENT_INTERACTION_DETAIL_VIEW()
-    // await sleep(100000)
-    await export_QUEUE_PERFORMANCE_DETAIL_VIEW()
-    await sleep(25*second)
+    // lookup()
+    // await sleep(5000)
+    // export_AGENT_STATUS_SUMMARY_VIEW()
+    // export_QUEUE_INTERACTION_DETAIL_VIEW()
+    // export_AGENT_STATUS_DETAIL_VIEW()
+    // export_AGENT_PERFORMANCE_DETAIL_VIEW()
+    // export_INTERACTION_SEARCH_VIEW()
+    // export_AGENT_INTERACTION_DETAIL_VIEW()
+    // export_QUEUE_PERFORMANCE_DETAIL_VIEW()
+    // await sleep(25*second)
+    postExport()
 
 }
 async function lookup(){
@@ -118,7 +115,7 @@ async function export_AGENT_PERFORMANCE_DETAIL_VIEW(){
               payload.filter.mediaTypes = [media]
               Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
               Object.assign(payload.filter, {userIds: [`${userid}`]})
-              await exportdata(payload)
+              sql_conn.export(payload.viewType,JSON.stringify(payload))
             }
         }
     }
@@ -138,7 +135,7 @@ async function export_AGENT_STATUS_DETAIL_VIEW(){
               const id = uuid.v4()
               Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
               Object.assign(payload.filter, {userIds: [`${userid}`]})
-              exportdata(payload)
+              sql_conn.export(payload.viewType,JSON.stringify(payload))
         }
     }
 }
@@ -157,7 +154,7 @@ async function export_QUEUE_INTERACTION_DETAIL_VIEW(){
               const id = uuid.v4()
               Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
               Object.assign(payload.filter, {queueIds: [`${queueid}`]})
-              exportdata(payload)
+              sql_conn.export(payload.viewType,JSON.stringify(payload))
         }
     }
 }
@@ -176,7 +173,7 @@ async function export_INTERACTION_SEARCH_VIEW(){
               const id = uuid.v4()
               Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
               Object.assign(payload.filter, {userIds: [`${userid}`]})
-              exportdata(payload)
+              sql_conn.export(payload.viewType,JSON.stringify(payload))
         }
     }
 }
@@ -193,7 +190,7 @@ async function export_AGENT_STATUS_SUMMARY_VIEW(){
         })
       const id = uuid.v4()
       Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
-      exportdata(payload)
+      sql_conn.export(payload.viewType,JSON.stringify(payload))
     }
 }
 async function export_AGENT_INTERACTION_DETAIL_VIEW(){
@@ -211,7 +208,7 @@ async function export_AGENT_INTERACTION_DETAIL_VIEW(){
               const id = uuid.v4()
               Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
               Object.assign(payload.filter, {userIds: [`${userid}`]})
-              exportdata(payload)
+              sql_conn.export(payload.viewType,JSON.stringify(payload))
         }
     }
 }
@@ -232,20 +229,37 @@ async function export_QUEUE_PERFORMANCE_DETAIL_VIEW(){
               payload.filter.mediaTypes = [media]
               Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
               Object.assign(payload.filter, {queueIds: [`${queueid}`]})
-              exportdata(payload)
+              sql_conn.export(payload.viewType,JSON.stringify(payload))
             }
         }
     }
 }
-async function exportdata(payload) {
+async function exportdata(payload,id) {
   apiInstance
      .postAnalyticsReportingExports(payload)
      .then(() => {
-       logger.info(`Done Exporting ${payload.viewType}`)
+       sql_conn.doneExport(payload.viewType,id)
      })
      .catch((err) => {
        logger.error(`Failed at ${payload.viewType}`)
        logger.error(err)
      })
+}
+async function postExport(){
+  sql.connect(sqlconfig).then((pool) => {
+      return pool
+        .request()
+        .query("Select * from exports where is_exported = 0", async function (err, res) {
+          if (err) {
+            console.log("error:", err);
+            return(err, null);
+          } else {
+            for await (entry of res.recordset){
+              exportdata(JSON.parse(entry.payload),entry.id)
+            }
+            return(null, res);
+          }
+        });
+    });
 }
 module.exports = load
