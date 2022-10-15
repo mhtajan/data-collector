@@ -16,6 +16,7 @@ var sql = require("mssql");
 var dbConn = require("../../config");
 const { sqlconfig } = require("../../config");
 const sql_conn = require("../../sql_conn")
+const { createPipelineFromOptions } = require('@azure/core-http')
 const client = platformClient.ApiClient.instance
 const params = new URLSearchParams()
 client.setEnvironment('mypurecloud.jp')
@@ -40,18 +41,18 @@ let opts = {
     pageNumber: 1,
   }
 mediatypes = ["chat","email","message","callback"]
-async function load(){
-    // lookup()
-    // await sleep(5000)
-    // export_AGENT_STATUS_SUMMARY_VIEW()
-    // export_QUEUE_INTERACTION_DETAIL_VIEW()
-    // export_AGENT_STATUS_DETAIL_VIEW()
-    // export_AGENT_PERFORMANCE_DETAIL_VIEW()
-    // export_INTERACTION_SEARCH_VIEW()
-    // export_AGENT_INTERACTION_DETAIL_VIEW()
-    // export_QUEUE_PERFORMANCE_DETAIL_VIEW()
-    // await sleep(25*second)
-    postExport()
+async function load(acessToken){
+    lookup()
+    await sleep(5000)
+    await export_AGENT_STATUS_SUMMARY_VIEW()
+    await export_QUEUE_INTERACTION_DETAIL_VIEW()
+    await export_AGENT_STATUS_DETAIL_VIEW()
+    await export_AGENT_PERFORMANCE_DETAIL_VIEW()
+    await export_INTERACTION_SEARCH_VIEW()
+    await export_AGENT_INTERACTION_DETAIL_VIEW()
+    await export_QUEUE_PERFORMANCE_DETAIL_VIEW()
+    await sleep(5*second)
+    postExport(acessToken)
 
 }
 async function lookup(){
@@ -113,9 +114,10 @@ async function export_AGENT_PERFORMANCE_DETAIL_VIEW(){
             for await (const media of mediatypes){
               const id = uuid.v4()
               payload.filter.mediaTypes = [media]
-              Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
+              Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-","_")}_${id.replaceAll("-","_")}` })  
               Object.assign(payload.filter, {userIds: [`${userid}`]})
-              sql_conn.export(payload.viewType,JSON.stringify(payload))
+              console.log(payload.id)
+              sql_conn.export(payload.viewType,JSON.stringify(payload),payload.name)
             }
         }
     }
@@ -131,11 +133,11 @@ async function export_AGENT_STATUS_DETAIL_VIEW(){
       Object.assign(payload, {
         interval: `${yesterday}T00:00:00/${datetime}T00:00:00`,
         })
-        for await (const userid of user){
+        for (const userid of user){
               const id = uuid.v4()
-              Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
+              Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-","_")}_${id.replaceAll("-","_")}` }) 
               Object.assign(payload.filter, {userIds: [`${userid}`]})
-              sql_conn.export(payload.viewType,JSON.stringify(payload))
+              sql_conn.export(payload.viewType,JSON.stringify(payload),payload.name)
         }
     }
 }
@@ -152,9 +154,9 @@ async function export_QUEUE_INTERACTION_DETAIL_VIEW(){
         })
         for await (const queueid of queue){
               const id = uuid.v4()
-              Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
+              Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-","_")}_${id.replaceAll("-","_")}` }) 
               Object.assign(payload.filter, {queueIds: [`${queueid}`]})
-              sql_conn.export(payload.viewType,JSON.stringify(payload))
+              sql_conn.export(payload.viewType,JSON.stringify(payload),payload.name)
         }
     }
 }
@@ -171,9 +173,9 @@ async function export_INTERACTION_SEARCH_VIEW(){
         })
         for await (const userid of user){
               const id = uuid.v4()
-              Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
+              Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-","_")}_${id.replaceAll("-","_")}` }) 
               Object.assign(payload.filter, {userIds: [`${userid}`]})
-              sql_conn.export(payload.viewType,JSON.stringify(payload))
+              sql_conn.export(payload.viewType,JSON.stringify(payload),payload.name)
         }
     }
 }
@@ -189,8 +191,8 @@ async function export_AGENT_STATUS_SUMMARY_VIEW(){
         interval: `${yesterday}T00:00:00/${datetime}T00:00:00`,
         })
       const id = uuid.v4()
-      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
-      sql_conn.export(payload.viewType,JSON.stringify(payload))
+      Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-","_")}_${id.replaceAll("-","_")}` }) 
+      sql_conn.export(payload.viewType,JSON.stringify(payload),payload.name)
     }
 }
 async function export_AGENT_INTERACTION_DETAIL_VIEW(){
@@ -206,9 +208,9 @@ async function export_AGENT_INTERACTION_DETAIL_VIEW(){
         })
         for await (const userid of user){
               const id = uuid.v4()
-              Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
+              Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-","_")}_${id.replaceAll("-","_")}` }) 
               Object.assign(payload.filter, {userIds: [`${userid}`]})
-              sql_conn.export(payload.viewType,JSON.stringify(payload))
+              sql_conn.export(payload.viewType,JSON.stringify(payload),payload.name)
         }
     }
 }
@@ -227,25 +229,38 @@ async function export_QUEUE_PERFORMANCE_DETAIL_VIEW(){
             for await (const media of mediatypes){
               const id = uuid.v4()
               payload.filter.mediaTypes = [media]
-              Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
+              Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-","_")}_${id.replaceAll("-","_")}` }) 
               Object.assign(payload.filter, {queueIds: [`${queueid}`]})
-              sql_conn.export(payload.viewType,JSON.stringify(payload))
+              sql_conn.export(payload.viewType,JSON.stringify(payload),payload.name)
             }
         }
     }
 }
-async function exportdata(payload,id) {
+async function exportdata(accessToken,payload,id) {
   apiInstance
      .postAnalyticsReportingExports(payload)
      .then(() => {
        sql_conn.doneExport(payload.viewType,id)
      })
      .catch((err) => {
-       logger.error(`Failed at ${payload.viewType}`)
-       logger.error(err)
+       logger.error(`Failed at ${payload.viewType} : `+err.message)
      })
+  // axios({
+  //   method:'post',
+  //   url: 'https://apps.mypurecloud.jp/platform/api/v2/analytics/reporting/exports',
+  //   headers: { Authorization: "Bearer " + accessToken, "Content-Type": "application/json","Accept": "application/json", },
+  //   data: payload
+  // }).then((res)=>{   
+  //   console.log(res.statusText,payload.name)
+  //   if(res.ok){ 
+  //     console.log(res)   
+  //     sql_conn.doneExport(payload.viewType,id)    
+  //   }
+  // }).catch((err)=>{
+  //   logger.error('Failed at '+payload.viewType+ ' error: '+err)
+  // })
 }
-async function postExport(){
+async function postExport(accessToken){
   sql.connect(sqlconfig).then((pool) => {
       return pool
         .request()
@@ -254,8 +269,13 @@ async function postExport(){
             console.log("error:", err);
             return(err, null);
           } else {
-            for await (entry of res.recordset){
-              exportdata(JSON.parse(entry.payload),entry.id)
+            await sleep(5000)
+            for await(entry of res.recordset){
+              reportname = entry.report_name
+              //console.log(JSON.parse(entry.payload).name)
+              
+              exportdata(accessToken,JSON.parse(entry.payload),entry.id)
+              
             }
             return(null, res);
           }

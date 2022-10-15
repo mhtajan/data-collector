@@ -280,12 +280,10 @@ async function export_DNIS_PERFORMANCE_SUMMARY_VIEW(){
     Object.assign(payload, {
       interval: `${yesterday}T00:00:00/${datetime}T00:00:00`,
       })   
-          for await (const media of mediatypes){
             const id = uuid.v4()
-            payload.filter.mediaTypes = [media]
+            payload.filter.mediaTypes = ['voice']
             Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
             await exportdata(payload)
-          }
   }
 }
 async function export_DNIS_PERFORMANCE_DETAIL_VIEW(){
@@ -299,13 +297,11 @@ async function export_DNIS_PERFORMANCE_DETAIL_VIEW(){
     Object.assign(payload, {
       interval: `${yesterday}T00:00:00/${datetime}T00:00:00`,
       })   
-          for await (const media of mediatypes){
             const id = uuid.v4()
-            payload.filter.mediaTypes = [media]
+            payload.filter.mediaTypes = ['voice']
             payload.filter.dnisList = did
             Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })  
             await exportdata(payload)
-          }
   }
 }
 async function export_AGENT_QUEUE_DETAIL_VIEW(){

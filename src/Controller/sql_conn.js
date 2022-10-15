@@ -45,20 +45,22 @@ module.exports = {
       logger.error(error)
     }
   },
-  async export(viewType,payLoad) {
+  async export(viewType,payLoad,report_Name) {
     try {
 
       sql.connect(sqlconfig, function (res,err) {
         const ps = new sql.PreparedStatement();
         ps.input("viewtype", sql.NVarChar);
         ps.input("payload", sql.NVarChar);
+        ps.input("report_name", sql.NVarChar);
         ps.prepare(
-          "exec sp_insertExports 'exports', @viewtype, @payload",
+          "exec sp_insertExports 'exports', @viewtype, @payload, @report_name",
           (err) => {
             ps.execute(
               { 
                 viewtype: viewType,
-                payload: payLoad
+                payload: payLoad,
+                report_name: report_Name
               },
               function (err, res) {
                 if (err) {
@@ -77,12 +79,45 @@ module.exports = {
       logger.error(error)
     }
   },
+  async dload(report_Name,Url) {
+    try {
+
+      sql.connect(sqlconfig, function (res,err) {
+        const ps = new sql.PreparedStatement();
+        ps.input("report_name", sql.NVarChar);
+        ps.input("url", sql.NVarChar);
+        ps.prepare(
+          "exec sp_insertDownload 'exports',@report_name, @url",
+          (err) => {
+            ps.execute(
+              { 
+                report_name: report_Name,
+                url: Url
+              },
+              function (err, res) {
+                if (err) {
+                  console.log(err)
+                  logger.error("error:", err);
+                } else {
+                  logger.info(`Extracted URL from :`+report_Name);
+                }
+                ps.unprepare((err) => {});
+              });
+          });
+      })
+
+    }
+    catch(error) {
+      logger.error(error)
+    }
+  },
   async doneExport(viewType,ID){
     try {
       sql.connect(sqlconfig).then((pool) => {
         return pool
           .request()
-          .query(`UPDATE dbo.exports SET is_exported = 1 WHERE id = ${ID}`);
+          .query(`UPDATE dbo.exports SET is_exported = 1 WHERE id = ${ID}`)
+          .then(logger.info('Done exporting - '+viewType))
       });
         }
 catch(error) {
