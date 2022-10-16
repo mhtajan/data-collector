@@ -54,12 +54,12 @@ async function main(token) {
   // await user(token)
   // await wrapup(token)
   // await sleep(10000)
-  //await exporter(token) //semi-working needs optimization
-  // await sleep(20000)
+  await exporter(token) //semi-working needs optimization
+  await sleep(20000)
   await dlsql(token)
   //await newDL(token)
-  //await sleep(90000)
-  //await deleter(token)
+  await sleep(40000)
+  await deleter(token)
   
 }
 async function ensureDirectoryExistence() {
