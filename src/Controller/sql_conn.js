@@ -64,8 +64,7 @@ module.exports = {
               },
               function (err, res) {
                 if (err) {
-                  console.log(err)
-                  logger.error("error:", err);
+                  logger.error("error:", +viewType);
                 } else {
                   logger.info(`Exported - ${viewType}`);
                 }
@@ -160,12 +159,14 @@ module.exports = {
   }
 }
   ,
-  async doneDownload(id) {
+  async doneDownload(id,name) {
     try {
       sql.connect(sqlconfig).then((pool) => {
         return pool
           .request()
           .query(`UPDATE dbo.downloads SET is_completed = 1 WHERE exports_id = ${id}`)
+          .then(()=>{logger.info("Complete Downloading - "+name+".csv")
+          this.completed(id)})
       });
     }
     catch (error) {
@@ -190,6 +191,7 @@ module.exports = {
         return pool
           .request()
           .query(`UPDATE dbo.status SET is_deleted = 1 WHERE report_id = '${name}'`)
+          .then(console.log("success delete"))
       });
     }
     catch (error) {

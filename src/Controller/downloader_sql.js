@@ -12,7 +12,7 @@ const Downloader = require("./Downloader");
 const tokeni = `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`;
 const encodedToken = Buffer.from(tokeni).toString("base64");
 const blobUpload = require('./sql_conn')
-
+const deleter = require('./Delete')
 
 let opts = {
   pageNumber: 1,
@@ -40,7 +40,8 @@ async function mainDownload() {
       await sleep(4000)
       await sqlDownload();
       // console.log(token)
-      // await sleep(15000)
+      await sleep(15000)
+      await deleter()
       // await downloader(token.accessToken);
       // deleteReport(token.accessToken);
     });
@@ -73,53 +74,20 @@ async function Loop(res, accessToken) {
   }
 }
 
-// async function downloader(accessToken){
-//   const options = {
-//       headers: {
-//         Authorization: `Bearer ${accessToken}`,
-//         ContentType: `application/json`,
-//       },
-//     };
-//   if (array.length !=0){
-//       logger.info("Number of download: "+array.length)
-//       for await (const dl of array){
-//           fetch(dl.url,options)
-//           .then(async(res)=>{
-//               if (res.ok) {
-//                   console.log();
-//                     await download(res.url, "./reports")
-//                     .then(() => {
-//                     logger.info(`Complete Downloading - ${dl.name}`);
-//                     var path = process.cwd() + '\\reports\\' + dl.name
-//                     var file_path = path + '.csv';
-//                   var data = fs.readFileSync(file_path)
-//                   var res = data.toString().split('\n').length;
-//                   const rowcount = res - 2
-//                   if (rowcount < 0) {
-//                     rowcount = 0
-//                   }
-//                     });
-//                 }
-//           }).catch((error)=>{
-//               logger.error(error)
-//           })
-//       }
-//   }
-// }
-
-
 async function sqlDownload(){
   sql.connect(sqlconfig).then((pool) => {
     return pool
       .request()
-      .query("Select * from downloads where is_completed = 0", async function (err, res) {
+      .query("Select top (250) * from downloads where is_completed = 0", async function (err, res) {
         if (err) {
           console.log("error:", err);
           return(err, null);
         } else {
-          await sleep(5000)
-          for await(entry of res.recordset){
+          for (entry of res.recordset){         
             await getDownloads(entry.url.substr(54),entry.report_name,entry.exports_id)
+            .catch((err)=>{
+              logger.error(err)
+            })
           }
           return(null, res);
         }
@@ -129,11 +97,8 @@ async function sqlDownload(){
 async function getDownloads(id,name,exports_id){
   DlInstance.getDownload(id)
   .then(async(res)=>{
-    //const buffer = await res.buffer();
-    await writeFile(`./report/${name}.csv`,res)
-    await sql_conn.doneDownload(exports_id)
-    await sql_conn.completed(exports_id)
-    logger.info("downloaded "+name)
+    await writeFile(`./reports/${name}.csv`,res)
+    await sql_conn.doneDownload(exports_id,name)
   })
   .catch((err)=>{
     logger.error(err)

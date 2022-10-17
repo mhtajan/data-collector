@@ -86,22 +86,28 @@ async function deleteReport(accessToken) {
           return(err, null);
         } else {
           await sleep(5000)
-          for (report of res.recordset){
-            await sleep(200);
-            axios({
-              method: "delete",
-              url: `https://apps.mypurecloud.jp/platform/api/v2/analytics/reporting/exports/${report.report_id}/history/${report.run_id}`,
-              headers: { Authorization: "Bearer " + accessToken },
-            })
-              .then(() => {
-                console.log();
-                sql_conn.deleted(report.report_id)
-                console.log("success delete");
+          if(res.recordset.length>0){
+            for await(report of res.recordset){
+              await sleep(200)
+              axios({
+                method: "delete",
+                url: `https://apps.mypurecloud.jp/platform/api/v2/analytics/reporting/exports/${report.report_id}/history/${report.run_id}`,
+                headers: { Authorization: "Bearer " + accessToken },
               })
-              .catch((err) => {
-                console.log(err.message);
-              });
+                .then(async() => {
+                  sql_conn.deleted(report.report_id)
+                  
+                })
+                .catch((err) => {
+                  console.log(err.message);
+                });
+            }
+            await deleteReport(accessToken)
           }
+          else{
+            logger.info("Successfully deleted all reports")
+          }
+          
           return(null, res);
         }
       });
