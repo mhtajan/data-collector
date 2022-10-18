@@ -237,7 +237,7 @@ function LoopDid(res, body) {
   if (res.pageCount >= res.pageNumber) {
     entities = res.entities
     entities.forEach((entry) => {
-      did.push(entry.id)
+      did.push(entry.phoneNumber)
     })
     opts.pageNumber = opts.pageNumber + 1
     getDid(body)

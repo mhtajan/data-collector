@@ -14,6 +14,7 @@ const fs = require('fs')
 const moment = require('moment')
 var datetime = moment().format('YYYY_MM_DD')
 const loggers = require('../Logger')
+const sql_conn = require('../sql_conn')
 
 let opts = {
   pageSize: 25, // Number | Page size
@@ -42,8 +43,23 @@ function Loop(res, body) {
       user.push(entry)
     })
     const csv = json2csvParser.parse(user)
-    fs.writeFileSync(`./ISO_reports/ISO_User_Profile_${datetime}.csv`, `${eol.split(csv).join(eol.lf)}\n`)
-    loggers.info('ISO_User_Profile EXPORTED SUCCESSFULLY')
+    let createdDateTime = new Date();
+    var viewType = "ISO_USER_PROFILE_REPORT"
+    var filename = `ISO_USER_PROFILE_REPORT_${datetime}`
+    fs.writeFileSync(`./reports/ISO_USER_PROFILE_REPORT_${datetime}.csv`, `${eol.split(csv).join(eol.lf)}\n`)
+    var path = process.cwd() + `\\reports\\` + filename
+    var file_path = path + '.csv'
+    var data = fs.readFileSync(file_path)
+    var resp = data.toString().split('\n').length;
+    const rowcount = resp - 2
+    if (rowcount < 0) {
+      rowcount = 0
+    }
+    await sql_conn.main(viewType, createdDateTime, filename, rowcount, file_path)
+      .then((res) => {
+      })
+      .catch((ex) => logger.error(ex.message))
+    loggers.info('ISO_USER_PROFILE_REPORT EXPORTED SUCCESSFULLY')
     opts.pageNumber = opts.pageNumber + 1
     getUserProfile(body)
   }

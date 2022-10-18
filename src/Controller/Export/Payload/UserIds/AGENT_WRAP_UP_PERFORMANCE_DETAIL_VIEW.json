@@ -6,11 +6,9 @@
   "read": true,
   "filter": {
     "mediaTypes": [
-      "voice"
     ],
-    "userIds": [
-      
-    ]
+    "userIds": [  
+    ],"WrapUpCodes":[]
   },
   "requiredColumnIds": [
     "wrapup_performance_view_interval_start",

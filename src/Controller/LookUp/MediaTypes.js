@@ -16,7 +16,7 @@ var datetime = moment().format('YYYY_MM_DD')
 let createdDateTime = new Date();
 const loggers = require('../Logger')
 const platformClient = require('purecloud-platform-client-v2')
-const BlobUpload = require('../BlobUpload')
+const BlobUpload = require('../sql_conn')
 const client = platformClient.ApiClient.instance
 client.setEnvironment('mypurecloud.jp')
 

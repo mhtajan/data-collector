@@ -11,7 +11,8 @@ const path = require('path')
 const moment = require('moment')
 var datetime = moment().format('YYYY_MM_DD')
 const loggers = require('../Logger')
-
+const sql_conn = require('../sql_conn')
+const eol = require('eol')
 var MainteArr = []
 
 async function getMainteReport(body) {
@@ -24,10 +25,22 @@ async function getMainteReport(body) {
     .then((response) => {
       MainteArr.push(response.data)
       const csv = json2csvParser.parse(MainteArr)
-      fs.writeFileSync(
-        `./ISO_reports/ISO_Maintenance_Report_${datetime}.csv`,
-        csv,
-      )
+      let createdDateTime = new Date();
+      var viewType = "ISO_SECURITY_MAINTENANCE_REPORT"
+      var filename = `ISO_SECURITY_MAINTENANCE_REPORT_${datetime}`
+      fs.writeFileSync(`./reports/ISO_SECURITY_MAINTENANCE_REPORT_${datetime}.csv`, `${eol.split(csv).join(eol.lf)}\n`)
+      var path = process.cwd() + `\\reports\\` + filename
+      var file_path = path + '.csv'
+      var data = fs.readFileSync(file_path)
+      var resp = data.toString().split('\n').length;
+      const rowcount = resp - 2
+      if (rowcount < 0) {
+        rowcount = 0
+      }
+      await sql_conn.main(viewType, createdDateTime, filename, rowcount, file_path)
+        .then((res) => {
+        })
+        .catch((ex) => logger.error(ex.message))
       loggers.info('ISO_Maintenance_Report EXPORTED SUCCESSFULLY!')
     })
     .catch((e) => loggers.error(e))

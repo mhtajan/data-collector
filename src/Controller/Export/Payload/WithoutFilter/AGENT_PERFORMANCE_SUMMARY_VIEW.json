@@ -5,9 +5,6 @@
    "viewType": "AGENT_PERFORMANCE_SUMMARY_VIEW",
    "read": true,
    "filter": {
-      "mediaTypes": [
-         "voice"
-      ]
    },
    "requiredColumnIds": [
       "agent_performance_view_interval_start",

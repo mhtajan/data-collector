@@ -12,7 +12,7 @@ var sql = require("mssql");
 var dbConn = require("./config");
 const { sqlconfig } = require("./config");
 const sleep = require('sleep-promise');
-const blobUpload = require('./BlobUpload')
+const blobUpload = require('./sql_conn')
 
 let opts = {
   pageNumber: 1,
