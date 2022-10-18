@@ -6,7 +6,6 @@
   "read": true,
   "filter": {
     "mediaTypes": [
-      "voice"
     ]
   },
   "locale": "en-us",

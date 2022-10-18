@@ -1,9 +1,5 @@
 const fs = require('fs')
 
-async function tokenizer(token) {
-  await ensureDirectoryExistence()
-  await Main(token)
-}
 
 async function Main(token){
   const Components = fs
@@ -19,11 +15,5 @@ async function process(components,token){
   )
 }
 
-async function ensureDirectoryExistence() {
-  if (!fs.existsSync('./ISO_reports/')) {
-    fs.mkdirSync('./ISO_reports/')
-  }
-  
-}
 
-module.exports = tokenizer
+module.exports = Main

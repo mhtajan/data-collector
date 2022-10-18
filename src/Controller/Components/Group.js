@@ -23,8 +23,8 @@ const fs = require('fs')
 const moment = require('moment')
 var datetime = moment().format('YYYY_MM_DD')
 const loggers = require('../Logger')
-
-
+const eol = require('eol')
+const sql_conn = require('../sql_conn')
 let opts = {
   pageSize: 500,
   pageNumber: 1,
@@ -55,8 +55,23 @@ async function getGroup(token) {
         getGroup(token)
       }
       const csv = json2csvParser.parse(groups)
-      fs.writeFileSync(`./ISO_reports/ISO_GroupRoles_${datetime}.csv`, csv)
-      loggers.info('ISO_GroupRoles EXPORTED SUCCESSFULLY')
+      let createdDateTime = new Date();
+      var viewType = "ISO_LIST_GROUP_ROLES"
+      var filename = `ISO_LIST_GROUP_ROLES_${datetime}`
+      fs.writeFileSync(`./reports/ISO_LIST_GROUP_ROLES_${datetime}.csv`, `${eol.split(csv).join(eol.lf)}\n`)
+      var path = process.cwd() + `\\reports\\` + filename
+      var file_path = path + '.csv'
+      var data = fs.readFileSync(file_path)
+      var resp = data.toString().split('\n').length;
+      const rowcount = resp - 2
+      if (rowcount < 0) {
+        rowcount = 0
+      }
+      await sql_conn.main(viewType, createdDateTime, filename, rowcount, file_path)
+        .then((res) => {
+        })
+        .catch((ex) => logger.error(ex.message))
+      loggers.info('ISO_LIST_GROUP_ROLES EXPORTED SUCCESSFULLY')
     })
     .catch((e) => console.error(e))
 }
@@ -70,9 +85,24 @@ async function getSub(token, id) {
     .then((response) => {
       Sub.push(response.data)
       const csv = subparser.parse(Sub)
-      fs.writeFileSync(`./ISO_reports/ISO_Subjects_${datetime}.csv`, csv)
+      let createdDateTime = new Date();
+      var viewType = "SUBJECT_LOOKUP"
+      var filename = `SUBJECT_LOOKUP_${datetime}`
+      fs.writeFileSync(`./reports/SUBJECT_LOOKUP_${datetime}.csv`, `${eol.split(csv).join(eol.lf)}\n`)
+      var path = process.cwd() + `\\reports\\` + filename
+      var file_path = path + '.csv'
+      var data = fs.readFileSync(file_path)
+      var resp = data.toString().split('\n').length;
+      const rowcount = resp - 2
+      if (rowcount < 0) {
+        rowcount = 0
+      }
+      await sql_conn.main(viewType, createdDateTime, filename, rowcount, file_path)
+        .then((res) => {
+        })
+        .catch((ex) => logger.error(ex.message))
     })
-    .catch((e) => loggers.error(e,"at ISO GET SUBJECTS"))
+    .catch((e) => loggers.error(e, "at SUBJECTS LOOKUP"))
 }
 
 async function getMember(token, id) {
@@ -93,9 +123,24 @@ async function getMember(token, id) {
         getMember(token, id)
       }
       const csv = memberparser.parse(members)
-      fs.writeFileSync(`./ISO_reports/ISO_Get_Member_${datetime}.csv`, csv)
+      let createdDateTime = new Date();
+      var viewType = "MEMBER_LOOKUP"
+      var filename = `MEMBER_LOOKUP_${datetime}`
+      fs.writeFileSync(`./reports/MEMBER_LOOKUP_${datetime}.csv`, `${eol.split(csv).join(eol.lf)}\n`)
+      var path = process.cwd() + `\\reports\\` + filename
+      var file_path = path + '.csv'
+      var data = fs.readFileSync(file_path)
+      var resp = data.toString().split('\n').length;
+      const rowcount = resp - 2
+      if (rowcount < 0) {
+        rowcount = 0
+      }
+      await sql_conn.main(viewType, createdDateTime, filename, rowcount, file_path)
+        .then((res) => {
+        })
+        .catch((ex) => logger.error(ex.message))
     })
-    .catch((e) => loggers.error(e,"at ISO GET MEMBER"))
+    .catch((e) => loggers.error(e, "at MEMBER_LOOKUP"))
 }
 
 module.exports = getGroup

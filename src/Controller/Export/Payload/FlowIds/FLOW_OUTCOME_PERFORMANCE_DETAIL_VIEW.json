@@ -5,7 +5,8 @@
   "viewType": "FLOW_OUTCOME_PERFORMANCE_DETAIL_VIEW",
   "read": true,
   "filter": {
-    "flowIds":[]
+    "mediaTypes": [
+    ]
   },
   "locale": "en-us",
   "requiredColumnIds": [
