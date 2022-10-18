@@ -249,7 +249,7 @@ async function postExport() {
           await sleep(5000)
           //console.log(res.recordset.length) number of record checker
           if(res.recordset.length>0){
-            for await (entry of res.recordset) {
+            for await(entry of res.recordset) {
               reportname = entry.report_name
               exportdata(JSON.parse(entry.payload), entry.id)
             }

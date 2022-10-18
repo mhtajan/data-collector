@@ -78,20 +78,22 @@ module.exports = {
       logger.error(error)
     }
   },
-  async dload(report_Name, Url) {
+  async dload(report_Name, Url,viewType) {
     try {
 
-      sql.connect(sqlconfig, function (res, err) {
+      await sql.connect(sqlconfig, function (res, err) {
         const ps = new sql.PreparedStatement();
         ps.input("report_name", sql.NVarChar);
         ps.input("url", sql.NVarChar);
+        ps.input("viewtype", sql.NVarChar);
         ps.prepare(
-          "exec sp_insertDownload 'exports',@report_name, @url",
+          "exec sp_insertDownload 'exports',@report_name, @url,@viewtype",
           (err) => {
             ps.execute(
               {
                 report_name: report_Name,
-                url: Url
+                url: Url,
+                viewtype: viewType
               },
               function (err, res) {
                 if (err) {

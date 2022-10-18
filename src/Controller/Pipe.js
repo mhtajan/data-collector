@@ -20,6 +20,7 @@ const user = require("./LookUp/User")
 const wrapup = require("./LookUp/Wrapup")
 const newDL = require('./newDownloader')
 const dlsql = require('./downloader_sql')
+const olddelete = require('./olddelete')
 const sql_conn = require('./sql_conn')
 const platformClient = require("purecloud-platform-client-v2");
 const client = platformClient.ApiClient.instance
@@ -42,7 +43,7 @@ async function main(token) {
   client.setAccessToken(token);
   // await sleep(20000)
   await ensureDirectoryExistence()
-   //await agentcustom(token)
+  //  await agentcustom(token)
   // await presence(token)
   // await did(token)
   // await flow(token)
@@ -59,7 +60,7 @@ async function main(token) {
   //await dlsql(token)
   //await newDL(token)
   //await sleep(40000)
-  //await deleter(token)
+  //await olddelete(token)//temp deleter
   
 }
 async function ensureDirectoryExistence() {

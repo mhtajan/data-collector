@@ -7,6 +7,7 @@ const Pipe = require('./Controller/Pipe')
 const logger = require('./Controller/Logger')
 const params = new URLSearchParams();
 params.append("grant_type", "client_credentials");
+const controller = require(`./Controller/Controller`)
 const AgentCustom = require('./Controller/Components/Agent_custom_break_view')
 const AgentPresence = require(`./Controller/Components/Presence`)
   // cron.schedule(`${process.env.CRON_Sched}`, () => {
@@ -34,6 +35,7 @@ async function runScript() {
     })
     .then(async(jsonResponse) => {
         await Pipe(jsonResponse.access_token) //analytics exports
+        //await controller(jsonResponse.access_token)
         //await AgentCustom(jsonResponse.access_token)
         //await AgentPresence(jsonResponse.access_token)
     })

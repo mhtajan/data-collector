@@ -36,12 +36,8 @@ async function mainDownload() {
     .then(async (token) => {
       logger.info("Extracting URL")
       await dlExport();
-      logger.info("Downloading")
-      await sleep(4000)
-      await sqlDownload();
       // console.log(token)
-      await sleep(15000)
-      await deleter()
+      
       // await downloader(token.accessToken);
       // deleteReport(token.accessToken);
     });
@@ -63,14 +59,15 @@ async function Loop(res, accessToken) {
     entities = res.entities;
     entities.forEach(async (entity) => {
       if (entity.status.includes("COMPLETED")) {
-       
-        await sql_conn.dload(entity.name,entity.downloadUrl)
+        await sql_conn.dload(entity.name,entity.downloadUrl,entity.viewType)
       }
     });
     opts.pageNumber = opts.pageNumber + 1;
     dlExport();
-    console.log();
-    console.log();
+  }
+  if(res.pageCount==res.pageNumber){
+    await sleep(2000)
+    await sqlDownload()
   }
 }
 
@@ -78,88 +75,48 @@ async function sqlDownload(){
   sql.connect(sqlconfig).then((pool) => {
     return pool
       .request()
-      .query("Select top (250) * from downloads where is_completed = 0", async function (err, res) {
+      .query("Select top (275) * from downloads where is_completed = 0", async function (err, res) {
         if (err) {
           console.log("error:", err);
           return(err, null);
         } else {
-          for (entry of res.recordset){         
-            await getDownloads(entry.url.substr(54),entry.report_name,entry.exports_id)
-            .catch((err)=>{
-              logger.error(err)
-            })
+          if(res.recordset.length>0){
+            logger.info("Downloading")
+            for (entry of res.recordset){         
+              await getDownloads(entry.url.substr(54),entry.report_name,entry.exports_id,entry.datasource_name)
+              .catch((err)=>{
+                logger.error(err)
+              })
+            }
+            await sleep(30000)
+            await sqlDownload()
           }
-          return(null, res);
+          else{
+            await deleter()
+          }
+            return(null, res);
         }
       });
   });
 }
-async function getDownloads(id,name,exports_id){
+async function getDownloads(id,name,exports_id,viewtype){
   DlInstance.getDownload(id)
   .then(async(res)=>{
     await writeFile(`./reports/${name}.csv`,res)
+    var path = process.cwd() + '\\reports\\' + name
+    file_path = path +'.csv'
+    data = res.toString().split('\n').length
+    rowcount = data -2
+    if (rowcount < 0) {
+      rowcount = 0
+    }
+    await sql_conn.main(viewtype,createdDateTime,name,rowcount,file_path)
     await sql_conn.doneDownload(exports_id,name)
   })
   .catch((err)=>{
     logger.error(err)
   })
 }
-async function downloader(accessToken) {
-  const options = {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      ContentType: `application/json`,
-    },
-  };
-  logger.info("Number of download: " + array.length)
-  for (let i = 0; i < array.length; i++) {
-    await fetch(array[i].url, options)
-      .then(async (res) => {
-        if (res.ok) {
-          const response = await fetch(res.url);
-          const buffer = await response.buffer();
-          await writeFile(`./reports/${array[i].name}.csv`, buffer);
-          logger.info('Complete downloading - ' + array[i].name)
-          var path = process.cwd() + '\\reports\\' + array[i].name
-          var file_path = path + '.csv';
-          var data = fs.readFileSync(file_path)
-          var res = data.toString().split('\n').length;
-          let rowcount = res - 2
-          if (rowcount < 0) {
-            rowcount = 0
-          }
-          blobUpload.main(array[i].viewType, createdDateTime, array[i].name, rowcount, file_path)
-          .catch((ex) => console.log(ex.message));
-        }
-      }
-      )
-      .catch((err) => {
-        logger.error(err)
-      })
-  }
-}
-async function deleteReport(accessToken) {
-  logger.info("Removing exports")
-  await sleep(2000)
-  if (array.length != 0) {
-    console.log();
-    for (const report of array) {
-      await axios({
-        method: "delete",
-        url: `https://apps.mypurecloud.jp/platform/api/v2/analytics/reporting/exports/${report.id}/history/${report.runId}`,
-        headers: { Authorization: "Bearer " + accessToken },
-      })
-        .then(() => {
-          console.log();
-          console.log("success delete");
-        })
-        .catch((err) => {
-          console.log(err.message);
-        });
-    }
-    logger.info("Deleted export");
-  } else if (array.length == 0) {
-    console.log("No export to delete");
-  }
-}
+
+
 module.exports = mainDownload
