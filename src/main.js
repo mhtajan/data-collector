@@ -43,8 +43,9 @@ async function runScript() {
     .catch((e) => logger.error(e));
 }
 
+
 async function ensureDirectoryExistence() {
   if (!fs.existsSync('./reports/')) {
     fs.mkdirSync('./reports/')
-  }
-}
+ }
+
