@@ -36,8 +36,8 @@ async function runScript() {
     .then(async(jsonResponse) => {
         await ensureDirectoryExistence()
         await Pipe(jsonResponse.access_token) //analytics exports
-        await controller(jsonResponse.access_token)
-        //await AgentCustom(jsonResponse.access_token)
+        // await controller(jsonResponse.access_token)
+       // await AgentCustom(jsonResponse.access_token)
         //await AgentPresence(jsonResponse.access_token)
     })
     .catch((e) => logger.error(e));

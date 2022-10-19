@@ -44,9 +44,9 @@ async function deleter(token, _callback) {
 async function main(token) {
   client.setAccessToken(token);
   // await sleep(20000)
-  await ensureDirectoryExistence()
+  //await ensureDirectoryExistence()
   //  await agentcustom(token)
-  // await presence(token)
+   await presence(token)
   // await did(token)
   // await flow(token)
   // await flowmilestone(token)
@@ -54,12 +54,12 @@ async function main(token) {
   // await mediatype(token)
   // await queue(token)
   // await survey(token)
-  // await user(token)
-  // await wrapup(token)
+  await user(token)
+  //await wrapup(token)
   // await sleep(10000)
   //await exporter(token) //fully-working needs optimization
   //await exporter_batch2(token) // testing // working
-  await exporter_batch3(token) // testing
+  //await exporter_batch3(token) // testing
   //await sleep(60000*2)
   //await dlsql(token)
   //await newDL(token)

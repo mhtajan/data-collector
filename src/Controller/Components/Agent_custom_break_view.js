@@ -11,10 +11,13 @@ const {
 //   const json2csvParser = new Parser({
 //     transforms: [unwind({ blankOut: true }), flatten('__')],
 //   })
+const obj = {
+  results :[]
+}
 
 const json2csvParser = new Parser({
   transforms: [
-    unwind({ paths: ['fieldToUnwind'], blankOut: false }),
+    unwind({ paths: ['fieldToUnwind'], blankOut: true }),
     flatten({ objects: true, arrays: true, separator: "_" }),
     flatten('__')
   ]
@@ -22,12 +25,13 @@ const json2csvParser = new Parser({
 
 const fs = require('fs')
 const loggers = require('../Logger')
-
+const pivot = require('pivot-keyvalues')
 const sleep = require('sleep-promise')
 const platformClient = require('purecloud-platform-client-v2')
 const BlobUpload = require('../sql_conn')
 const client = platformClient.ApiClient.instance
 client.setEnvironment('mypurecloud.jp')
+const jsonToPivotjson = require("json-to-pivot-json");
 
 user = []
 let opts = {
@@ -71,6 +75,9 @@ function getUserProfile(body) {
     })
     .catch((e) => console.error(e))
 }
+function fastpivot(a){"use strict";var t={};if("string"!=typeof a&&a.length>0){var l=Object.keys(a[0]),n={};l.forEach(function(a){n[a]={},n[a]._labels=[],n[a]._labelsdata=[],n[a]._data={}}),a.forEach(function(a,t){l.forEach(function(t){var l=a[t];n[t]._data[l]=(n[t]._data[l]||0)+1,n[t]._labels[l]=null})}),l.forEach(function(a){for(var t in n[a]._data)n[a]._labelsdata.push(n[a]._data[t]);n[a]._labels=Object.keys(n[a]._labels)}),t=n}return t}
+//var json = JSON.parse(resp);
+
 
 function LoopUser(res, body) {
   if (res.pageCount >= res.pageNumber) {
@@ -100,7 +107,21 @@ async function GetApi(token, jsonPayload) {
   apiInstance.postAnalyticsUsersAggregatesQuery(jsonPayload)
     .then(async (response) => {
       res = response.data
-      const csv = json2csvParser.parse(response.results)
+      const arr = []
+      await response.results.forEach(async(entry)=>{
+        await entry.data.forEach(async(data)=>{
+          await data.metrics.forEach(async(metric)=>{
+            obj.results.push({UserId: `${entry.group.userId}`,
+          Interval: `${data.interval}`,
+          Metric: `${metric.metric}`,
+          Qualifier: `${metric.qualifier}`,
+          Stats_Sum: `${metric.stats.sum}`})
+          })
+        })
+      })
+      //Object.assign(obj,{results:`${[arr]}`})
+      //console.log(JSON.stringify(obj,null,2))
+      const csv = json2csvParser.parse(obj.results)
       String(eol.lf)
 
       var viewType = "AGENT_CUSTOM_BREAK_VIEW"
