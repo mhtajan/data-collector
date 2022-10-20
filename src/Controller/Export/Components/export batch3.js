@@ -305,12 +305,12 @@ async function postExport() {
   sql.connect(sqlconfig).then((pool) => {
     return pool
       .request()
-      .query("Select top (250) * from exports where is_exported = 0", async function (err, res) {
+      .query("Select top (200) * from exports where is_exported = 0", async function (err, res) {
         if (err) {
           logger.error("error")
           return (err, null);
         } else {
-          await sleep(5000)
+          await sleep(10000)
           //console.log(res.recordset.length) number of record checker
           if (res.recordset.length > 0) {
             for await (entry of res.recordset) {

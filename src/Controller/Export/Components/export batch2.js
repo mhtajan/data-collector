@@ -3,9 +3,7 @@ const fs = require('fs')
 const moment = require(`moment`)
 var datetime = moment().format('YYYY-MM-DD')
 var yesterday = moment().subtract(6, 'days').format('YYYY-MM-DD')
-const fetch = require('node-fetch')
 const logger = require('../../Logger')
-const axios = require('axios').default
 const sleep = require('sleep-promise')
 const platformClient = require('purecloud-platform-client-v2')
 const sql_dl = require('../../downloader_sql')
@@ -14,7 +12,6 @@ var sql = require("mssql");
 var dbConn = require("../../config");
 const { sqlconfig } = require("../../config");
 const sql_conn = require("../../sql_conn")
-const { createPipelineFromOptions } = require('@azure/core-http')
 const client = platformClient.ApiClient.instance
 const params = new URLSearchParams()
 client.setEnvironment('mypurecloud.jp')
@@ -401,12 +398,12 @@ async function postExport() {
   sql.connect(sqlconfig).then((pool) => {
     return pool
       .request()
-      .query("Select top (500) * from exports where is_exported = 0", async function (err, res) {
+      .query("Select top (200) * from exports where is_exported = 0", async function (err, res) {
         if (err) {
           logger.error("error")
           return (err, null);
         } else {
-          await sleep(5000)
+          await sleep(10000)
           //console.log(res.recordset.length) number of record checker
           if (res.recordset.length > 0) {
             for await (entry of res.recordset) {

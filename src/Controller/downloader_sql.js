@@ -75,7 +75,7 @@ async function sqlDownload(){
   sql.connect(sqlconfig).then((pool) => {
     return pool
       .request()
-      .query("Select top (275) * from downloads where is_completed = 0", async function (err, res) {
+      .query("Select top (200) * from downloads where is_completed = 0", async function (err, res) {
         if (err) {
           console.log("error:", err);
           return(err, null);
@@ -88,7 +88,7 @@ async function sqlDownload(){
                 logger.error(err)
               })
             }
-            await sleep(30000)
+            await sleep(50000)
             await sqlDownload()
           }
           else{
