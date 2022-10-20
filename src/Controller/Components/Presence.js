@@ -31,7 +31,7 @@ function load(token) {
   getPresence()
 }
 let apiInstance = new platformClient.PresenceApi();
-function getPresence() {
+async function getPresence() {
   apiInstance.getPresencedefinitions(opts)
     .then(async (data) => {
       const csv = json2csvParser.parse(data.entities)

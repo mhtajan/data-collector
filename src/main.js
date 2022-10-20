@@ -48,4 +48,5 @@ async function ensureDirectoryExistence() {
   if (!fs.existsSync('./reports/')) {
     fs.mkdirSync('./reports/')
  }
+}
 

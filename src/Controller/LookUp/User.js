@@ -144,7 +144,19 @@ async function saveCsv(){
       }    
     })
   await sleep(2000)
-    const csv = json2csvParser.parse(arr)
+  const newArray = arr.filter((item, index, arr) => {
+    return index === arr.findIndex((foundItem) => {
+      return foundItem.Id === item.Id && 
+      foundItem.Contact_Display === item.Contact_Display &&
+      foundItem.Contact_Address === item.Contact_Address &&
+      foundItem.Contact_Extension === item.Contact_Extension &&
+      foundItem.Contact_Type === item.Contact_Type &&
+      foundItem.Address_Country_Code === item.Address_Country_Code &&
+      foundItem.Address_Display === item.Address_Display;
+      // 'name' should correspond to an identifying property of the objects
+    })
+  }) 
+    const csv = json2csvParser.parse(newArray)
     var viewType = "USERID_LOOKUP"
     var filename = `USERID_LOOKUP_${datetime}`
     fs.writeFileSync(`./reports/USERID_LOOKUP_${datetime}.csv`, `${eol.split(csv).join(eol.lf)}\n`)

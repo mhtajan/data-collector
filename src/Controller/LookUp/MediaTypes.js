@@ -39,7 +39,20 @@ async function getRoutingAvailablemediatype() {
         entities.forEach((entry) => {
             mediatypes.push(entry)
         })
-        const csv = json2csvParser.parse(mediatypes)
+        const arr = []
+        mediatypes.forEach((entry)=>{
+          if(entry.availableSubTypes.length>0){
+            entry.availableSubTypes.forEach((subtype)=>{
+              arr.push({mediaType: `${entry.mediaType}`,
+            Available_subtype: `${subtype}`})
+            })
+          }
+          else{
+            arr.push({mediaType: `${entry.mediaType}`})
+          }
+        }
+        )
+        const csv = json2csvParser.parse(arr)
         var viewType = "MEDIATYPES_LOOKUP"
         var filename = `MEDIATYPES_LOOKUP_${datetime}`
     fs.writeFileSync(`./reports/MEDIATYPES_LOOKUP_${datetime}.csv`, `${eol.split(csv).join(eol.lf)}\n`)

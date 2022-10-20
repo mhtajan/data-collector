@@ -22,9 +22,21 @@ async function getMainteReport(body) {
       'https://apps.mypurecloud.jp/platform/api/v2/audits/query/servicemapping',
     headers: { Authorization: 'Bearer ' + body },
   })
-    .then((response) => {
+    .then(async(response) => {
+      const arr = []
       MainteArr.push(response.data)
-      const csv = json2csvParser.parse(MainteArr)
+      MainteArr.forEach((services)=>{
+        services.services.forEach((entry)=>{
+          entry.entities.forEach((entity)=>{
+            entity.actions.forEach((action)=>{
+              arr.push({Service_name: `${entry.name}`,
+            Entity_name: `${entity.name}`,
+          Action: `${action}`})
+            })
+          })
+        })
+      })
+      const csv = json2csvParser.parse(arr)
       let createdDateTime = new Date();
       var viewType = "ISO_SECURITY_MAINTENANCE_REPORT"
       var filename = `ISO_SECURITY_MAINTENANCE_REPORT_${datetime}`
@@ -41,7 +53,7 @@ async function getMainteReport(body) {
         .then((res) => {
         })
         .catch((ex) => logger.error(ex.message))
-      loggers.info('ISO_Maintenance_Report EXPORTED SUCCESSFULLY!')
+      loggers.info('ISO_SECURITY_MAINTENANCE_REPORT EXPORTED SUCCESSFULLY!')
     })
     .catch((e) => loggers.error(e))
 }
