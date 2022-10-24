@@ -113,7 +113,7 @@ async function Loop(res) {
       if(entry.hasOwnProperty("agentOwnedRouting")){
         Object.assign(arr[index],{Agent_Owned_Routing_enable_callback: `${entry.agentOwnedRouting.enableAgentOwnedCallbacks}`,
         Agent_Owned_Routing_max_owned_callback_hours: `${entry.agentOwnedRouting.maxOwnedCallbackHours}`,
-        Agent_Owned_Routing_max_owned_callback_delay_hours: `${entry.agentOwnedRoutingaxOwnedCallbackDelayHours}`
+        Agent_Owned_Routing_max_owned_callback_delay_hours: `${entry.agentOwnedRouting.maxOwnedCallbackDelayHours}`
       })
       }
     })

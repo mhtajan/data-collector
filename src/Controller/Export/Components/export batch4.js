@@ -54,15 +54,24 @@ let optssurvey = {
   pageSize: 500,
   pageNumber: 1,
 }
+milestoneopts= {
+  pageSize: 500,
+  pageNumber: 1,
+}
+
 mediatypes = ["chat", "email", "message", "callback"]
 async function load(acessToken) {
   await lookup()
   await sleep(7000)
-  await export_FLOW_OUTCOME_PERFORMANCE_DETAIL_VIEW()
-  await export_FLOW_OUTCOME_SUMMARY_VIEW()
-  await export_IVR_PERFORMANCE_DETAIL_VIEW()
-  await export_IVR_PERFORMANCE_SUMMARY_VIEW()
-  export_SURVEY_FORM_PERFORMANCE_DETAIL_VIEW()
+  await export_BOT_PERFORMANCE_DETAIL_VIEW()
+  await export_BOT_PERFORMANCE_SUMMARY_VIEW()
+  await export_CONTENT_SEARCH_VIEW()
+  await export_FLOW_MILESTONE_PERFORMANCE_DETAIL_VIEW()
+  await export_FLOW_MILESTONE_PERFORMANCE_INTERVAL_DETAIL_VIEW()
+  await export_JOURNEY_ACTION_MAP_SUMMARY_VIEW()
+  await export_JOURNEY_OUTCOME_SUMMARY_VIEW()
+  await export_JOURNEY_SEGMENT_SUMMARY_VIEW()
+  await export_SCHEDULED_CALLBACKS_VIEW()
   await sleep(5 * second)
   await postExport()
 }
@@ -71,6 +80,7 @@ async function lookup() {
   getQueue()
   getWrapUp()
   getFlow()
+  getFlowMilestone()
   getSurvey()
   async function getUserProfile() {
     let userInstance = new platformClient.UsersApi()
@@ -125,6 +135,26 @@ async function lookup() {
         LoopSurvey(data,)
       })
       .catch((e) => console.error(e))
+  }
+  async function getFlowMilestone() {
+    let flowInstance = new platformClient.ArchitectApi()
+    flowInstance
+      .getFlowsMilestones(milestoneopts)
+      .then((data) => {
+        LoopFlowMilestone(data)
+      })
+      .catch((e) => console.error(e))
+  }
+  function LoopFlowMilestone(res, body) {
+    if (res.pageCount >= res.pageNumber) {
+      entities = res.entities
+      entities.forEach((entry) => {
+        flowMileStone.push(entry.id)
+      })
+  
+      milestoneopts.pageNumber = milestoneopts.pageNumber + 1
+      getFlowMilestone(body)
+    }
   }
   function LoopQueue(res) {
     if (res.pageCount >= res.pageNumber) {
@@ -188,48 +218,102 @@ async function lookup() {
     }
   }
 }
-//batch 3
-async function export_FLOW_OUTCOME_SUMMARY_VIEW() {
-  await fileCheck('FLOW_OUTCOME_SUMMARY_VIEW', process)
+//batch 4
+async function export_BOT_PERFORMANCE_DETAIL_VIEW() {
+  await fileCheck('BOT_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
-    logger.info("Exporting FLOW_OUTCOME_SUMMARY_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/FLOW_OUTCOME_SUMMARY_VIEW.json`)
+    logger.info("Exporting BOT_PERFORMANCE_DETAIL_VIEW")
+    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/BOT_PERFORMANCE_DETAIL_VIEW.json`)
     var payload = JSON.parse(jsonData)
     Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const media of mediatypes) {
-      const id = uuid.v4()
-      payload.filter.mediaTypes = [media]
-      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
-    }
+    const id = uuid.v4()
+    Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+    sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
   }
 }
-async function export_IVR_PERFORMANCE_SUMMARY_VIEW() {
-  await fileCheck('IVR_PERFORMANCE_SUMMARY_VIEW', process)
+async function export_BOT_PERFORMANCE_SUMMARY_VIEW() {
+  await fileCheck('BOT_PERFORMANCE_SUMMARY_VIEW', process)
   async function process() {
-    logger.info("Exporting IVR_PERFORMANCE_SUMMARY_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/IVR_PERFORMANCE_SUMMARY_VIEW.json`)
+    logger.info("Exporting BOT_PERFORMANCE_SUMMARY_VIEW")
+    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/BOT_PERFORMANCE_SUMMARY_VIEW.json`)
     var payload = JSON.parse(jsonData)
     Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const media of mediatypes) {
-      const id = uuid.v4()
-      payload.filter.mediaTypes = [media]
-      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
-    }
+    const id = uuid.v4()
+    Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+    sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
   }
 }
-async function export_IVR_PERFORMANCE_DETAIL_VIEW() {
-  await fileCheck('IVR_PERFORMANCE_DETAIL_VIEW', process)
+async function export_CONTENT_SEARCH_VIEW() {
+  await fileCheck('CONTENT_SEARCH_VIEW', process)
   async function process() {
-    logger.info("Exporting IVR_PERFORMANCE_DETAIL_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/FlowIds/IVR_PERFORMANCE_DETAIL_VIEW.json`)
+    logger.info("Exporting CONTENT_SEARCH_VIEW")
+    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/CONTENT_SEARCH_VIEW.json`)
+    var payload = JSON.parse(jsonData)
+    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
+    const id = uuid.v4()
+    Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+    sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+  }
+}
+async function export_JOURNEY_ACTION_MAP_SUMMARY_VIEW() {
+  await fileCheck('JOURNEY_ACTION_MAP_SUMMARY_VIEW', process)
+  async function process() {
+    logger.info("Exporting JOURNEY_ACTION_MAP_SUMMARY_VIEW")
+    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/JOURNEY_ACTION_MAP_SUMMARY_VIEW.json`)
+    var payload = JSON.parse(jsonData)
+    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
+    const id = uuid.v4()
+    Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+    sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+  }
+}
+async function export_JOURNEY_OUTCOME_SUMMARY_VIEW() {
+  await fileCheck('JOURNEY_OUTCOME_SUMMARY_VIEW', process)
+  async function process() {
+    logger.info("Exporting JOURNEY_OUTCOME_SUMMARY_VIEW")
+    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/JOURNEY_OUTCOME_SUMMARY_VIEW.json`)
+    var payload = JSON.parse(jsonData)
+    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
+    const id = uuid.v4()
+    Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+    sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+  }
+}
+async function export_JOURNEY_SEGMENT_SUMMARY_VIEW() {
+  await fileCheck('JOURNEY_SEGMENT_SUMMARY_VIEW', process)
+  async function process() {
+    logger.info("Exporting JOURNEY_SEGMENT_SUMMARY_VIEW")
+    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/JOURNEY_SEGMENT_SUMMARY_VIEW.json`)
+    var payload = JSON.parse(jsonData)
+    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
+    const id = uuid.v4()
+    Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+    sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+  }
+}
+async function export_SCHEDULED_CALLBACKS_VIEW() {
+  await fileCheck('SCHEDULED_CALLBACKS_VIEW', process)
+  async function process() {
+    logger.info("Exporting SCHEDULED_CALLBACKS_VIEW")
+    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/SCHEDULED_CALLBACKS_VIEW.json`)
+    var payload = JSON.parse(jsonData)
+    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
+    const id = uuid.v4()
+    Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+    sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+  }
+}
+async function export_FLOW_MILESTONE_PERFORMANCE_DETAIL_VIEW() {
+  await fileCheck('FLOW_MILESTONE_PERFORMANCE_DETAIL_VIEW', process)
+  async function process() {
+    logger.info("Exporting FLOW_MILESTONE_PERFORMANCE_DETAIL_VIEW")
+    var jsonData = fs.readFileSync(__dirname + `/../Payload/FlowIds/FLOW_MILESTONE_PERFORMANCE_DETAIL_VIEW.json`)
     var payload = JSON.parse(jsonData)
     Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
     for await (const flowid of flow) {
-      for await (const media of mediatypes) {
+      for await (const milestone of flowMileStone) {
         const id = uuid.v4()
-        payload.filter.mediaTypes = [media]
+        payload.filter.flowMilestoneIds = [milestone]
         Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
         Object.assign(payload.filter, { flowIds: [`${flowid}`] })
         sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
@@ -237,41 +321,23 @@ async function export_IVR_PERFORMANCE_DETAIL_VIEW() {
     }
   }
 }
-async function export_FLOW_OUTCOME_PERFORMANCE_DETAIL_VIEW() {
-  await fileCheck('FLOW_OUTCOME_PERFORMANCE_DETAIL_VIEW', process)
+async function export_FLOW_MILESTONE_PERFORMANCE_INTERVAL_DETAIL_VIEW() {
+  await fileCheck('FLOW_MILESTONE_PERFORMANCE_INTERVAL_DETAIL_VIEW', process)
   async function process() {
-    logger.info("Exporting FLOW_OUTCOME_PERFORMANCE_DETAIL_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/FlowIds/FLOW_OUTCOME_PERFORMANCE_DETAIL_VIEW.json`)
+    logger.info("Exporting FLOW_MILESTONE_PERFORMANCE_INTERVAL_DETAIL_VIEW")
+    var jsonData = fs.readFileSync(__dirname + `/../Payload/FlowIds/FLOW_MILESTONE_PERFORMANCE_INTERVAL_DETAIL_VIEW.json`)
     var payload = JSON.parse(jsonData)
     Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
     for await (const flowid of flow) {
-      for await (const media of mediatypes) {
+      for await (const milestone of flowMileStone) {
         const id = uuid.v4()
-        payload.filter.mediaTypes = [media]
+        payload.filter.flowMilestoneIds = [milestone]
         Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
         Object.assign(payload.filter, { flowIds: [`${flowid}`] })
         sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
       }
     }
-  }
 }
-async function export_SURVEY_FORM_PERFORMANCE_DETAIL_VIEW() {
-  await fileCheck('SURVEY_FORM_PERFORMANCE_DETAIL_VIEW', process)
-  async function process() {
-    logger.info("Exporting SURVEY_FORM_PERFORMANCE_DETAIL_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/SurveyFormIds/SURVEY_FORM_PERFORMANCE_DETAIL_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const surveyid of survey) {
-      for await (const media of mediatypes) {
-        const id = uuid.v4()
-        payload.filter.mediaTypes = [media]
-        payload.filter.surveyFormIds = [surveyid]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
-      }
-    }
-  }
 }
 
 async function exportdata(payload, id) {

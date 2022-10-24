@@ -8,6 +8,7 @@ const test = require("./Export/Components/test")
 const exporter = require("./Export/Components/export")
 const exporter_batch2 = require("./Export/Components/export batch2")
 const exporter_batch3 = require("./Export/Components/export batch3")
+const exporter_batch4 = require("./Export/Components/export batch4")
 const exporter2 = require("./Export/Components/batch2")
 const agentcustom = require("./Components/Agent_custom_break_view")
 const presence = require("./Components/Presence")
@@ -48,22 +49,24 @@ async function main(token) {
 //    await presence(token)
 //   await did(token)
 // await flow(token)
-//   // await flowmilestone(token)
-//   // await flowoutcome(token)
-//    await mediatype(token)
-//   await queue(token)
+ // await flowmilestone(token)
+ // await flowoutcome(token)
+//   await mediatype(token)
+//  await queue(token)
 //   await survey(token)
 //   await user(token)
 //   await wrapup(token)
 //   await sleep(10000)
   //await exporter(token) //fully-working needs optimization
- // await exporter_batch2(token) // testing // working
-  await exporter_batch3(token) // testing
+  //await exporter_batch2(token) // testing // working
+// await exporter_batch3(token) // testing
+ await exporter_batch4(token)
   //await sleep(60000*2)
   //await dlsql(token)
   //await newDL(token)
   //await sleep(40000)
- // await olddelete(token)//temp deleter
+ 
+  //await olddelete(token)//temp deleter
   
 }
 
