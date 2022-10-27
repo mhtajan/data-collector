@@ -8,15 +8,13 @@ const logger = require('./Controller/Logger')
 const params = new URLSearchParams();
 params.append("grant_type", "client_credentials");
 const controller = require(`./Controller/Controller`)
-const AgentCustom = require('./Controller/Components/Agent_custom_break_view')
-const AgentPresence = require(`./Controller/Components/Presence`)
-const mediatype = require("./Controller/LookUp/MediaTypes");
 const lookup = require("./Controller/Lookup")
-  // cron.schedule(`${process.env.CRON_Sched}`, () => {
-  //  loggers.info("Data collection executing!");
-  //  runScript();
-  // });
-runScript();
+  cron.schedule(`${process.env.CRON_Sched}`, () => {
+   loggers.info("Data collection executing!");
+   runScript();
+  });
+ // console.log(process.env.MAX_EXPORT_QUERY)
+//runScript();
 async function runScript() {
   //oauth login
   fetch(`https://login.mypurecloud.jp/oauth/token`, {
@@ -39,9 +37,6 @@ async function runScript() {
         await controller(jsonResponse.access_token)
         await lookup(jsonResponse.access_token)
         await Pipe(jsonResponse.access_token) //analytics exports
-        //await AgentCustom(jsonResponse.access_token)
-        //await mediatype(jsonResponse.access_token)
-        //await AgentPresence(jsonResponse.access_token)
     })
     .catch((e) => logger.error(e));
 }

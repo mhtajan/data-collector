@@ -25,9 +25,9 @@ After installing npm packages run `npm run build`
 
 
 ## Windows Service Installation
-Run `nssm install data-collector`<br />
+Run `nssm install data-collector` using commandline<br />
 Locate data-collector.exe's path<br />
-Leave arugments as blank <br/>
+Leave arguments as blank <br/>
 Click Install service <br />
 data-collector Service is now installed <br />
 
@@ -40,6 +40,6 @@ Create a new System Environment variable for Client Credentials <br/>
 * Client_ID: <`Client ID Credential`>
 * Client_SECRET: <`Client Secret Credential`>
 * CRON_Sched: <CRON schedule format configuration, sample: `0 4 * * *`>
-* MAX_QUERY_LIMIT: <Min: `100` - Max: `250`, default: `225`> 
-* MAX_REPORT_LIMIT: <Min: `500` - Max: `1200` , default: `1200`> 
+* MAX_EXPORT_QUERY: <Min: `100` - Max: `250`, default: `225`> 
+* MAX_EXPORT_LIMIT: <Min: `500` - Max: `1200` , default: `1200`> 
 

@@ -761,7 +761,7 @@ async function postExport() {
     pool
 		.request()
 		// Get x number of records to send as post request to genesys
-		.query(`Select top (${process.env.MAX_QUERY_LIMIT}) * from exports where is_exported = 0`, async function (err, res) {
+		.query(`Select top (${process.env.MAX_EXPORT_QUERY}) * from exports where is_exported = 0`, async function (err, res) {
 			if (err) {
 				logger.error("error");
 				return (err, null);

@@ -6,7 +6,8 @@
   "bin": "dist/index.js",
   "scripts": {
     "prebuild": "rimraf ./dist/*",
-    "build": "nexe -i ./src/main.js -r ./src/**/*.js -r ./src/Controller/*.js -r ./src/**/*.json -r ./node_modules -o dist/data-collector.exe --build"
+    "build": "nexe -i ./src/main.js -r ./src/**/*.js -r ./src/Controller/*.js -r ./src/**/*.json -r ./node_modules -o dist/data-collector.exe --build ",
+    "postbuild" : "cp readme.md nssm.exe dist/"
   },
   "keywords": [],
   "author": "",
