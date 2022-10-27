@@ -16,7 +16,6 @@ const mediatype = require("./Controller/LookUp/MediaTypes")
   //  runScript();
   // });
 runScript();
-
 async function runScript() {
   //oauth login
   fetch(`https://login.mypurecloud.jp/oauth/token`, {

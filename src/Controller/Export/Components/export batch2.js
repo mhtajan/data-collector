@@ -7,10 +7,9 @@ const logger = require('../../Logger')
 const sleep = require('sleep-promise')
 const platformClient = require('purecloud-platform-client-v2')
 const sql_dl = require('../../downloader_sql')
-const { backOff } = require("exponential-backoff");
 var sql = require("mssql");
-var dbConn = require("../../config");
-const { sqlconfig } = require("../../config");
+const { sqlconfig, dbConn } = require("../../config");
+
 const sql_conn = require("../../sql_conn")
 const client = platformClient.ApiClient.instance
 const params = new URLSearchParams()

@@ -8,13 +8,12 @@ const logger = require('../../Logger')
 const axios = require('axios').default
 const sleep = require('sleep-promise')
 const platformClient = require('purecloud-platform-client-v2')
-const sql_dl = require('../../downloader_sql')
 const { backOff } = require("exponential-backoff");
 var sql = require("mssql");
 var dbConn = require("../../config");
 const { sqlconfig } = require("../../config");
 const sql_conn = require("../../sql_conn")
-const { createPipelineFromOptions } = require('@azure/core-http')
+const sql_dl = require('../../downloader_sql')
 const client = platformClient.ApiClient.instance
 const params = new URLSearchParams()
 client.setEnvironment('mypurecloud.jp')
@@ -29,6 +28,9 @@ const did = []
 const directions = ['Inbound']
 const survey = []
 const wrapup = []
+var counter = 0
+var export_counter = 0; // counter for export
+
 const second = 1000
 let opts = {
   pageSize: 500,
@@ -41,8 +43,6 @@ let optsqueue = {
 mediatypes = ["chat", "email", "message", "callback"]
 async function load(acessToken) {
   await lookup()
-
-
   await sleep(5000)
   await export_AGENT_STATUS_SUMMARY_VIEW()
   await export_QUEUE_INTERACTION_DETAIL_VIEW()
@@ -66,7 +66,7 @@ async function lookup() {
     await userInstance
       .getUsers(opts)
       .then((data) => {
-        LoopUser(data)
+        Loop(user,data,opts,getUserProfile)
       })
       .catch((e) => console.error(e))
   }
@@ -75,29 +75,18 @@ async function lookup() {
     await queueInstance
       .getRoutingQueues(optsqueue)
       .then((data) => {
-        LoopQueue(data)
+        Loop(queue,user,opts,getQueue)
       })
       .catch((e) => console.error(e))
   }
-  function LoopQueue(res) {
-    if (res.pageCount >= res.pageNumber) {
-      entities = res.entities
-      entities.forEach((entry) => {
-        queue.push(entry.id)
-      })
-
-      optsqueue.pageNumber = optsqueue.pageNumber + 1
-      getQueue()
-    }
-  }
-  function LoopUser(res) {
+  function Loop(arr,res,opt,process) {
     if (res.pageCount >= res.pageNumber) {
       entities = res.entities
       entities.forEach(async (entry) => {
-        user.push(entry.id)
+        arr.push(entry.id)
       })
-      opts.pageNumber = opts.pageNumber + 1
-      getUserProfile()
+      opt.pageNumber = opt.pageNumber + 1
+      process()
     }
   }
 }
@@ -214,7 +203,11 @@ async function exportdata(payload, id) {
   apiInstance
     .postAnalyticsReportingExports(payload)
     .then(async() => {
+      //counter++
+	  export_counter++;
       sql_conn.doneExport(payload.viewType, id)
+      // console.log(counter)
+	  console.log(export_counter);
     })
     .catch((err) => {
       logger.error(`Failed at ${payload.viewType} : ` + err.message)
@@ -238,40 +231,44 @@ async function fileCheck(viewtype, process) {
   });
 }
 async function postExport() {
-  sql.connect(sqlconfig).then((pool) => {
-    return pool
-      .request()
-      .query("Select top (275) * from exports where is_exported = 0", async function (err, res) {
-        if (err) {
-          logger.error("error")
-          return (err, null);
-        } else {
-          await sleep(5000)
-          //console.log(res.recordset.length) number of record checker
-          if(res.recordset.length>0){
-            for await(entry of res.recordset) {
-              reportname = entry.report_name
-              exportdata(JSON.parse(entry.payload), entry.id)
-            }
-            await sleep(60000)
-            await postExport()
-          }
-          else{
-            logger.info("There is nothing to be exported")
+	sql.connect(sqlconfig).then((pool) => {
+    pool
+		.request()
+		// Get x number of records to send as post request to genesys
+		.query("Select top (125) * from exports where is_exported = 0", async function (err, res) {
+			if (err) {
+				logger.error("error");
+				return (err, null);
+			} else {
+				console.log("counter:" + counter);
+				await sleep(5000); // is this needed as there is a sleep inside the if condition after this?
+				if (res.recordset.length > 0) {
+					counter = counter + export_counter;
+					export_counter = 0;
+					if(counter>100){
+            console.log("Limit Reach counter:" + counter);
             await sql_dl()
           }
-          return (null, res);
-        }
-      });
-  });
+          else{
+            await sleep(60000); // rate-limit avoidance
+					// iterate in the x number of records captured from database
+					for await (entry of res.recordset) {
+						reportname = entry.report_name;
+						// send post request to genesys
+						exportdata(JSON.parse(entry.payload), entry.id);
+					}
+            console.log("counter:" + counter);
+            await postExport()
+          }
+				} else {
+					logger.info("There is nothing to be exported");
+					// initiate report download then subtract total number of successful download to counter
+					await sql_dl();
+				}
+			}
+		});
+	});
 }
 
-async function retry(){
-for(i=0;i<3;i++){
-  logger.info("Checking for failed export")
-  logger.info("Number of tries: "+i)
-  await sleep(5000)
-  postExport()
-}
-}
+
 module.exports = load

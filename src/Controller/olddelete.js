@@ -1,7 +1,6 @@
 const logger = require(`./Logger`);
 const axios = require(`axios`);
 const sleep = require("sleep-promise");
-const Downloader = require("./Downloader");
 const tokeni = `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`;
 const encodedToken = Buffer.from(tokeni).toString("base64");
 var sql = require("mssql");
