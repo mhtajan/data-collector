@@ -8,8 +8,6 @@ const logger = require('../../Logger')
 const axios = require('axios').default
 const sleep = require('sleep-promise')
 const platformClient = require('purecloud-platform-client-v2')
-const download = require('../../newDownloader')
-const downloadr = require('../../Downloader')
 const deletr = require('../../Delete')
 
 const client = platformClient.ApiClient.instance

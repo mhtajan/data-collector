@@ -41,7 +41,6 @@ async function mainDownload() {
       await dlExport();
     });
 }
-
 async function dlExport(accessToken) {
   apiInstance
     .getAnalyticsReportingExports(opts)
@@ -66,7 +65,6 @@ async function Loop(res, accessToken) {
     await sqlDownload()
   }
 }
-
 async function sqlDownload() {
   sql.connect(sqlconfig).then((pool) => {
     return pool
@@ -113,7 +111,6 @@ async function getDownloads(id, name, exports_id, viewtype) {
       logger.error(err)
     })
 }
-
 async function deleteRep(){
   await deleter()
   async function deleter() {
@@ -211,7 +208,7 @@ async function deleteRep(){
       pool
       .request()
       // Get x number of records to send as post request to genesys
-      .query("Select top (125) * from exports where is_exported = 0", async function (err, res) {
+      .query(`Select top (${process.env.MAX_EXPORT_QUERY}) * from exports where is_exported = 0`, async function (err, res) {
         if (err) {
           logger.error("error");
           return (err, null);
@@ -221,7 +218,7 @@ async function deleteRep(){
           if (res.recordset.length > 0) {
             counter = counter + export_counter;
             export_counter = 0;
-            if(counter>100){
+            if(counter>process.env.MAX_EXPORT_LIMIT){
               console.log("Limit Reach counter:" + counter);
               mainDownload()
             }

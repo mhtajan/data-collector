@@ -60,6 +60,15 @@ async function load(acessToken) {
   await export_AGENT_WRAP_UP_PERFORMANCE_DETAIL_VIEW()
   await export_WRAP_UP_PERFORMANCE_SUMMARY_VIEW()
   await export_DNIS_PERFORMANCE_DETAIL_VIEW()
+  await export_BOT_PERFORMANCE_DETAIL_VIEW()
+  await export_BOT_PERFORMANCE_SUMMARY_VIEW()
+  await export_CONTENT_SEARCH_VIEW()
+  await export_FLOW_MILESTONE_PERFORMANCE_DETAIL_VIEW()
+  await export_FLOW_MILESTONE_PERFORMANCE_INTERVAL_DETAIL_VIEW()
+  await export_JOURNEY_ACTION_MAP_SUMMARY_VIEW()
+  await export_JOURNEY_OUTCOME_SUMMARY_VIEW()
+  await export_JOURNEY_SEGMENT_SUMMARY_VIEW()
+  await export_SCHEDULED_CALLBACKS_VIEW()
   await sleep(5 * second)
   await postExport()
 }
@@ -67,6 +76,7 @@ async function lookup() {
   getUserProfile()
   getQueue()
   getWrapUp()
+  getDid()
   async function getUserProfile() {
     let userInstance = new platformClient.UsersApi()
     await userInstance

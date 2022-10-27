@@ -1,6 +1,5 @@
 const fetch = require(`node-fetch`)
 const axios = require('axios')
-const removeDuplicateLines = require('remove-duplicate-lines');
 const {
   Parser,
   transforms: { unwind, flatten },
