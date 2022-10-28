@@ -144,7 +144,7 @@ async function deleteRep(){
       entities.forEach(async (entity) => {
         sql_conn.status(entity.runId,entity.id,entity.status,entity.name)
       });
-      opts.pageNumber = opts.pageNumber + 1;
+      deleteopts.pageNumber = deleteopts.pageNumber + 1;
       deleteExport();
       console.log();
     }

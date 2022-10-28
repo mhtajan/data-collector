@@ -224,16 +224,20 @@ async function export_FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW() {
     var jsonData = fs.readFileSync(__dirname + `/../Payload/FlowIds/FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW.json`)
     var payload = JSON.parse(jsonData)
     Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-        for await (const media of mediatypes) {
-          const id = uuid.v4()
-          payload.filter.flowOutcomeIds = flowOutcome
-          payload.filter.mediaTypes = [media]
-          payload.filter.flowIds = [flow[0]]
-          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    for await (const flowout of flowOutcome){
+      for await (const flowid of flow){
+          for await (const media of mediatypes) {
+            const id = uuid.v4()
+            payload.filter.flowOutcomeIds = flowOutcome
+            payload.filter.mediaTypes = [media]
+            payload.filter.flowIds = [flow[0]]
+            Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+            sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+          }
         }
       }
-  }
+    }
+}
 async function export_AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW() {
   await fileCheck('AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW', process)
   async function process() {

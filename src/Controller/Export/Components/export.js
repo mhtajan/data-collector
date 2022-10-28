@@ -94,6 +94,11 @@ async function load(acessToken) {
   await export_IVR_PERFORMANCE_DETAIL_VIEW()
   await export_IVR_PERFORMANCE_SUMMARY_VIEW()
   await export_SURVEY_FORM_PERFORMANCE_DETAIL_VIEW()
+  await export_AGENT_DEVELOPMENT_DETAIL_ME_VIEW()
+  await export_AGENT_DEVELOPMENT_DETAIL_VIEW()
+  await export_AGENT_DEVELOPMENT_SUMMARY_VIEW()
+  await export_AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW()
+  //await export_FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW()
   await sleep(5*second)
   await postExport()
  //await sleep(60*second)
@@ -725,6 +730,97 @@ async function export_FLOW_MILESTONE_PERFORMANCE_INTERVAL_DETAIL_VIEW() {
     }
 }
 }
+async function export_AGENT_DEVELOPMENT_SUMMARY_VIEW() {
+  await fileCheck('AGENT_DEVELOPMENT_SUMMARY_VIEW', process)
+  async function process() {
+    logger.info("Exporting AGENT_DEVELOPMENT_SUMMARY_VIEW")
+    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/AGENT_DEVELOPMENT_SUMMARY_VIEW.json`)
+    var payload = JSON.parse(jsonData)
+    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
+      for await (const mediatype of mediatypes) {
+        const id = uuid.v4()
+        payload.filter.mediaTypes = [mediatype]
+        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      }
+  }
+}
+async function export_AGENT_DEVELOPMENT_DETAIL_VIEW() {
+  await fileCheck('AGENT_DEVELOPMENT_DETAIL_VIEW', process)
+  async function process() {
+    logger.info("Exporting AGENT_DEVELOPMENT_DETAIL_VIEW")
+    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/AGENT_DEVELOPMENT_DETAIL_VIEW.json`)
+    var payload = JSON.parse(jsonData)
+    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
+    for await (const userid of user) {
+      for await (const media of mediatypes) {
+        const id = uuid.v4()
+        payload.filter.mediaTypes = [media]
+        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+        Object.assign(payload.filter, { userIds: [`${userid}`] })
+        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      }
+    }
+  }
+}
+async function export_AGENT_DEVELOPMENT_DETAIL_ME_VIEW() {
+  await fileCheck('AGENT_DEVELOPMENT_DETAIL_ME_VIEW', process)
+  async function process() {
+    logger.info("Exporting AGENT_DEVELOPMENT_DETAIL_ME_VIEW")
+    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/AGENT_DEVELOPMENT_DETAIL_ME_VIEW.json`)
+    var payload = JSON.parse(jsonData)
+    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
+    for await (const userid of user) {
+      for await (const media of mediatypes) {
+        const id = uuid.v4()
+        payload.filter.mediaTypes = [media]
+        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+        Object.assign(payload.filter, { userIds: [`${userid}`] })
+        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      }
+    }
+  }
+}
+async function export_FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW() {
+  await fileCheck('FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW', process)
+  async function process() {
+    logger.info("Exporting FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW")
+    var jsonData = fs.readFileSync(__dirname + `/../Payload/FlowIds/FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW.json`)
+    var payload = JSON.parse(jsonData)
+    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
+    for await (const flowout of flowOutcome){
+      for await (const flowid of flow){
+          for await (const media of mediatypes) {
+            const id = uuid.v4()
+            payload.filter.flowOutcomeIds = flowOutcome
+            payload.filter.mediaTypes = [media]
+            payload.filter.flowIds = [flow[0]]
+            Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+            sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+          }
+        }
+      }
+    }
+}
+async function export_AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW() {
+  await fileCheck('AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW', process)
+  async function process() {
+    logger.info("Exporting AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW")
+    var jsonData = fs.readFileSync(__dirname + `/../Payload/AgentWrapUp/AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW.json`)
+    var payload = JSON.parse(jsonData)
+    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
+    for await (const userid of user) {
+      for await (const media of mediatypes) {
+        const id = uuid.v4()
+        payload.filter.wrapUpCodes = wrapup
+        payload.filter.mediaTypes = [media]
+        payload.filter.userIds = [userid]
+        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      }
+    }
+  }
+}
 async function exportdata(payload, id) {
   apiInstance
     .postAnalyticsReportingExports(payload)
@@ -770,7 +866,7 @@ async function postExport() {
 				await sleep(5000); // is this needed as there is a sleep inside the if condition after this?
 				if (res.recordset.length > 0) {
 
-					if(counter>process.env.MAX_REPORT_LIMIT){
+					if(counter>process.env.MAX_EXPORT_LIMIT){
             console.log("Limit Reach counter:" + counter);
             await sql_dl()
           }
