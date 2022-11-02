@@ -11,7 +11,6 @@ const { sqlconfig } = require("./config");
 const tokeni = `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`;
 const encodedToken = Buffer.from(tokeni).toString("base64");
 const sql_conn = require('./sql_conn')
-const deleter = require('./Delete')
 var counter = 0
 var export_counter = 0;
 
@@ -223,6 +222,7 @@ async function exportdata(payload, id) {
     })
     .catch((err) => {
       logger.error(`Failed at ${payload.viewType} : ` + err.message)
+      sql_conn.failExport(payload.viewType, id)
     })
 }
 async function postExport() {
@@ -230,7 +230,7 @@ async function postExport() {
     pool
     .request()
     // Get x number of records to send as post request to genesys
-    .query(`Select top (${process.env.MAX_EXPORT_QUERY}) * from exports where is_exported = 0`, async function (err, res) {
+    .query(`Select top (${process.env.MAX_EXPORT_QUERY}) * from exports where is_exported = 0 AND generation_retries<3`, async function (err, res) {
       if (err) {
         logger.error("error");
         return (err, null);

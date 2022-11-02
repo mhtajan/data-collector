@@ -68,36 +68,36 @@ mediatypes = ["chat", "email", "message", "callback"]
 async function load(acessToken) {
   await lookup()
   await sleep(5000)
-  //await export_AGENT_STATUS_SUMMARY_VIEW()
-  // await export_QUEUE_INTERACTION_DETAIL_VIEW()
+  await export_AGENT_STATUS_SUMMARY_VIEW()
+  await export_QUEUE_INTERACTION_DETAIL_VIEW()
    await export_AGENT_STATUS_DETAIL_VIEW()
-  // await export_AGENT_PERFORMANCE_DETAIL_VIEW()
-  // await export_INTERACTION_SEARCH_VIEW()
-  // await export_AGENT_INTERACTION_DETAIL_VIEW()
-  // await export_QUEUE_PERFORMANCE_DETAIL_VIEW()
-  // await export_AGENT_PERFORMANCE_SUMMARY_VIEW()
-  // await export_QUEUE_PERFORMANCE_SUMMARY_VIEW()
-  // await export_AGENT_QUEUE_DETAIL_VIEW()
-  // await export_QUEUE_AGENT_DETAIL_VIEW()
-  // await export_AGENT_EVALUATION_SUMMARY_VIEW()
-  // await export_AGENT_EVALUATION_DETAIL_VIEW()
-  // await export_FLOW_DESTINATION_SUMMARY_VIEW()
-  // await export_SKILLS_PERFORMANCE_VIEW()
-  // await export_SURVEY_FORM_PERFORMANCE_SUMMARY_VIEW()
-  // await export_DNIS_PERFORMANCE_SUMMARY_VIEW()
-  // await export_ABANDON_INSIGHTS_VIEW()
-  // await export_AGENT_WRAP_UP_PERFORMANCE_DETAIL_VIEW()
-  // await export_WRAP_UP_PERFORMANCE_SUMMARY_VIEW()
-  // await export_DNIS_PERFORMANCE_DETAIL_VIEW()
-  // await export_FLOW_OUTCOME_PERFORMANCE_DETAIL_VIEW()
-  // await export_FLOW_OUTCOME_SUMMARY_VIEW()
-  // await export_IVR_PERFORMANCE_DETAIL_VIEW()
-  // await export_IVR_PERFORMANCE_SUMMARY_VIEW()
-  // await export_SURVEY_FORM_PERFORMANCE_DETAIL_VIEW()
-  // await export_AGENT_DEVELOPMENT_DETAIL_ME_VIEW()
-  // await export_AGENT_DEVELOPMENT_DETAIL_VIEW()
-  // await export_AGENT_DEVELOPMENT_SUMMARY_VIEW()
-  // await export_AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW()
+  await export_AGENT_PERFORMANCE_DETAIL_VIEW()
+  await export_INTERACTION_SEARCH_VIEW()
+  await export_AGENT_INTERACTION_DETAIL_VIEW()
+  await export_QUEUE_PERFORMANCE_DETAIL_VIEW()
+  await export_AGENT_PERFORMANCE_SUMMARY_VIEW()
+  await export_QUEUE_PERFORMANCE_SUMMARY_VIEW()
+  await export_AGENT_QUEUE_DETAIL_VIEW()
+  await export_QUEUE_AGENT_DETAIL_VIEW()
+  await export_AGENT_EVALUATION_SUMMARY_VIEW()
+  await export_AGENT_EVALUATION_DETAIL_VIEW()
+  await export_FLOW_DESTINATION_SUMMARY_VIEW()
+  await export_SKILLS_PERFORMANCE_VIEW()
+  await export_SURVEY_FORM_PERFORMANCE_SUMMARY_VIEW()
+  await export_DNIS_PERFORMANCE_SUMMARY_VIEW()
+  await export_ABANDON_INSIGHTS_VIEW()
+  await export_AGENT_WRAP_UP_PERFORMANCE_DETAIL_VIEW()
+  await export_WRAP_UP_PERFORMANCE_SUMMARY_VIEW()
+  await export_DNIS_PERFORMANCE_DETAIL_VIEW()
+  await export_FLOW_OUTCOME_PERFORMANCE_DETAIL_VIEW()
+  await export_FLOW_OUTCOME_SUMMARY_VIEW()
+  await export_IVR_PERFORMANCE_DETAIL_VIEW()
+  await export_IVR_PERFORMANCE_SUMMARY_VIEW()
+  await export_SURVEY_FORM_PERFORMANCE_DETAIL_VIEW()
+  await export_AGENT_DEVELOPMENT_DETAIL_ME_VIEW()
+  await export_AGENT_DEVELOPMENT_DETAIL_VIEW()
+  await export_AGENT_DEVELOPMENT_SUMMARY_VIEW()
+  await export_AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW()
   //await export_FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW()
   await sleep(5*second)
   await postExport()
@@ -203,7 +203,7 @@ async function payload_method(datasource){
 async function export_AGENT_PERFORMANCE_DETAIL_VIEW() {
   await fileCheck('AGENT_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
-    payload('AGENT_PERFORMANCE_DETAIL_VIEW').then((payload)=>{
+    payload_method('AGENT_PERFORMANCE_DETAIL_VIEW').then(async(payload)=>{
       for await (const userid of user) {
         for await (const media of mediatypes) {
           const id = uuid.v4()
@@ -219,7 +219,7 @@ async function export_AGENT_PERFORMANCE_DETAIL_VIEW() {
 async function export_AGENT_STATUS_DETAIL_VIEW() {
   await fileCheck('AGENT_STATUS_DETAIL_VIEW', process)
   async function process() {
-    payload_method('AGENT_STATUS_DETAIL_VIEW').then((payload)=>{
+    payload_method('AGENT_STATUS_DETAIL_VIEW').then(async(payload)=>{
       for (const userid of user) {
         const id = uuid.v4()
         Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
@@ -232,7 +232,7 @@ async function export_AGENT_STATUS_DETAIL_VIEW() {
 async function export_QUEUE_INTERACTION_DETAIL_VIEW() {
   await fileCheck('QUEUE_INTERACTION_DETAIL_VIEW', process)
   async function process() {
-    payload('QUEUE_INTERACTION_DETAIL_VIEW').then((payload)=>{
+    payload_method('QUEUE_INTERACTION_DETAIL_VIEW').then(async(payload)=>{
       for await (const queueid of queue) {
         const id = uuid.v4()
         Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
@@ -245,7 +245,7 @@ async function export_QUEUE_INTERACTION_DETAIL_VIEW() {
 async function export_INTERACTION_SEARCH_VIEW() {
   await fileCheck('INTERACTION_SEARCH_VIEW', process)
   async function process() {
-    payload('INTERACTION_SEARCH_VIEW').then((payload)=>{
+    payload_method('INTERACTION_SEARCH_VIEW').then(async(payload)=>{
       for await (const userid of user) {
         const id = uuid.v4()
         Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
@@ -258,7 +258,7 @@ async function export_INTERACTION_SEARCH_VIEW() {
 async function export_AGENT_STATUS_SUMMARY_VIEW() {
   await fileCheck('AGENT_STATUS_SUMMARY_VIEW', process)
   async function process() {
-    payload('AGENT_STATUS_SUMMARY_VIEW').then((payload)=>{
+    payload_method('AGENT_STATUS_SUMMARY_VIEW').then(async(payload)=>{
       const id = uuid.v4()
       Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
       sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
@@ -268,7 +268,7 @@ async function export_AGENT_STATUS_SUMMARY_VIEW() {
 async function export_AGENT_INTERACTION_DETAIL_VIEW() {
   await fileCheck('AGENT_INTERACTION_DETAIL_VIEW', process)
   async function process() {
-    payload('AGENT_INTERACTION_DETAIL_VIEW').then((payload)=>{
+    payload_method('AGENT_INTERACTION_DETAIL_VIEW').then(async(payload)=>{
       for await (const userid of user) {
         const id = uuid.v4()
         Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
@@ -281,7 +281,7 @@ async function export_AGENT_INTERACTION_DETAIL_VIEW() {
 async function export_QUEUE_PERFORMANCE_DETAIL_VIEW() {
   await fileCheck('QUEUE_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
-    payload('QUEUE_PERFORMANCE_DETAIL_VIEW').then((payload)=>{
+    payload_method('QUEUE_PERFORMANCE_DETAIL_VIEW').then(async(payload)=>{
       for await (const queueid of queue) {
         for await (const media of mediatypes) {
           const id = uuid.v4()
@@ -297,7 +297,7 @@ async function export_QUEUE_PERFORMANCE_DETAIL_VIEW() {
 async function export_AGENT_PERFORMANCE_SUMMARY_VIEW() {
   await fileCheck('AGENT_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
-    payload('AGENT_PERFORMANCE_DETAIL_VIEW').then((payload)=>{
+    payload_method('AGENT_PERFORMANCE_DETAIL_VIEW').then(async(payload)=>{
       for await (const media of mediatypes) {
         const id = uuid.v4()
         payload.filter.mediaTypes = [media]
@@ -310,7 +310,7 @@ async function export_AGENT_PERFORMANCE_SUMMARY_VIEW() {
 async function export_AGENT_EVALUATION_SUMMARY_VIEW() {
   await fileCheck('AGENT_EVALUATION_SUMMARY_VIEW', process)
   async function process() {
-    payload('AGENT_EVALUATION_SUMMARY_VIEW').then((payload)=>{
+    payload_method('AGENT_EVALUATION_SUMMARY_VIEW').then(async(payload)=>{
       const id = uuid.v4()
       Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
       sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
@@ -320,7 +320,7 @@ async function export_AGENT_EVALUATION_SUMMARY_VIEW() {
 async function export_QUEUE_PERFORMANCE_SUMMARY_VIEW() {
   await fileCheck('QUEUE_PERFORMANCE_SUMMARY_VIEW', process)
   async function process() {
-    payload('QUEUE_PERFORMANCE_SUMMARY_VIEW').then((payload)=>{
+    payload_method('QUEUE_PERFORMANCE_SUMMARY_VIEW').then(async(payload)=>{
       for await (const media of mediatypes) {
         const id = uuid.v4()
         payload.filter.mediaTypes = [media]
@@ -333,7 +333,7 @@ async function export_QUEUE_PERFORMANCE_SUMMARY_VIEW() {
 async function export_FLOW_DESTINATION_SUMMARY_VIEW() {
   await fileCheck('FLOW_DESTINATION_SUMMARY_VIEW', process)
   async function process() {
-    payload('FLOW_DESTINATION_SUMMARY_VIEW').then((payload)=>{
+    payload_method('FLOW_DESTINATION_SUMMARY_VIEW').then(async(payload)=>{
       for await (const media of mediatypes) {
         const id = uuid.v4()
         payload.filter.mediaTypes = [media]
@@ -346,7 +346,7 @@ async function export_FLOW_DESTINATION_SUMMARY_VIEW() {
 async function export_SKILLS_PERFORMANCE_VIEW() {
   await fileCheck('SKILLS_PERFORMANCE_VIEW', process)
   async function process() {
-    payload('SKILLS_PERFORMANCE_VIEW').then((payload)=>{
+    payload_method('SKILLS_PERFORMANCE_VIEW').then(async(payload)=>{
       for await (const media of mediatypes) {
         const id = uuid.v4()
         payload.filter.mediaTypes = [media]
@@ -359,7 +359,7 @@ async function export_SKILLS_PERFORMANCE_VIEW() {
 async function export_SURVEY_FORM_PERFORMANCE_SUMMARY_VIEW() {
   await fileCheck('SURVEY_FORM_PERFORMANCE_SUMMARY_VIEW', process)
   async function process() {
-    payload('SURVEY_FORM_PERFORMANCE_SUMMARY_VIEW').then((payload)=>{
+    payload_method('SURVEY_FORM_PERFORMANCE_SUMMARY_VIEW').then(async(payload)=>{
       for await (const media of mediatypes) {
         const id = uuid.v4()
         payload.filter.mediaTypes = [media]
@@ -372,7 +372,7 @@ async function export_SURVEY_FORM_PERFORMANCE_SUMMARY_VIEW() {
 async function export_DNIS_PERFORMANCE_SUMMARY_VIEW() {
   await fileCheck('DNIS_PERFORMANCE_SUMMARY_VIEW', process)
   async function process() {
-    payload('DNIS_PERFORMANCE_SUMMARY_VIEW').then((payload)=>{
+    payload_method('DNIS_PERFORMANCE_SUMMARY_VIEW').then(async(payload)=>{
       const id = uuid.v4()
       payload.filter.mediaTypes = ['voice']
       Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
@@ -383,7 +383,7 @@ async function export_DNIS_PERFORMANCE_SUMMARY_VIEW() {
 async function export_DNIS_PERFORMANCE_DETAIL_VIEW() {
   await fileCheck('DNIS_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
-    payload('DNIS_PERFORMANCE_DETAIL_VIEW').then((payload)=>{
+    payload_method('DNIS_PERFORMANCE_DETAIL_VIEW').then(async(payload)=>{
       const id = uuid.v4()
       payload.filter.mediaTypes = ['voice']
       payload.filter.dnisList = did
@@ -395,7 +395,7 @@ async function export_DNIS_PERFORMANCE_DETAIL_VIEW() {
 async function export_AGENT_QUEUE_DETAIL_VIEW() {
   await fileCheck('AGENT_QUEUE_DETAIL_VIEW', process)
   async function process() {
-    payload('AGENT_QUEUE_DETAIL_VIEW').then((payload)=>{
+    payload_method('AGENT_QUEUE_DETAIL_VIEW').then(async(payload)=>{
       for await (const userid of user) {
         for await (const media of mediatypes) {
           const id = uuid.v4()
@@ -411,7 +411,7 @@ async function export_AGENT_QUEUE_DETAIL_VIEW() {
 async function export_AGENT_EVALUATION_DETAIL_VIEW() {
   await fileCheck('AGENT_EVALUATION_DETAIL_VIEW', process)
   async function process() {
-    payload('AGENT_EVALUATION_DETAIL_VIEW').then((payload)=>{
+    payload_method('AGENT_EVALUATION_DETAIL_VIEW').then(async(payload)=>{
       for await (const userid of user) {
         for await (const media of mediatypes) {
           const id = uuid.v4()
@@ -427,7 +427,7 @@ async function export_AGENT_EVALUATION_DETAIL_VIEW() {
 async function export_QUEUE_AGENT_DETAIL_VIEW() {
   await fileCheck('QUEUE_AGENT_DETAIL_VIEW', process)
   async function process() {
-    payload('QUEUE_AGENT_DETAIL_VIEW').then((payload)=>{
+    payload_method('QUEUE_AGENT_DETAIL_VIEW').then(async(payload)=>{
       for await (const queueid of queue) {
         for await (const media of mediatypes) {
           const id = uuid.v4()
@@ -443,7 +443,7 @@ async function export_QUEUE_AGENT_DETAIL_VIEW() {
 async function export_ABANDON_INSIGHTS_VIEW() {
   await fileCheck('ABANDON_INSIGHTS_VIEW', process)
   async function process() {
-    payload('ABANDON_INSIGHTS_VIEW').then((payload)=>{
+    payload_method('ABANDON_INSIGHTS_VIEW').then(async(payload)=>{
       for await (const queueid of queue) {
         for await (const media of mediatypes) {
           const id = uuid.v4()
@@ -459,7 +459,7 @@ async function export_ABANDON_INSIGHTS_VIEW() {
 async function export_AGENT_WRAP_UP_PERFORMANCE_DETAIL_VIEW() {
   await fileCheck('AGENT_WRAP_UP_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
-    payload('AGENT_WRAP_UP_PERFORMANCE_DETAIL_VIEW').then((payload)=>{
+    payload_method('AGENT_WRAP_UP_PERFORMANCE_DETAIL_VIEW').then(async(payload)=>{
       for await (const userid of user) {
         for await (const media of mediatypes) {
           const id = uuid.v4()
@@ -476,7 +476,7 @@ async function export_AGENT_WRAP_UP_PERFORMANCE_DETAIL_VIEW() {
 async function export_WRAP_UP_PERFORMANCE_SUMMARY_VIEW() {
   await fileCheck('WRAP_UP_PERFORMANCE_SUMMARY_VIEW', process)
   async function process() {
-    payload('WRAP_UP_PERFORMANCE_SUMMARY_VIEW').then((payload)=>{
+    payload_method('WRAP_UP_PERFORMANCE_SUMMARY_VIEW').then(async(payload)=>{
       for await (const media of mediatypes) {
         const id = uuid.v4()
         payload.filter.mediaTypes = [media]
@@ -490,7 +490,7 @@ async function export_WRAP_UP_PERFORMANCE_SUMMARY_VIEW() {
 async function export_FLOW_OUTCOME_SUMMARY_VIEW() {
   await fileCheck('FLOW_OUTCOME_SUMMARY_VIEW', process)
   async function process() {
-    payload('FLOW_OUTCOME_SUMMARY_VIEW').then((payload)=>{
+    payload_method('FLOW_OUTCOME_SUMMARY_VIEW').then(async(payload)=>{
       for await (const media of mediatypes) {
         const id = uuid.v4()
         payload.filter.mediaTypes = [media]
@@ -503,7 +503,7 @@ async function export_FLOW_OUTCOME_SUMMARY_VIEW() {
 async function export_IVR_PERFORMANCE_SUMMARY_VIEW() {
   await fileCheck('IVR_PERFORMANCE_SUMMARY_VIEW', process)
   async function process() {
-    payload('IVR_PERFORMANCE_SUMMARY_VIEW').then((payload)=>{
+    payload_method('IVR_PERFORMANCE_SUMMARY_VIEW').then(async(payload)=>{
       for await (const media of mediatypes) {
         const id = uuid.v4()
         payload.filter.mediaTypes = [media]
@@ -516,7 +516,7 @@ async function export_IVR_PERFORMANCE_SUMMARY_VIEW() {
 async function export_IVR_PERFORMANCE_DETAIL_VIEW() {
   await fileCheck('IVR_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
-    payload('IVR_PERFORMANCE_DETAIL_VIEW').then((payload)=>{
+    payload_method('IVR_PERFORMANCE_DETAIL_VIEW').then(async(payload)=>{
       for await (const flowid of flow) {
         for await (const media of mediatypes) {
           const id = uuid.v4()
@@ -532,7 +532,7 @@ async function export_IVR_PERFORMANCE_DETAIL_VIEW() {
 async function export_FLOW_OUTCOME_PERFORMANCE_DETAIL_VIEW() {
   await fileCheck('FLOW_OUTCOME_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
-    payload('FLOW_OUTCOME_PERFORMANCE_DETAIL_VIEW').then((payload)=>{
+    payload_method('FLOW_OUTCOME_PERFORMANCE_DETAIL_VIEW').then(async(payload)=>{
       for await (const flowid of flow) {
         for await (const media of mediatypes) {
           const id = uuid.v4()
@@ -548,7 +548,7 @@ async function export_FLOW_OUTCOME_PERFORMANCE_DETAIL_VIEW() {
 async function export_SURVEY_FORM_PERFORMANCE_DETAIL_VIEW() {
   await fileCheck('SURVEY_FORM_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
-    payload('SURVEY_FORM_PERFORMANCE_DETAIL_VIEW').then((payload)=>{
+    payload_method('SURVEY_FORM_PERFORMANCE_DETAIL_VIEW').then(async(payload)=>{
       for await (const surveyid of survey) {
         for await (const media of mediatypes) {
           const id = uuid.v4()
@@ -564,7 +564,7 @@ async function export_SURVEY_FORM_PERFORMANCE_DETAIL_VIEW() {
 async function export_BOT_PERFORMANCE_DETAIL_VIEW() {
   await fileCheck('BOT_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
-    payload('BOT_PERFORMANCE_DETAIL_VIEW').then((payload)=>{
+    payload_method('BOT_PERFORMANCE_DETAIL_VIEW').then(async(payload)=>{
       const id = uuid.v4()
       Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
       sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
@@ -574,7 +574,7 @@ async function export_BOT_PERFORMANCE_DETAIL_VIEW() {
 async function export_BOT_PERFORMANCE_SUMMARY_VIEW() {
   await fileCheck('BOT_PERFORMANCE_SUMMARY_VIEW', process)
   async function process() {
-    payload('BOT_PERFORMANCE_SUMMARY_VIEW').then((payload)=>{
+    payload_method('BOT_PERFORMANCE_SUMMARY_VIEW').then(async(payload)=>{
       const id = uuid.v4()
       Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
       sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
@@ -584,7 +584,7 @@ async function export_BOT_PERFORMANCE_SUMMARY_VIEW() {
 async function export_CONTENT_SEARCH_VIEW() {
   await fileCheck('CONTENT_SEARCH_VIEW', process)
   async function process() {
-    payload('CONTENT_SEARCH_VIEW').then((payload)=>{
+    payload_method('CONTENT_SEARCH_VIEW').then(async(payload)=>{
       const id = uuid.v4()
       Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
       sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
@@ -594,7 +594,7 @@ async function export_CONTENT_SEARCH_VIEW() {
 async function export_JOURNEY_ACTION_MAP_SUMMARY_VIEW() {
   await fileCheck('JOURNEY_ACTION_MAP_SUMMARY_VIEW', process)
   async function process() {
-    payload('JOURNEY_ACTION_MAP_SUMMARY_VIEW').then((payload)=>{
+    payload_method('JOURNEY_ACTION_MAP_SUMMARY_VIEW').then(async(payload)=>{
       const id = uuid.v4()
       Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
       sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
@@ -604,7 +604,7 @@ async function export_JOURNEY_ACTION_MAP_SUMMARY_VIEW() {
 async function export_JOURNEY_OUTCOME_SUMMARY_VIEW() {
   await fileCheck('JOURNEY_OUTCOME_SUMMARY_VIEW', process)
   async function process() {
-    payload('JOURNEY_OUTCOME_SUMMARY_VIEW').then((payload)=>{
+    payload_method('JOURNEY_OUTCOME_SUMMARY_VIEW').then(async(payload)=>{
       const id = uuid.v4()
       Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
       sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
@@ -614,7 +614,7 @@ async function export_JOURNEY_OUTCOME_SUMMARY_VIEW() {
 async function export_JOURNEY_SEGMENT_SUMMARY_VIEW() {
   await fileCheck('JOURNEY_SEGMENT_SUMMARY_VIEW', process)
   async function process() {
-    payload('JOURNEY_SEGMENT_SUMMARY_VIEW').then((payload)=>{
+    payload_method('JOURNEY_SEGMENT_SUMMARY_VIEW').then(async(payload)=>{
       const id = uuid.v4()
       Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
       sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
@@ -624,7 +624,7 @@ async function export_JOURNEY_SEGMENT_SUMMARY_VIEW() {
 async function export_SCHEDULED_CALLBACKS_VIEW() {
   await fileCheck('SCHEDULED_CALLBACKS_VIEW', process)
   async function process() {
-    payload('SCHEDULED_CALLBACKS_VIEW').then((payload)=>{
+    payload_method('SCHEDULED_CALLBACKS_VIEW').then(async(payload)=>{
       const id = uuid.v4()
       Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
       sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
@@ -634,7 +634,7 @@ async function export_SCHEDULED_CALLBACKS_VIEW() {
 async function export_FLOW_MILESTONE_PERFORMANCE_DETAIL_VIEW() {
   await fileCheck('FLOW_MILESTONE_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
-    payload('FLOW_MILESTONE_PERFORMANCE_DETAIL_VIEW').then((payload)=>{
+    payload_method('FLOW_MILESTONE_PERFORMANCE_DETAIL_VIEW').then(async(payload)=>{
       for await (const flowid of flow) {
         for await (const milestone of flowMileStone) {
           const id = uuid.v4()
@@ -650,7 +650,7 @@ async function export_FLOW_MILESTONE_PERFORMANCE_DETAIL_VIEW() {
 async function export_FLOW_MILESTONE_PERFORMANCE_INTERVAL_DETAIL_VIEW() {
   await fileCheck('FLOW_MILESTONE_PERFORMANCE_INTERVAL_DETAIL_VIEW', process)
   async function process() {
-    payload('FLOW_MILESTONE_PERFORMANCE_INTERVAL_DETAIL_VIEW').then((payload)=>{
+    payload_method('FLOW_MILESTONE_PERFORMANCE_INTERVAL_DETAIL_VIEW').then(async(payload)=>{
       for await (const flowid of flow) {
         for await (const milestone of flowMileStone) {
           const id = uuid.v4()
@@ -666,7 +666,7 @@ async function export_FLOW_MILESTONE_PERFORMANCE_INTERVAL_DETAIL_VIEW() {
 async function export_AGENT_DEVELOPMENT_SUMMARY_VIEW() {
   await fileCheck('AGENT_DEVELOPMENT_SUMMARY_VIEW', process)
   async function process() {
-    payload('AGENT_DEVELOPMENT_SUMMARY_VIEW').then((payload)=>{
+    payload_method('AGENT_DEVELOPMENT_SUMMARY_VIEW').then(async(payload)=>{
       for await (const mediatype of mediatypes) {
         const id = uuid.v4()
         payload.filter.mediaTypes = [mediatype]
@@ -679,7 +679,7 @@ async function export_AGENT_DEVELOPMENT_SUMMARY_VIEW() {
 async function export_AGENT_DEVELOPMENT_DETAIL_VIEW() {
   await fileCheck('AGENT_DEVELOPMENT_DETAIL_VIEW', process)
   async function process() {
-    payload('AGENT_DEVELOPMENT_DETAIL_VIEW').then((payload)=>{
+    payload_method('AGENT_DEVELOPMENT_DETAIL_VIEW').then(async(payload)=>{
       for await (const userid of user) {
         for await (const media of mediatypes) {
           const id = uuid.v4()
@@ -695,7 +695,7 @@ async function export_AGENT_DEVELOPMENT_DETAIL_VIEW() {
 async function export_AGENT_DEVELOPMENT_DETAIL_ME_VIEW() {
   await fileCheck('AGENT_DEVELOPMENT_DETAIL_ME_VIEW', process)
   async function process() {
-    payload('AGENT_DEVELOPMENT_DETAIL_ME_VIEW').then((payload)=>{
+    payload_method('AGENT_DEVELOPMENT_DETAIL_ME_VIEW').then(async(payload)=>{
       for await (const userid of user) {
         for await (const media of mediatypes) {
           const id = uuid.v4()
@@ -711,7 +711,7 @@ async function export_AGENT_DEVELOPMENT_DETAIL_ME_VIEW() {
 async function export_FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW() {
   await fileCheck('FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW', process)
   async function process() {
-    payload('FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW').then((payload)=>{
+    payload_method('FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW').then(async(payload)=>{
       for await (const flowout of flowOutcome){
         for await (const flowid of flow){
             for await (const media of mediatypes) {
@@ -730,7 +730,7 @@ async function export_FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW() {
 async function export_AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW() {
   await fileCheck('AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW', process)
   async function process() {
-    payload('AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW').then((payload)=>{
+    payload_method('AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW').then(async(payload)=>{
       for await (const userid of user) {
         for await (const media of mediatypes) {
           const id = uuid.v4()

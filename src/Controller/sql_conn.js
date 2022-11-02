@@ -125,6 +125,18 @@ module.exports = {
       logger.error(error)
     }
   },
+  async failExport(viewType, ID){
+    try {
+      sql.connect(sqlconfig).then((pool) => {
+        return pool
+          .request()
+          .query(`UPDATE dbo.exports SET generation_retries=generation_retries+1 WHERE id = ${ID}`)
+      });
+    }
+    catch (error) {
+      logger.error(error)
+    }
+  },
   async status(runId,reportId,Status,Name){
     try {
 
