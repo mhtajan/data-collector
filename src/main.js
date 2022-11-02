@@ -9,10 +9,10 @@ const params = new URLSearchParams();
 params.append("grant_type", "client_credentials");
 const controller = require(`./Controller/Controller`)
 const lookup = require("./Controller/Lookup")
-  // cron.schedule(`${process.env.CRON_Sched}`, () => {
-  //  loggers.info("Data collection executing!");
-  //  runScript();
-  // });
+  // // cron.schedule(`${process.env.CRON_Sched}`, () => {
+  // //  loggers.info("Data collection executing!");
+  // //  runScript();
+  // // });
  // console.log(process.env.MAX_EXPORT_QUERY)
 runScript();
 async function runScript() {
