@@ -66,5 +66,4 @@ async function Loop(res) {
     getTelephonyProvidersEdgesDid()
   }
 }
-
 module.exports = load

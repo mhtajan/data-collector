@@ -13,7 +13,7 @@ var sql = require("mssql");
 var dbConn = require("../../config");
 const { sqlconfig } = require("../../config");
 const sql_conn = require("../../sql_conn")
-const sql_dl = require('../../downloader_sql')
+const postExport = require('../../downloader_sql')
 const client = platformClient.ApiClient.instance
 const params = new URLSearchParams()
 client.setEnvironment('mypurecloud.jp')
@@ -68,9 +68,9 @@ mediatypes = ["chat", "email", "message", "callback"]
 async function load(acessToken) {
   await lookup()
   await sleep(5000)
-  // await export_AGENT_STATUS_SUMMARY_VIEW()
+  //await export_AGENT_STATUS_SUMMARY_VIEW()
   // await export_QUEUE_INTERACTION_DETAIL_VIEW()
-  // await export_AGENT_STATUS_DETAIL_VIEW()
+   await export_AGENT_STATUS_DETAIL_VIEW()
   // await export_AGENT_PERFORMANCE_DETAIL_VIEW()
   // await export_INTERACTION_SEARCH_VIEW()
   // await export_AGENT_INTERACTION_DETAIL_VIEW()
@@ -98,12 +98,9 @@ async function load(acessToken) {
   // await export_AGENT_DEVELOPMENT_DETAIL_VIEW()
   // await export_AGENT_DEVELOPMENT_SUMMARY_VIEW()
   // await export_AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW()
-  await export_FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW()
+  //await export_FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW()
   await sleep(5*second)
   await postExport()
- //await sleep(60*second)
- // await retry()
-
 }
 async function lookup() {
   getUserProfile()
@@ -196,644 +193,556 @@ async function getUserProfile() {
     }
   }
 }
+async function payload_method(datasource){
+  logger.info(`Payload for ${datasource} has been inserted to exports database`)
+  var jsonData = fs.readFileSync(__dirname + `/../Payload/${datasource}.json`)
+  var payload = JSON.parse(jsonData)
+  Object.assign(payload, {interval: `${yesterday}T00:00:00/${datetime}T00:00:00`})
+  return payload
+}
 async function export_AGENT_PERFORMANCE_DETAIL_VIEW() {
   await fileCheck('AGENT_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
-    logger.info("Exporting AGENT_PERFORMANCE_DETAIL_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/UserIds/AGENT_PERFORMANCE_DETAIL_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, {interval: `${yesterday}T00:00:00/${datetime}T00:00:00`})
-    for await (const userid of user) {
-      for await (const media of mediatypes) {
-        const id = uuid.v4()
-        payload.filter.mediaTypes = [media]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
-        Object.assign(payload.filter, { userIds: [`${userid}`] })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('AGENT_PERFORMANCE_DETAIL_VIEW').then((payload)=>{
+      for await (const userid of user) {
+        for await (const media of mediatypes) {
+          const id = uuid.v4()
+          payload.filter.mediaTypes = [media]
+          Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
+          Object.assign(payload.filter, { userIds: [`${userid}`] })
+          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        }
       }
-    }
+    })
   }
 }
 async function export_AGENT_STATUS_DETAIL_VIEW() {
   await fileCheck('AGENT_STATUS_DETAIL_VIEW', process)
   async function process() {
-    logger.info("Exporting AGENT_STATUS_DETAIL_VIEW")
-    var jsonData = fs.readFileSync( __dirname + `/../Payload/UserIds/AGENT_STATUS_DETAIL_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, {interval: `${yesterday}T00:00:00/${datetime}T00:00:00`})
-    for (const userid of user) {
-      const id = uuid.v4()
-      Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
-      Object.assign(payload.filter, { userIds: [`${userid}`] })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
-    }
+    payload_method('AGENT_STATUS_DETAIL_VIEW').then((payload)=>{
+      for (const userid of user) {
+        const id = uuid.v4()
+        Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
+        Object.assign(payload.filter, { userIds: [`${userid}`] })
+        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      }
+    })
   }
 }
 async function export_QUEUE_INTERACTION_DETAIL_VIEW() {
   await fileCheck('QUEUE_INTERACTION_DETAIL_VIEW', process)
   async function process() {
-    logger.info("Exporting QUEUE_INTERACTION_DETAIL_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/QueueIds/QUEUE_INTERACTION_DETAIL_VIEW.json` )
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, {interval: `${yesterday}T00:00:00/${datetime}T00:00:00`})
-    for await (const queueid of queue) {
-      const id = uuid.v4()
-      Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
-      Object.assign(payload.filter, { queueIds: [`${queueid}`] })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
-    }
+    payload('QUEUE_INTERACTION_DETAIL_VIEW').then((payload)=>{
+      for await (const queueid of queue) {
+        const id = uuid.v4()
+        Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
+        Object.assign(payload.filter, { queueIds: [`${queueid}`] })
+        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      }
+    })
   }
 }
 async function export_INTERACTION_SEARCH_VIEW() {
   await fileCheck('INTERACTION_SEARCH_VIEW', process)
   async function process() {
-    logger.info("Exporting INTERACTION_SEARCH_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/UserIds/INTERACTION_SEARCH_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, {interval: `${yesterday}T00:00:00/${datetime}T00:00:00`})
-    for await (const userid of user) {
-      const id = uuid.v4()
-      Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
-      Object.assign(payload.filter, { userIds: [`${userid}`] })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
-    }
+    payload('INTERACTION_SEARCH_VIEW').then((payload)=>{
+      for await (const userid of user) {
+        const id = uuid.v4()
+        Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
+        Object.assign(payload.filter, { userIds: [`${userid}`] })
+        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      }
+    })
   }
 }
 async function export_AGENT_STATUS_SUMMARY_VIEW() {
   await fileCheck('AGENT_STATUS_SUMMARY_VIEW', process)
   async function process() {
-    logger.info("Exporting AGENT_STATUS_SUMMARY_VIEW")
-    var jsonData = fs.readFileSync( __dirname + '/../Payload/WithoutFilter/AGENT_STATUS_SUMMARY_VIEW.json')
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, {interval: `${yesterday}T00:00:00/${datetime}T00:00:00`})
-    const id = uuid.v4()
-    Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
-    sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('AGENT_STATUS_SUMMARY_VIEW').then((payload)=>{
+      const id = uuid.v4()
+      Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
+      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    }) 
   }
 }
 async function export_AGENT_INTERACTION_DETAIL_VIEW() {
   await fileCheck('AGENT_INTERACTION_DETAIL_VIEW', process)
   async function process() {
-    logger.info("Exporting AGENT_INTERACTION_DETAIL_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/UserIds/AGENT_INTERACTION_DETAIL_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, {interval: `${yesterday}T00:00:00/${datetime}T00:00:00`})
-    for await (const userid of user) {
-      const id = uuid.v4()
-      Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
-      Object.assign(payload.filter, { userIds: [`${userid}`] })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
-    }
+    payload('AGENT_INTERACTION_DETAIL_VIEW').then((payload)=>{
+      for await (const userid of user) {
+        const id = uuid.v4()
+        Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
+        Object.assign(payload.filter, { userIds: [`${userid}`] })
+        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      }
+    })  
   }
 }
 async function export_QUEUE_PERFORMANCE_DETAIL_VIEW() {
-
   await fileCheck('QUEUE_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
-    logger.info("Exporting QUEUE_PERFORMANCE_DETAIL_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/QueueIds/QUEUE_PERFORMANCE_DETAIL_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, {interval: `${yesterday}T00:00:00/${datetime}T00:00:00`})
-    for await (const queueid of queue) {
-      for await (const media of mediatypes) {
-        const id = uuid.v4()
-        payload.filter.mediaTypes = [media]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
-        Object.assign(payload.filter, { queueIds: [`${queueid}`] })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('QUEUE_PERFORMANCE_DETAIL_VIEW').then((payload)=>{
+      for await (const queueid of queue) {
+        for await (const media of mediatypes) {
+          const id = uuid.v4()
+          payload.filter.mediaTypes = [media]
+          Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
+          Object.assign(payload.filter, { queueIds: [`${queueid}`] })
+          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        }
       }
-    }
+    })
   }
 }
 async function export_AGENT_PERFORMANCE_SUMMARY_VIEW() {
   await fileCheck('AGENT_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
-    logger.info("Exporting AGENT_PERFORMANCE_SUMMARY_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/AGENT_PERFORMANCE_SUMMARY_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const media of mediatypes) {
-      const id = uuid.v4()
-      payload.filter.mediaTypes = [media]
-      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
-    }
+    payload('AGENT_PERFORMANCE_DETAIL_VIEW').then((payload)=>{
+      for await (const media of mediatypes) {
+        const id = uuid.v4()
+        payload.filter.mediaTypes = [media]
+        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      }
+    })
   }
 }
 async function export_AGENT_EVALUATION_SUMMARY_VIEW() {
   await fileCheck('AGENT_EVALUATION_SUMMARY_VIEW', process)
   async function process() {
-    logger.info("Exporting AGENT_EVALUATION_SUMMARY_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/AGENT_EVALUATION_SUMMARY_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00`, })
-    const id = uuid.v4()
-    Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-    sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('AGENT_EVALUATION_SUMMARY_VIEW').then((payload)=>{
+      const id = uuid.v4()
+      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    })
   }
 }
 async function export_QUEUE_PERFORMANCE_SUMMARY_VIEW() {
   await fileCheck('QUEUE_PERFORMANCE_SUMMARY_VIEW', process)
   async function process() {
-    logger.info("Exporting QUEUE_PERFORMANCE_SUMMARY_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/QUEUE_PERFORMANCE_SUMMARY_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const media of mediatypes) {
-      const id = uuid.v4()
-      payload.filter.mediaTypes = [media]
-      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
-    }
+    payload('QUEUE_PERFORMANCE_SUMMARY_VIEW').then((payload)=>{
+      for await (const media of mediatypes) {
+        const id = uuid.v4()
+        payload.filter.mediaTypes = [media]
+        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      }
+    })
   }
 }
 async function export_FLOW_DESTINATION_SUMMARY_VIEW() {
   await fileCheck('FLOW_DESTINATION_SUMMARY_VIEW', process)
   async function process() {
-    logger.info("Exporting FLOW_DESTINATION_SUMMARY_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/FLOW_DESTINATION_SUMMARY_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const media of mediatypes) {
-      const id = uuid.v4()
-      payload.filter.mediaTypes = [media]
-      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
-    }
+    payload('FLOW_DESTINATION_SUMMARY_VIEW').then((payload)=>{
+      for await (const media of mediatypes) {
+        const id = uuid.v4()
+        payload.filter.mediaTypes = [media]
+        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      }
+    })
   }
 }
 async function export_SKILLS_PERFORMANCE_VIEW() {
   await fileCheck('SKILLS_PERFORMANCE_VIEW', process)
   async function process() {
-    logger.info("Exporting SKILLS_PERFORMANCE_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/SKILLS_PERFORMANCE_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const media of mediatypes) {
-      const id = uuid.v4()
-      payload.filter.mediaTypes = [media]
-      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
-    }
+    payload('SKILLS_PERFORMANCE_VIEW').then((payload)=>{
+      for await (const media of mediatypes) {
+        const id = uuid.v4()
+        payload.filter.mediaTypes = [media]
+        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      }
+    })
   }
 }
 async function export_SURVEY_FORM_PERFORMANCE_SUMMARY_VIEW() {
   await fileCheck('SURVEY_FORM_PERFORMANCE_SUMMARY_VIEW', process)
   async function process() {
-    logger.info("Exporting SURVEY_FORM_PERFORMANCE_SUMMARY_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/SURVEY_FORM_PERFORMANCE_SUMMARY_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const media of mediatypes) {
-      const id = uuid.v4()
-      payload.filter.mediaTypes = [media]
-      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
-    }
+    payload('SURVEY_FORM_PERFORMANCE_SUMMARY_VIEW').then((payload)=>{
+      for await (const media of mediatypes) {
+        const id = uuid.v4()
+        payload.filter.mediaTypes = [media]
+        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      }
+    }) 
   }
 }
 async function export_DNIS_PERFORMANCE_SUMMARY_VIEW() {
   await fileCheck('DNIS_PERFORMANCE_SUMMARY_VIEW', process)
   async function process() {
-    logger.info("Exporting DNIS_PERFORMANCE_SUMMARY_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/Directions/DNIS_PERFORMANCE_SUMMARY_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    const id = uuid.v4()
-    payload.filter.mediaTypes = ['voice']
-    Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-    sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('DNIS_PERFORMANCE_SUMMARY_VIEW').then((payload)=>{
+      const id = uuid.v4()
+      payload.filter.mediaTypes = ['voice']
+      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    })   
   }
 }
 async function export_DNIS_PERFORMANCE_DETAIL_VIEW() {
   await fileCheck('DNIS_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
-    logger.info("Exporting DNIS_PERFORMANCE_DETAIL_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/Directions/DNIS_PERFORMANCE_DETAIL_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    const id = uuid.v4()
-    payload.filter.mediaTypes = ['voice']
-    payload.filter.dnisList = did
-    Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-    sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('DNIS_PERFORMANCE_DETAIL_VIEW').then((payload)=>{
+      const id = uuid.v4()
+      payload.filter.mediaTypes = ['voice']
+      payload.filter.dnisList = did
+      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    })
   }
 }
 async function export_AGENT_QUEUE_DETAIL_VIEW() {
   await fileCheck('AGENT_QUEUE_DETAIL_VIEW', process)
   async function process() {
-    logger.info("Exporting AGENT_QUEUE_DETAIL_VIEW_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/FilterQueuesbyUserIds/AGENT_QUEUE_DETAIL_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const userid of user) {
-      for await (const media of mediatypes) {
-        const id = uuid.v4()
-        payload.filter.mediaTypes = [media]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-        Object.assign(payload.filter, { filterQueuesByUserIds: [`${userid}`] })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('AGENT_QUEUE_DETAIL_VIEW').then((payload)=>{
+      for await (const userid of user) {
+        for await (const media of mediatypes) {
+          const id = uuid.v4()
+          payload.filter.mediaTypes = [media]
+          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+          Object.assign(payload.filter, { filterQueuesByUserIds: [`${userid}`] })
+          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        }
       }
-    }
+    }) 
   }
 }
 async function export_AGENT_EVALUATION_DETAIL_VIEW() {
   await fileCheck('AGENT_EVALUATION_DETAIL_VIEW', process)
   async function process() {
-    logger.info("Exporting AGENT_EVALUATION_DETAIL_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/UserIds/AGENT_EVALUATION_DETAIL_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const userid of user) {
-      for await (const media of mediatypes) {
-        const id = uuid.v4()
-        payload.filter.mediaTypes = [media]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-        Object.assign(payload.filter, { userIds: [`${userid}`] })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('AGENT_EVALUATION_DETAIL_VIEW').then((payload)=>{
+      for await (const userid of user) {
+        for await (const media of mediatypes) {
+          const id = uuid.v4()
+          payload.filter.mediaTypes = [media]
+          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+          Object.assign(payload.filter, { userIds: [`${userid}`] })
+          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        }
       }
-    }
+    }) 
   }
 }
 async function export_QUEUE_AGENT_DETAIL_VIEW() {
   await fileCheck('QUEUE_AGENT_DETAIL_VIEW', process)
   async function process() {
-    logger.info("Exporting QUEUE_AGENT_DETAIL_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/FilterUsersByQueueIds/QUEUE_AGENT_DETAIL_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const queueid of queue) {
-      for await (const media of mediatypes) {
-        const id = uuid.v4()
-        payload.filter.mediaTypes = [media]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-        Object.assign(payload.filter, { filterUsersByQueueIds: [`${queueid}`] })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('QUEUE_AGENT_DETAIL_VIEW').then((payload)=>{
+      for await (const queueid of queue) {
+        for await (const media of mediatypes) {
+          const id = uuid.v4()
+          payload.filter.mediaTypes = [media]
+          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+          Object.assign(payload.filter, { filterUsersByQueueIds: [`${queueid}`] })
+          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        }
       }
-    }
+    })
   }
 }
 async function export_ABANDON_INSIGHTS_VIEW() {
   await fileCheck('ABANDON_INSIGHTS_VIEW', process)
   async function process() {
-    logger.info("Exporting ABANDON_INSIGHTS_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/QueueIds/ABANDON_INSIGHTS_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const queueid of queue) {
-      for await (const media of mediatypes) {
-        const id = uuid.v4()
-        payload.filter.mediaTypes = [media]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-        Object.assign(payload.filter, { queueIds: [`${queueid}`] })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('ABANDON_INSIGHTS_VIEW').then((payload)=>{
+      for await (const queueid of queue) {
+        for await (const media of mediatypes) {
+          const id = uuid.v4()
+          payload.filter.mediaTypes = [media]
+          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+          Object.assign(payload.filter, { queueIds: [`${queueid}`] })
+          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        }
       }
-    }
+    }) 
   }
 }
 async function export_AGENT_WRAP_UP_PERFORMANCE_DETAIL_VIEW() {
   await fileCheck('AGENT_WRAP_UP_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
-    logger.info("Exporting AGENT_WRAP_UP_PERFORMANCE_DETAIL_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/UserIds/AGENT_WRAP_UP_PERFORMANCE_DETAIL_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const userid of user) {
-      for await (const media of mediatypes) {
-        const id = uuid.v4()
-        payload.filter.mediaTypes = [media]
-        payload.filter.WrapUpCodes = [wrapup]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-        Object.assign(payload.filter, { userIds: [`${userid}`] })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('AGENT_WRAP_UP_PERFORMANCE_DETAIL_VIEW').then((payload)=>{
+      for await (const userid of user) {
+        for await (const media of mediatypes) {
+          const id = uuid.v4()
+          payload.filter.mediaTypes = [media]
+          payload.filter.WrapUpCodes = [wrapup]
+          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+          Object.assign(payload.filter, { userIds: [`${userid}`] })
+          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        }
       }
-    }
+    })
   }
 }
 async function export_WRAP_UP_PERFORMANCE_SUMMARY_VIEW() {
   await fileCheck('WRAP_UP_PERFORMANCE_SUMMARY_VIEW', process)
   async function process() {
-    logger.info("Exporting WRAP_UP_PERFORMANCE_SUMMARY_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/WrapUpCodes/WRAP_UP_PERFORMANCE_SUMMARY_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const media of mediatypes) {
-      const id = uuid.v4()
-      payload.filter.mediaTypes = [media]
-      payload.filter.WrapUpCodes = [wrapup]
-      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
-    }
+    payload('WRAP_UP_PERFORMANCE_SUMMARY_VIEW').then((payload)=>{
+      for await (const media of mediatypes) {
+        const id = uuid.v4()
+        payload.filter.mediaTypes = [media]
+        payload.filter.WrapUpCodes = [wrapup]
+        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      }
+    })
   }
 }
 async function export_FLOW_OUTCOME_SUMMARY_VIEW() {
   await fileCheck('FLOW_OUTCOME_SUMMARY_VIEW', process)
   async function process() {
-    logger.info("Exporting FLOW_OUTCOME_SUMMARY_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/FLOW_OUTCOME_SUMMARY_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const media of mediatypes) {
-      const id = uuid.v4()
-      payload.filter.mediaTypes = [media]
-      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
-    }
+    payload('FLOW_OUTCOME_SUMMARY_VIEW').then((payload)=>{
+      for await (const media of mediatypes) {
+        const id = uuid.v4()
+        payload.filter.mediaTypes = [media]
+        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      }
+    })
   }
 }
 async function export_IVR_PERFORMANCE_SUMMARY_VIEW() {
   await fileCheck('IVR_PERFORMANCE_SUMMARY_VIEW', process)
   async function process() {
-    logger.info("Exporting IVR_PERFORMANCE_SUMMARY_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/IVR_PERFORMANCE_SUMMARY_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const media of mediatypes) {
-      const id = uuid.v4()
-      payload.filter.mediaTypes = [media]
-      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
-    }
+    payload('IVR_PERFORMANCE_SUMMARY_VIEW').then((payload)=>{
+      for await (const media of mediatypes) {
+        const id = uuid.v4()
+        payload.filter.mediaTypes = [media]
+        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      }
+    })  
   }
 }
 async function export_IVR_PERFORMANCE_DETAIL_VIEW() {
   await fileCheck('IVR_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
-    logger.info("Exporting IVR_PERFORMANCE_DETAIL_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/FlowIds/IVR_PERFORMANCE_DETAIL_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const flowid of flow) {
-      for await (const media of mediatypes) {
-        const id = uuid.v4()
-        payload.filter.mediaTypes = [media]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-        Object.assign(payload.filter, { flowIds: [`${flowid}`] })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('IVR_PERFORMANCE_DETAIL_VIEW').then((payload)=>{
+      for await (const flowid of flow) {
+        for await (const media of mediatypes) {
+          const id = uuid.v4()
+          payload.filter.mediaTypes = [media]
+          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+          Object.assign(payload.filter, { flowIds: [`${flowid}`] })
+          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        }
       }
-    }
+    })
   }
 }
 async function export_FLOW_OUTCOME_PERFORMANCE_DETAIL_VIEW() {
   await fileCheck('FLOW_OUTCOME_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
-    logger.info("Exporting FLOW_OUTCOME_PERFORMANCE_DETAIL_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/FlowIds/FLOW_OUTCOME_PERFORMANCE_DETAIL_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const flowid of flow) {
-      for await (const media of mediatypes) {
-        const id = uuid.v4()
-        payload.filter.mediaTypes = [media]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-        Object.assign(payload.filter, { flowIds: [`${flowid}`] })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('FLOW_OUTCOME_PERFORMANCE_DETAIL_VIEW').then((payload)=>{
+      for await (const flowid of flow) {
+        for await (const media of mediatypes) {
+          const id = uuid.v4()
+          payload.filter.mediaTypes = [media]
+          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+          Object.assign(payload.filter, { flowIds: [`${flowid}`] })
+          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        }
       }
-    }
+    }) 
   }
 }
 async function export_SURVEY_FORM_PERFORMANCE_DETAIL_VIEW() {
   await fileCheck('SURVEY_FORM_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
-    logger.info("Exporting SURVEY_FORM_PERFORMANCE_DETAIL_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/SurveyFormIds/SURVEY_FORM_PERFORMANCE_DETAIL_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const surveyid of survey) {
-      for await (const media of mediatypes) {
-        const id = uuid.v4()
-        payload.filter.mediaTypes = [media]
-        payload.filter.surveyFormIds = [surveyid]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('SURVEY_FORM_PERFORMANCE_DETAIL_VIEW').then((payload)=>{
+      for await (const surveyid of survey) {
+        for await (const media of mediatypes) {
+          const id = uuid.v4()
+          payload.filter.mediaTypes = [media]
+          payload.filter.surveyFormIds = [surveyid]
+          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        }
       }
-    }
+    }) 
   }
 }
 async function export_BOT_PERFORMANCE_DETAIL_VIEW() {
   await fileCheck('BOT_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
-    logger.info("Exporting BOT_PERFORMANCE_DETAIL_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/BOT_PERFORMANCE_DETAIL_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    const id = uuid.v4()
-    Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-    sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('BOT_PERFORMANCE_DETAIL_VIEW').then((payload)=>{
+      const id = uuid.v4()
+      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    })
   }
 }
 async function export_BOT_PERFORMANCE_SUMMARY_VIEW() {
   await fileCheck('BOT_PERFORMANCE_SUMMARY_VIEW', process)
   async function process() {
-    logger.info("Exporting BOT_PERFORMANCE_SUMMARY_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/BOT_PERFORMANCE_SUMMARY_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    const id = uuid.v4()
-    Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-    sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('BOT_PERFORMANCE_SUMMARY_VIEW').then((payload)=>{
+      const id = uuid.v4()
+      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    })
   }
 }
 async function export_CONTENT_SEARCH_VIEW() {
   await fileCheck('CONTENT_SEARCH_VIEW', process)
   async function process() {
-    logger.info("Exporting CONTENT_SEARCH_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/CONTENT_SEARCH_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    const id = uuid.v4()
-    Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-    sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('CONTENT_SEARCH_VIEW').then((payload)=>{
+      const id = uuid.v4()
+      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    }) 
   }
 }
 async function export_JOURNEY_ACTION_MAP_SUMMARY_VIEW() {
   await fileCheck('JOURNEY_ACTION_MAP_SUMMARY_VIEW', process)
   async function process() {
-    logger.info("Exporting JOURNEY_ACTION_MAP_SUMMARY_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/JOURNEY_ACTION_MAP_SUMMARY_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    const id = uuid.v4()
-    Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-    sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('JOURNEY_ACTION_MAP_SUMMARY_VIEW').then((payload)=>{
+      const id = uuid.v4()
+      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    }) 
   }
 }
 async function export_JOURNEY_OUTCOME_SUMMARY_VIEW() {
   await fileCheck('JOURNEY_OUTCOME_SUMMARY_VIEW', process)
   async function process() {
-    logger.info("Exporting JOURNEY_OUTCOME_SUMMARY_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/JOURNEY_OUTCOME_SUMMARY_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    const id = uuid.v4()
-    Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-    sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('JOURNEY_OUTCOME_SUMMARY_VIEW').then((payload)=>{
+      const id = uuid.v4()
+      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    })  
   }
 }
 async function export_JOURNEY_SEGMENT_SUMMARY_VIEW() {
   await fileCheck('JOURNEY_SEGMENT_SUMMARY_VIEW', process)
   async function process() {
-    logger.info("Exporting JOURNEY_SEGMENT_SUMMARY_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/JOURNEY_SEGMENT_SUMMARY_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    const id = uuid.v4()
-    Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-    sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('JOURNEY_SEGMENT_SUMMARY_VIEW').then((payload)=>{
+      const id = uuid.v4()
+      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    })   
   }
 }
 async function export_SCHEDULED_CALLBACKS_VIEW() {
   await fileCheck('SCHEDULED_CALLBACKS_VIEW', process)
   async function process() {
-    logger.info("Exporting SCHEDULED_CALLBACKS_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/SCHEDULED_CALLBACKS_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    const id = uuid.v4()
-    Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-    sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('SCHEDULED_CALLBACKS_VIEW').then((payload)=>{
+      const id = uuid.v4()
+      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    })
   }
 }
 async function export_FLOW_MILESTONE_PERFORMANCE_DETAIL_VIEW() {
   await fileCheck('FLOW_MILESTONE_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
-    logger.info("Exporting FLOW_MILESTONE_PERFORMANCE_DETAIL_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/FlowIds/FLOW_MILESTONE_PERFORMANCE_DETAIL_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const flowid of flow) {
-      for await (const milestone of flowMileStone) {
-        const id = uuid.v4()
-        payload.filter.flowMilestoneIds = [milestone]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-        Object.assign(payload.filter, { flowIds: [`${flowid}`] })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('FLOW_MILESTONE_PERFORMANCE_DETAIL_VIEW').then((payload)=>{
+      for await (const flowid of flow) {
+        for await (const milestone of flowMileStone) {
+          const id = uuid.v4()
+          payload.filter.flowMilestoneIds = [milestone]
+          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+          Object.assign(payload.filter, { flowIds: [`${flowid}`] })
+          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        }
       }
-    }
+    })
   }
 }
 async function export_FLOW_MILESTONE_PERFORMANCE_INTERVAL_DETAIL_VIEW() {
   await fileCheck('FLOW_MILESTONE_PERFORMANCE_INTERVAL_DETAIL_VIEW', process)
   async function process() {
-    logger.info("Exporting FLOW_MILESTONE_PERFORMANCE_INTERVAL_DETAIL_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/FlowIds/FLOW_MILESTONE_PERFORMANCE_INTERVAL_DETAIL_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const flowid of flow) {
-      for await (const milestone of flowMileStone) {
-        const id = uuid.v4()
-        payload.filter.flowMilestoneIds = [milestone]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-        Object.assign(payload.filter, { flowIds: [`${flowid}`] })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('FLOW_MILESTONE_PERFORMANCE_INTERVAL_DETAIL_VIEW').then((payload)=>{
+      for await (const flowid of flow) {
+        for await (const milestone of flowMileStone) {
+          const id = uuid.v4()
+          payload.filter.flowMilestoneIds = [milestone]
+          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+          Object.assign(payload.filter, { flowIds: [`${flowid}`] })
+          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        }
       }
-    }
-}
+    }) 
+  }
 }
 async function export_AGENT_DEVELOPMENT_SUMMARY_VIEW() {
   await fileCheck('AGENT_DEVELOPMENT_SUMMARY_VIEW', process)
   async function process() {
-    logger.info("Exporting AGENT_DEVELOPMENT_SUMMARY_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/AGENT_DEVELOPMENT_SUMMARY_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
+    payload('AGENT_DEVELOPMENT_SUMMARY_VIEW').then((payload)=>{
       for await (const mediatype of mediatypes) {
         const id = uuid.v4()
         payload.filter.mediaTypes = [mediatype]
         Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
         sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
       }
+    })  
   }
 }
 async function export_AGENT_DEVELOPMENT_DETAIL_VIEW() {
   await fileCheck('AGENT_DEVELOPMENT_DETAIL_VIEW', process)
   async function process() {
-    logger.info("Exporting AGENT_DEVELOPMENT_DETAIL_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/AGENT_DEVELOPMENT_DETAIL_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const userid of user) {
-      for await (const media of mediatypes) {
-        const id = uuid.v4()
-        payload.filter.mediaTypes = [media]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-        Object.assign(payload.filter, { userIds: [`${userid}`] })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('AGENT_DEVELOPMENT_DETAIL_VIEW').then((payload)=>{
+      for await (const userid of user) {
+        for await (const media of mediatypes) {
+          const id = uuid.v4()
+          payload.filter.mediaTypes = [media]
+          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+          Object.assign(payload.filter, { userIds: [`${userid}`] })
+          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        }
       }
-    }
+    })
   }
 }
 async function export_AGENT_DEVELOPMENT_DETAIL_ME_VIEW() {
   await fileCheck('AGENT_DEVELOPMENT_DETAIL_ME_VIEW', process)
   async function process() {
-    logger.info("Exporting AGENT_DEVELOPMENT_DETAIL_ME_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/WithoutFilter/AGENT_DEVELOPMENT_DETAIL_ME_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const userid of user) {
-      for await (const media of mediatypes) {
-        const id = uuid.v4()
-        payload.filter.mediaTypes = [media]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-        Object.assign(payload.filter, { userIds: [`${userid}`] })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('AGENT_DEVELOPMENT_DETAIL_ME_VIEW').then((payload)=>{
+      for await (const userid of user) {
+        for await (const media of mediatypes) {
+          const id = uuid.v4()
+          payload.filter.mediaTypes = [media]
+          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+          Object.assign(payload.filter, { userIds: [`${userid}`] })
+          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        }
       }
-    }
+    })
   }
 }
 async function export_FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW() {
   await fileCheck('FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW', process)
   async function process() {
-    logger.info("Exporting FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/FlowIds/FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const flowout of flowOutcome){
-      for await (const flowid of flow){
-          for await (const media of mediatypes) {
-            const id = uuid.v4()
-            payload.filter.flowOutcomeIds = [flowout]
-            payload.filter.mediaTypes = [media]
-            payload.filter.flowIds = [flowid]
-            Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-            sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW').then((payload)=>{
+      for await (const flowout of flowOutcome){
+        for await (const flowid of flow){
+            for await (const media of mediatypes) {
+              const id = uuid.v4()
+              payload.filter.flowOutcomeIds = [flowout]
+              payload.filter.mediaTypes = [media]
+              payload.filter.flowIds = [flowid]
+              Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+              sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+            }
           }
         }
-      }
-    }
+    })
+  }
 }
 async function export_AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW() {
   await fileCheck('AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW', process)
   async function process() {
-    logger.info("Exporting AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW")
-    var jsonData = fs.readFileSync(__dirname + `/../Payload/AgentWrapUp/AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW.json`)
-    var payload = JSON.parse(jsonData)
-    Object.assign(payload, { interval: `${yesterday}T00:00:00/${datetime}T00:00:00` })
-    for await (const userid of user) {
-      for await (const media of mediatypes) {
-        const id = uuid.v4()
-        payload.filter.wrapUpCodes = wrapup
-        payload.filter.mediaTypes = [media]
-        payload.filter.userIds = [userid]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+    payload('AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW').then((payload)=>{
+      for await (const userid of user) {
+        for await (const media of mediatypes) {
+          const id = uuid.v4()
+          payload.filter.wrapUpCodes = wrapup
+          payload.filter.mediaTypes = [media]
+          payload.filter.userIds = [userid]
+          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
+          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        }
       }
-    }
+    })
   }
-}
-async function exportdata(payload, id) {
-  apiInstance
-    .postAnalyticsReportingExports(payload)
-    .then(async() => {
-      //counter++
-	  export_counter++;
-      sql_conn.doneExport(payload.viewType, id)
-      // console.log(counter)
-	  console.log(export_counter);
-    })
-    .catch((err) => {
-      logger.error(`Failed at ${payload.viewType} : ` + err.message)
-    })
 }
 async function fileCheck(viewtype, process) {
   sql.connect(sqlconfig).then((pool) => {
@@ -847,51 +756,10 @@ async function fileCheck(viewtype, process) {
           process()
         }
         else{
-          logger.info(viewtype+" is not active")
+          logger.info(viewtype+" is inactive")
         }
       })
   });
 }
-async function postExport() {
-	sql.connect(sqlconfig).then((pool) => {
-    pool
-		.request()
-		// Get x number of records to send as post request to genesys
-		.query(`Select top (${process.env.MAX_EXPORT_QUERY}) * from exports where is_exported = 0`, async function (err, res) {
-			if (err) {
-				logger.error("error");
-				return (err, null);
-			} else {
-				console.log("counter:" + counter);
-				await sleep(5000); // is this needed as there is a sleep inside the if condition after this?
-				if (res.recordset.length > 0) {
-
-					if(counter>process.env.MAX_EXPORT_LIMIT){
-            console.log("Limit Reach counter:" + counter);
-            await sql_dl()
-          }
-          else{
-            await sleep(60000); // rate-limit avoidance
-					// iterate in the x number of records captured from database
-					for await (entry of res.recordset) {
-						reportname = entry.report_name;
-						// send post request to genesys
-						exportdata(JSON.parse(entry.payload), entry.id);
-					}
-          counter = counter + export_counter;
-          export_counter = 0;
-            console.log("counter:" + counter);
-            await postExport()
-          }
-				} else {
-					logger.info("There is nothing to be exported");
-					// initiate report download then subtract total number of successful download to counter
-					await sql_dl();
-				}
-			}
-		});
-	});
-}
-
 
 module.exports = load
