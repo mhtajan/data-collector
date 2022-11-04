@@ -255,7 +255,7 @@ async function postExport() {
               // for AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW 
               // and FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW 
               // solution for failed statuses
-              await sleep(15000)
+              await sleep(12000) //interval high success rate: 15000 = 99.995%
             }
           }
             console.log("counter:" + counter);

@@ -34,13 +34,12 @@ async function runScript() {
     })
     .then(async(jsonResponse) => {
         await ensureDirectoryExistence() 
-        await controller(jsonResponse.access_token)
-        await lookup(jsonResponse.access_token)
+        await controller(jsonResponse.access_token) //iso with custombreakview and presenceconfig
+        await lookup(jsonResponse.access_token) //lookups
         await Pipe(jsonResponse.access_token) //analytics exports
     })
     .catch((e) => logger.error(e));
 }
-
 
 async function ensureDirectoryExistence() {
   if (!fs.existsSync('./reports/')) {
