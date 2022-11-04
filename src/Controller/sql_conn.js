@@ -31,7 +31,7 @@ module.exports = {
               function (err, res) {
                 if (err) {
                   console.log(err)
-                  logger.error("error:", err);
+                  logger.error(`error: ${err}`);
                 } else {
                   logger.info(`Tasks added successfully - ${filename}`);
                 }
@@ -64,7 +64,7 @@ module.exports = {
               },
               function (err, res) {
                 if (err) {
-                  logger.error("error:", +viewType);
+                  logger.error(`error: ${err}`);
                 } else {
                   logger.info(`Exported - ${viewType}`);
                 }
@@ -97,8 +97,7 @@ module.exports = {
               },
               function (err, res) {
                 if (err) {
-                  console.log(err)
-                  logger.error("error:", err);
+                  logger.error(`error: ${err}`);
                 } else {
                   logger.info(`Extracted URL from :` + report_Name);
                 }
@@ -159,7 +158,7 @@ module.exports = {
               function (err, res) {
                 if (err) {
                   console.log(err)
-                  logger.error("error:", err);
+                  logger.error(`error: ${err}`);
                 } else {
                   logger.info(`For deletion - ${Name}`);
                 }

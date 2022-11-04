@@ -251,6 +251,12 @@ async function postExport() {
             reportname = entry.report_name;
             // send post request to genesys
             exportdata(JSON.parse(entry.payload), entry.id);
+            if(entry.datasource_id==29||entry.datasource_id==19){ 
+              // for AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW 
+              // and FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW 
+              // solution for failed statuses
+              await sleep(15000)
+            }
           }
             console.log("counter:" + counter);
             await postExport()
