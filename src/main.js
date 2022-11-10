@@ -9,11 +9,8 @@ const params = new URLSearchParams();
 params.append("grant_type", "client_credentials");
 const controller = require(`./Controller/Controller`)
 const lookup = require("./Controller/Lookup")
-  // // cron.schedule(`${process.env.CRON_Sched}`, () => {
-  // //  loggers.info("Data collection executing!");
-  // //  runScript();
-  // // });
- // console.log(process.env.MAX_EXPORT_QUERY)
+const campaign = require("./Controller/Components/Campaign")
+
 runScript();
 async function runScript() {
   //oauth login
@@ -34,9 +31,10 @@ async function runScript() {
     })
     .then(async(jsonResponse) => {
         await ensureDirectoryExistence() 
-        await controller(jsonResponse.access_token) //iso with custombreakview and presenceconfig
-        await lookup(jsonResponse.access_token) //lookups
-        await Pipe(jsonResponse.access_token) //analytics exports
+        // await controller(jsonResponse.access_token) //iso with custombreakview and presenceconfig
+        // await lookup(jsonResponse.access_token) //lookups
+        // await Pipe(jsonResponse.access_token) //analytics exports
+        await campaign(jsonResponse.access_token)
     })
     .catch((e) => logger.error(e));
 }

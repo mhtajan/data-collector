@@ -7,7 +7,7 @@
   "scripts": {
     "prebuild": "rimraf ./dist/*",
     "build": "nexe -i ./src/main.js -r ./src/**/*.js -r ./src/Controller/*.js -r ./src/**/*.json -r ./node_modules -o dist/data-collector.exe --build ",
-    "postbuild" : "cp readme.md nssm.exe dist/"
+    "postbuild": "cp readme.md nssm.exe dist/"
   },
   "keywords": [],
   "author": "",
@@ -33,6 +33,7 @@
     "remove-duplicate-lines": "github:mhtajan/remove-duplicate-lines#master",
     "rimraf": "^3.0.2",
     "sleep-promise": "^9.1.0",
+    "stringify-object": "^4.0.1",
     "uuid": "^9.0.0",
     "winston": "^3.8.1"
   }

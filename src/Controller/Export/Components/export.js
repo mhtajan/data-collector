@@ -68,6 +68,7 @@ mediatypes = ["chat", "email", "message", "callback"]
 async function load(acessToken) {
   await lookup()
   await sleep(5000)
+  //await export_testmedia()// for testing mediatypes only
   await export_AGENT_STATUS_SUMMARY_VIEW()
   await export_QUEUE_INTERACTION_DETAIL_VIEW()
    await export_AGENT_STATUS_DETAIL_VIEW()
@@ -107,9 +108,23 @@ async function load(acessToken) {
   await export_AGENT_DEVELOPMENT_DETAIL_VIEW()
   await export_AGENT_DEVELOPMENT_SUMMARY_VIEW()
   await export_AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW()
-  await export_FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW()
+  // await export_FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW()
   await sleep(35*second)
   await postExport()
+}
+async function export_testmedia() {
+  await fileCheck('AGENT_PERFORMANCE_DETAIL_VIEW', process)
+  async function process() {
+    payload_method('AGENT_PERFORMANCE_DETAIL_VIEW').then(async(payload)=>{
+      for await (const userid of user) {
+          const id = uuid.v4()
+          payload.filter.mediaTypes = mediatypes
+          Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
+          Object.assign(payload.filter, { userIds: [`${userid}`] })
+          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      }
+    })
+  }
 }
 async function lookup() {
   getUserProfile()
