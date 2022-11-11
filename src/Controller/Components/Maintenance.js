@@ -36,7 +36,6 @@ async function getMainteReport(body) {
           })
         })
       })
-      if(arr.length>0)
       const csv = json2csvParser.parse(arr)
       let createdDateTime = new Date();
       var viewType = "ISO_SECURITY_MAINTENANCE_REPORT"

@@ -52,7 +52,6 @@ async function Loop(res) {
     getUserProfile()
   }
   else{
-    
     saveCsv()
   }
 }

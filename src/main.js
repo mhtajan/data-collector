@@ -9,7 +9,8 @@ const params = new URLSearchParams();
 params.append("grant_type", "client_credentials");
 const controller = require(`./Controller/Controller`)
 const lookup = require("./Controller/Lookup")
-const campaign = require("./Controller/Components/Campaign")
+const campaign = require("./Controller/Components/Campaign");
+const sleep = require("sleep-promise");
 
 runScript();
 async function runScript() {
@@ -30,11 +31,14 @@ async function runScript() {
       }
     })
     .then(async(jsonResponse) => {
-        await ensureDirectoryExistence() 
-        // await controller(jsonResponse.access_token) //iso with custombreakview and presenceconfig
-        // await lookup(jsonResponse.access_token) //lookups
-        // await Pipe(jsonResponse.access_token) //analytics exports
-        await campaign(jsonResponse.access_token)
+        await ensureDirectoryExistence()       
+        controller(jsonResponse.access_token) //iso with custombreakview and presenceconfig
+        await sleep(1000)
+        await lookup(jsonResponse.access_token) //lookups
+        await sleep(1000)
+        Pipe(jsonResponse.access_token)
+         //analytics exports
+        //await campaign(jsonResponse.access_token)
     })
     .catch((e) => logger.error(e));
 }

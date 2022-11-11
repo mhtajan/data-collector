@@ -34,28 +34,16 @@ async function getCampaign(body) {
     headers: { Authorization: 'Bearer ' + body },
     params: opts,
   })
-    .then((response) => {
-      Loop(response.data, body)
+    .then(async(response) => {
+      entities = response.data.entities
+      entities.forEach((entry) => {
+        campid.push(entry)
+      })
+      await sleep(1000)
+      tocsv(body)
     })
     .catch((e) => loggers.error(e))
 }
-async function Loop(res, body) {
-  if (res.pageCount >= res.pageNumber) {
-    entities = res.entities
-    entities.forEach((entry) => {
-      campid.push(entry)
-    })
-  if(res.pageCount==res.pageNumber){
-    getProgress(body)
-    await sleep(3000)
-    tocsv(body)
-    return
-  }
-    opts.pageNumber = opts.pageNumber + 1
-    getCampaign(body)
-  }
-}
-
 function ifExist(obj,arr_el,ele){
   if(obj.hasOwnProperty(`${ele}`)){
     return arr_el
@@ -67,24 +55,12 @@ function ifExist(obj,arr_el,ele){
 function phoneList(obj){
   return obj.phoneColumns[0]
 }
- function getProgress(body){
-  client.setAccessToken(body)
-  campid.forEach((entry)=>{
-    let apiInstance = new platformClient.OutboundApi();
-    apiInstance.getOutboundCampaignProgress(entry.id).then((data)=>{
-      progress.push(data)
-    }).catch((err)=>(loggers.info(err)))
-  }) 
-}
 async function getP(obj,body){
   client.setAccessToken(body)
     let apiInstance = new platformClient.OutboundApi();
     await apiInstance.getOutboundCampaignProgress(obj).then(async(data)=>{
       await progress.push(data)
     }).catch((err)=>(loggers.info(err)))
-}
-function findProgress(obj){
- console.log(progress)
 }
 async function tocsv(body){
   const arr = []
@@ -133,7 +109,6 @@ async function tocsv(body){
   percentage: `${progress[progress.length-1].percentage}`
 })
   })
- // console.log(JSON.stringify(arr,null,2))
 await sleep(2000)
 const csv = json2csvParser.parse(arr)
     let createdDateTime = new Date();
