@@ -1,0 +1,26 @@
+{
+   "timeZone": "Aisa/Singapore",
+   "exportFormat": "CSV",
+   "period": "PT30M",
+   "viewType": "AGENT_DEVELOPMENT_SUMMARY_VIEW",
+   "read": true,
+   "filter": {
+      "mediaTypes": [
+       ]
+   },
+   "requiredColumnIds": [
+      "agent_development_interval_start",
+      "agent_development_interval_end",
+      "agent_development_interval_complete",
+      "agent_development_filters",
+      "agent_development_agent_name",
+      "agent_development_agent_id"
+   ],
+   "locale": "en-us",
+   "hasFormatDurations": true,
+   "hasSplitFilters": false,
+   "excludeEmptyRows": true,
+   "hasSummaryRow": false,
+   "csvDelimiter": "COMMA",
+   "hasCustomParticipantAttributes": true
+}

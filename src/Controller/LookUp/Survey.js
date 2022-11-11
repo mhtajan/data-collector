@@ -47,7 +47,7 @@ async function Loop(res) {
     })
     const csv = json2csvParser.parse(survey)
     var viewType = "SURVEY_LOOKUP"
-        var filename = `SURVEY_LOOKUP_${datetime}`
+    var filename = `SURVEY_LOOKUP_${datetime}`
     fs.writeFileSync(`./reports/SURVEY_LOOKUP_${datetime}.csv`, `${eol.split(csv).join(eol.lf)}\n`)
     var path = process.cwd() + `\\reports\\` + filename
         var file_path = path + '.csv'

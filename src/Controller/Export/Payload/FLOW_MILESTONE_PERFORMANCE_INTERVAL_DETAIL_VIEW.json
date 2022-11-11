@@ -1,0 +1,29 @@
+{
+  "timeZone": "Aisa/Singapore",
+  "exportFormat": "CSV",
+  "period": "PT30M",
+  "viewType": "FLOW_MILESTONE_PERFORMANCE_INTERVAL_DETAIL_VIEW",
+  "read": true,
+  "filter": {
+    "flowMilestoneIds": [
+    ]
+  },
+  "locale": "en-us",
+  "requiredColumnIds": [
+    "flow_milestone_interval_start",
+    "flow_milestone_interval_end",
+    "flow_milestone_interval_complete",
+    "flow_milestone_filters",
+    "flow_milestone_media_type",
+    "flow_milestone_id",
+    "flow_milestone_name",
+    "flow_milestone_flow_id",
+    "flow_milestone_flow_name"
+  ],
+  "hasFormatDurations": true,
+  "hasSplitFilters": false,
+  "excludeEmptyRows": true,
+  "hasSummaryRow": false,
+  "csvDelimiter": "COMMA",
+  "hasCustomParticipantAttributes": true
+}

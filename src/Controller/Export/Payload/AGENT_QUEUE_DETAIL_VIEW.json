@@ -1,0 +1,30 @@
+{
+   "timeZone": "Aisa/Singapore",
+   "exportFormat": "CSV",
+   "period": "PT30M",
+   "viewType": "AGENT_QUEUE_DETAIL_VIEW",
+   "read": true,
+   "filter": {
+      "mediaTypes": [
+      ]
+   },
+   "requiredColumnIds": [
+      "agent_queue_view_interval_start",
+      "agent_queue_view_interval_end",
+      "agent_queue_view_interval_complete",
+      "agent_queue_view_filters",
+      "agent_queue_view_media_type",
+      "agent_queue_view_agent_id",
+      "agent_queue_view_agent_name",
+      "agent_queue_view_queue_id",
+      "agent_queue_view_queue_name",
+      "agent_queue_view_is_queue_active"
+   ],
+   "locale": "en-us",
+   "hasFormatDurations": true,
+   "hasSplitFilters": false,
+   "excludeEmptyRows": true,
+   "hasSummaryRow": false,
+   "csvDelimiter": "COMMA",
+   "hasCustomParticipantAttributes": true
+}

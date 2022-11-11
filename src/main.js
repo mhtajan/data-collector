@@ -8,14 +8,11 @@ const logger = require('./Controller/Logger')
 const params = new URLSearchParams();
 params.append("grant_type", "client_credentials");
 const controller = require(`./Controller/Controller`)
-const AgentCustom = require('./Controller/Components/Agent_custom_break_view')
-const AgentPresence = require(`./Controller/Components/Presence`)
-  // cron.schedule(`${process.env.CRON_Sched}`, () => {
-  //  loggers.info("Data collection executing!");
-  //  runScript();
-  // });
-runScript();
+const lookup = require("./Controller/Lookup")
+const campaign = require("./Controller/Components/Campaign");
+const sleep = require("sleep-promise");
 
+runScript();
 async function runScript() {
   //oauth login
   fetch(`https://login.mypurecloud.jp/oauth/token`, {
@@ -34,18 +31,21 @@ async function runScript() {
       }
     })
     .then(async(jsonResponse) => {
-        await ensureDirectoryExistence()
-        await Pipe(jsonResponse.access_token) //analytics exports
-        await controller(jsonResponse.access_token)
-        //await AgentCustom(jsonResponse.access_token)
-        //await AgentPresence(jsonResponse.access_token)
+        await ensureDirectoryExistence()       
+        controller(jsonResponse.access_token) //iso with custombreakview and presenceconfig
+        await sleep(1000)
+        await lookup(jsonResponse.access_token) //lookups
+        await sleep(1000)
+        Pipe(jsonResponse.access_token)
+         //analytics exports
+        //await campaign(jsonResponse.access_token)
     })
     .catch((e) => logger.error(e));
 }
-
 
 async function ensureDirectoryExistence() {
   if (!fs.existsSync('./reports/')) {
     fs.mkdirSync('./reports/')
  }
+}
 

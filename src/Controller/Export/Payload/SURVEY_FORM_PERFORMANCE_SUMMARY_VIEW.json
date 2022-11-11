@@ -1,0 +1,30 @@
+{
+  "timeZone": "Aisa/Singapore",
+  "exportFormat": "CSV",
+  "period": "PT30M",
+  "viewType": "SURVEY_FORM_PERFORMANCE_SUMMARY_VIEW",
+  "read": true,
+  "filter": {
+    "mediaTypes": [
+    ]
+  },
+  "locale": "en-us",
+  "requiredColumnIds": [
+    "survey_performance_view_interval_start",
+    "survey_performance_view_interval_end",
+    "survey_performance_view_interval_complete",
+    "survey_performance_view_aggregate_or_detail",
+    "survey_performance_view_filters",
+    "survey_performance_view_media_type",
+    "survey_performance_view_survey_form_context_id",
+    "survey_performance_view_survey_form_id",
+    "survey_performance_view_survey_form_name",
+    "survey_performance_view_survey_version"
+  ],
+  "hasFormatDurations": true,
+  "hasSplitFilters": false,
+  "excludeEmptyRows": true,
+  "hasSummaryRow": false,
+  "csvDelimiter": "COMMA",
+  "hasCustomParticipantAttributes": true
+}

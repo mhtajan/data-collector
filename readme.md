@@ -5,8 +5,7 @@ Chinabank Data-Collector
 
 |Dependencies    |Version   
 |----------------|---------           
-|axios           |`0.27.2`                    
-|download        |`8.0.0`            
+|axios           |`0.27.2`                             
 |json2csv        |`5.0.7`
 |moment          |`2.29.4`
 |nexe            |`4.0.0-rc.1`            
@@ -26,14 +25,21 @@ After installing npm packages run `npm run build`
 
 
 ## Windows Service Installation
-Run `nssm install data-collector`<br />
-Target data-collector.exe<br />
+Run `nssm install data-collector` using commandline<br />
+Locate data-collector.exe's path<br />
+Leave arguments as blank <br/>
+Click Install service <br />
+data-collector Service is now installed <br />
 
+## Windows Service Uninstall
+Run `nssm remove data-collector`<br />
 
 ## Windows Environment Setup
 Run `sysdm.cpl` <br />
 Create a new System Environment variable for Client Credentials <br/>
 * Client_ID: <`Client ID Credential`>
 * Client_SECRET: <`Client Secret Credential`>
-* CRON_Sched <`CRON schedule format configuration`>
+* CRON_Sched: <CRON schedule format configuration, sample: `0 4 * * *`>
+* MAX_EXPORT_QUERY: <Min: `100` - Max: `225`, default: `200`> 
+* MAX_EXPORT_LIMIT: <Min: `500` - Max: `1200` , default: `1100`> 
 

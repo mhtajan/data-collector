@@ -1,0 +1,31 @@
+{
+  "timeZone": "Aisa/Singapore",
+  "exportFormat": "CSV",
+  "period": "PT30M",
+  "viewType": "SKILLS_PERFORMANCE_VIEW",
+  "read": true,
+  "filter": {
+    "mediaTypes": [
+    ]
+  },
+  "locale": "en-us",
+  "requiredColumnIds": [
+    "skills_performance_view_interval_start",
+    "skills_performance_view_interval_end",
+    "skills_performance_view_interval_complete",
+    "skills_performance_view_filters",
+    "skills_performance_view_media_type",
+    "skills_performance_view_aggregate_or_detail",
+    "skills_performance_view_skills_id",
+    "skills_performance_view_skills_name",
+    "skills_performance_view_queue_id",
+    "skills_performance_view_queue_name",
+    "skills_performance_view_abandon_no_short"
+  ],
+  "hasFormatDurations": true,
+  "hasSplitFilters": false,
+  "excludeEmptyRows": true,
+  "hasSummaryRow": false,
+  "csvDelimiter": "COMMA",
+  "hasCustomParticipantAttributes": true
+}

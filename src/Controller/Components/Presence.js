@@ -31,10 +31,10 @@ function load(token) {
   getPresence()
 }
 let apiInstance = new platformClient.PresenceApi();
-function getPresence() {
+async function getPresence() {
   apiInstance.getPresencedefinitions(opts)
     .then(async (data) => {
-      const csv = json2csvParser.parse(data)
+      const csv = json2csvParser.parse(data.entities)
       let createdDateTime = new Date();
       var viewType = "AGENT_PRESENCE_CONFIG_DEFINITIONS"
       var filename = `AGENT_PRESENCE_CONFIG_DEFINITIONS_${datetime}`

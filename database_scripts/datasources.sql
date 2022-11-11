@@ -116,5 +116,7 @@ INSERT [dbo].[datasources] ([id], [name], [is_lookup], [created_at]) VALUES (57,
 GO
 INSERT [dbo].[datasources] ([id], [name], [is_lookup], [created_at]) VALUES (58, N'MEMBER_LOOKUP', 1, CAST(N'2022-09-21T16:16:40.080' AS DateTime))
 GO
+INSERT [dbo].[datasources] ([id], [name], [is_active], [created_at]) VALUES (59, N'DAILY_UPLOAD_REPORT', 1, CAST(N'2022-09-21T16:16:40.080' AS DateTime))
+GO
 SET IDENTITY_INSERT [dbo].[datasources] OFF
 GO
