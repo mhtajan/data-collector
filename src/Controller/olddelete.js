@@ -71,6 +71,7 @@ async function deleteReport(accessToken) {
         });
     }
     logger.info("Deleted all export");
+    deleteReport(accessToken)
   } else if (array.length == 0) {
     console.log("No export to delete");
   }

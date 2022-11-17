@@ -109,7 +109,7 @@ async function load(acessToken) {
   await export_AGENT_DEVELOPMENT_DETAIL_VIEW()
   await export_AGENT_DEVELOPMENT_SUMMARY_VIEW()
   await export_AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW()
-  await export_FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW()
+  //await export_FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW()
   await sleep(35*second)
   await postExport()
 }
@@ -320,9 +320,9 @@ async function export_QUEUE_PERFORMANCE_DETAIL_VIEW() {
   }
 }
 async function export_AGENT_PERFORMANCE_SUMMARY_VIEW() {
-  await fileCheck('AGENT_PERFORMANCE_DETAIL_VIEW', process)
+  await fileCheck('AGENT_PERFORMANCE_SUMMARY_VIEW', process)
   async function process() {
-    payload_method('AGENT_PERFORMANCE_DETAIL_VIEW').then(async(payload)=>{
+    payload_method('AGENT_PERFORMANCE_SUMMARY_VIEW').then(async(payload)=>{
       for await (const media of mediatypes) {
         const id = uuid.v4()
         payload.filter.mediaTypes = [media]

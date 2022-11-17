@@ -257,6 +257,9 @@ async function postExport() {
               // solution for failed statuses
               await sleep(12000) //interval high success rate: 15000 = 99.995%
             }
+            else{
+              await sleep(4000)
+            }
           }
             console.log("counter:" + counter);
             await postExport()
