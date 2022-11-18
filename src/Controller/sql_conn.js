@@ -53,10 +53,10 @@ module.exports = {
         ps.input("viewtype", sql.NVarChar);
         ps.input("payload", sql.NVarChar);
         ps.input("report_name", sql.NVarChar);
-        ps.prepare(
+        await ps.prepare(
           "exec sp_insertExports 'exports', @viewtype, @payload, @report_name",
           (err) => {
-            ps.execute(
+            await ps.execute(
               {
                 viewtype: viewType,
                 payload: payLoad,
@@ -68,7 +68,7 @@ module.exports = {
                 } else {
                   logger.info(`Exported - ${viewType}`);
                 }
-                ps.unprepare((err) => { });
+                await ps.unprepare((err) => { });
               });
           });
       })
@@ -86,10 +86,10 @@ module.exports = {
         ps.input("report_name", sql.NVarChar);
         ps.input("url", sql.NVarChar);
         ps.input("viewtype", sql.NVarChar);
-        ps.prepare(
+        await ps.prepare(
           "exec sp_insertDownload 'exports',@report_name, @url,@viewtype",
           (err) => {
-            ps.execute(
+            await ps.execute(
               {
                 report_name: report_Name,
                 url: Url,
@@ -101,7 +101,7 @@ module.exports = {
                 } else {
                   logger.info(`Extracted URL from :` + report_Name);
                 }
-                ps.unprepare((err) => { });
+                await ps.unprepare((err) => { });
               });
           });
       })
@@ -145,10 +145,10 @@ module.exports = {
         ps.input("reportid", sql.NVarChar);
         ps.input("status", sql.NVarChar);
         ps.input("name", sql.NVarChar);
-        ps.prepare(
+        await ps.prepare(
           "exec sp_insertStatus 'status', @runid, @reportid, @status, @name",
           (err) => {
-            ps.execute(
+            await ps.execute(
               {
                 runid: runId,
                 reportid: reportId,
@@ -162,7 +162,7 @@ module.exports = {
                 } else {
                   logger.info(`For deletion - ${Name}`);
                 }
-                ps.unprepare((err) => { });
+                await ps.unprepare((err) => { });
               });
           });
       })

@@ -225,6 +225,11 @@ async function payload_method(datasource){
   Object.assign(payload, {interval: `${yesterday}T00:00:00/${datetime}T00:00:00`})
   return payload
 }
+async function payload_connection(payload){
+  const id = uuid.v4()
+  Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
+  sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+}
 async function export_AGENT_PERFORMANCE_DETAIL_VIEW() {
   await fileCheck('AGENT_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
