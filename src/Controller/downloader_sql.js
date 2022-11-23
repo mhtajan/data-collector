@@ -95,7 +95,7 @@ async function sqlDownload() {
 async function getDownloads(id, name, exports_id, viewtype) {
   DlInstance.getDownload(id)
     .then(async (res) => {
-      await writeFile(`./reports/${name}.csv`, res)
+      await writeFile(`c:\\collector\\reports\\${name}.csv`, res)
       var path = 'c:\\collector\\reports' + name
       file_path = path + '.csv'
       data = res.toString().split('\n').length
