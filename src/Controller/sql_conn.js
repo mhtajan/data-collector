@@ -56,8 +56,7 @@ module.exports = {
         ps.prepare(
           "exec sp_insertExports 'exports', @viewtype, @payload, @report_name",
           (err) => {
-            ps.execute(
-              {
+            ps.execute({
                 viewtype: viewType,
                 payload: payLoad,
                 report_name: report_Name
@@ -72,7 +71,6 @@ module.exports = {
               });
           });
       })
-
     }
     catch (error) {
       logger.error(error)
@@ -80,7 +78,6 @@ module.exports = {
   },
   async dload(report_Name, Url,viewType) {
     try {
-
       await sql.connect(sqlconfig, function (res, err) {
         const ps = new sql.PreparedStatement();
         ps.input("report_name", sql.NVarChar);
@@ -89,8 +86,7 @@ module.exports = {
         ps.prepare(
           "exec sp_insertDownload 'exports',@report_name, @url,@viewtype",
           (err) => {
-            ps.execute(
-              {
+            ps.execute({
                 report_name: report_Name,
                 url: Url,
                 viewtype: viewType
@@ -105,7 +101,6 @@ module.exports = {
               });
           });
       })
-
     }
     catch (error) {
       logger.error(error)
@@ -138,7 +133,6 @@ module.exports = {
   },
   async status(runId,reportId,Status,Name){
     try {
-
       sql.connect(sqlconfig, function (res, err) {
         const ps = new sql.PreparedStatement();
         ps.input("runid", sql.NVarChar);

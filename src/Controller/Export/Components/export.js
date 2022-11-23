@@ -67,22 +67,21 @@ mediatypes = ["chat", "email", "message", "callback"]
 async function load(acessToken) {
   await lookup()
   await sleep(5000)
-  console.log("test")
   //await export_testmedia()// for testing mediatypes only
   await export_AGENT_STATUS_SUMMARY_VIEW()
   await export_QUEUE_INTERACTION_DETAIL_VIEW()
-   await export_AGENT_STATUS_DETAIL_VIEW()
+  await export_AGENT_STATUS_DETAIL_VIEW()
   await export_AGENT_PERFORMANCE_DETAIL_VIEW()
-  await export_INTERACTION_SEARCH_VIEW()
-  await export_AGENT_INTERACTION_DETAIL_VIEW()
-  await export_QUEUE_PERFORMANCE_DETAIL_VIEW()
-  await export_AGENT_PERFORMANCE_SUMMARY_VIEW()
-  await export_QUEUE_PERFORMANCE_SUMMARY_VIEW()
-  await export_AGENT_QUEUE_DETAIL_VIEW()
-  await export_QUEUE_AGENT_DETAIL_VIEW()
-  await export_AGENT_EVALUATION_SUMMARY_VIEW()
-  await export_AGENT_EVALUATION_DETAIL_VIEW()
-  await export_FLOW_DESTINATION_SUMMARY_VIEW()
+  // await export_INTERACTION_SEARCH_VIEW()
+  // await export_AGENT_INTERACTION_DETAIL_VIEW()
+  // await export_QUEUE_PERFORMANCE_DETAIL_VIEW()
+  // await export_AGENT_PERFORMANCE_SUMMARY_VIEW()
+  // await export_QUEUE_PERFORMANCE_SUMMARY_VIEW()
+  // await export_AGENT_QUEUE_DETAIL_VIEW()
+  // await export_QUEUE_AGENT_DETAIL_VIEW()
+  // await export_AGENT_EVALUATION_SUMMARY_VIEW()
+  // await export_AGENT_EVALUATION_DETAIL_VIEW()
+  // await export_FLOW_DESTINATION_SUMMARY_VIEW()
   // await export_SKILLS_PERFORMANCE_VIEW()
   // await export_SURVEY_FORM_PERFORMANCE_SUMMARY_VIEW()
   // await export_DNIS_PERFORMANCE_SUMMARY_VIEW()
@@ -224,17 +223,20 @@ async function payload_method(datasource){
   Object.assign(payload, {interval: `${yesterday}T00:00:00/${datetime}T00:00:00`})
   return payload
 }
+async function payload_Insert(payload){
+  const id = uuid.v4()
+  Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
+  sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+}
 async function export_AGENT_PERFORMANCE_DETAIL_VIEW() {
   await fileCheck('AGENT_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
     payload_method('AGENT_PERFORMANCE_DETAIL_VIEW').then(async(payload)=>{
       for await (const userid of user) {
         for await (const media of mediatypes) {
-          const id = uuid.v4()
           payload.filter.mediaTypes = [media]
-          Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
           Object.assign(payload.filter, { userIds: [`${userid}`] })
-          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+          payload_Insert(payload)
         }
       }
     })
@@ -245,10 +247,8 @@ async function export_AGENT_STATUS_DETAIL_VIEW() {
   async function process() {
     payload_method('AGENT_STATUS_DETAIL_VIEW').then(async(payload)=>{
       for (const userid of user) {
-        const id = uuid.v4()
-        Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
         Object.assign(payload.filter, { userIds: [`${userid}`] })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        payload_Insert(payload)
       }
     })
   }
@@ -258,10 +258,8 @@ async function export_QUEUE_INTERACTION_DETAIL_VIEW() {
   async function process() {
     payload_method('QUEUE_INTERACTION_DETAIL_VIEW').then(async(payload)=>{
       for await (const queueid of queue) {
-        const id = uuid.v4()
-        Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
         Object.assign(payload.filter, { queueIds: [`${queueid}`] })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        payload_Insert(payload)
       }
     })
   }
@@ -271,10 +269,8 @@ async function export_INTERACTION_SEARCH_VIEW() {
   async function process() {
     payload_method('INTERACTION_SEARCH_VIEW').then(async(payload)=>{
       for await (const userid of user) {
-        const id = uuid.v4()
-        Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
         Object.assign(payload.filter, { userIds: [`${userid}`] })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        payload_Insert(payload)
       }
     })
   }
@@ -283,9 +279,7 @@ async function export_AGENT_STATUS_SUMMARY_VIEW() {
   await fileCheck('AGENT_STATUS_SUMMARY_VIEW', process)
   async function process() {
     payload_method('AGENT_STATUS_SUMMARY_VIEW').then(async(payload)=>{
-      const id = uuid.v4()
-      Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      payload_Insert(payload)
     }) 
   }
 }
@@ -294,10 +288,8 @@ async function export_AGENT_INTERACTION_DETAIL_VIEW() {
   async function process() {
     payload_method('AGENT_INTERACTION_DETAIL_VIEW').then(async(payload)=>{
       for await (const userid of user) {
-        const id = uuid.v4()
-        Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
         Object.assign(payload.filter, { userIds: [`${userid}`] })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        payload_Insert(payload)
       }
     })  
   }
@@ -308,11 +300,9 @@ async function export_QUEUE_PERFORMANCE_DETAIL_VIEW() {
     payload_method('QUEUE_PERFORMANCE_DETAIL_VIEW').then(async(payload)=>{
       for await (const queueid of queue) {
         for await (const media of mediatypes) {
-          const id = uuid.v4()
           payload.filter.mediaTypes = [media]
-          Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
           Object.assign(payload.filter, { queueIds: [`${queueid}`] })
-          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+          payload_Insert(payload)
         }
       }
     })
@@ -323,10 +313,8 @@ async function export_AGENT_PERFORMANCE_SUMMARY_VIEW() {
   async function process() {
     payload_method('AGENT_PERFORMANCE_SUMMARY_VIEW').then(async(payload)=>{
       for await (const media of mediatypes) {
-        const id = uuid.v4()
         payload.filter.mediaTypes = [media]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        payload_Insert(payload)
       }
     })
   }
@@ -335,9 +323,7 @@ async function export_AGENT_EVALUATION_SUMMARY_VIEW() {
   await fileCheck('AGENT_EVALUATION_SUMMARY_VIEW', process)
   async function process() {
     payload_method('AGENT_EVALUATION_SUMMARY_VIEW').then(async(payload)=>{
-      const id = uuid.v4()
-      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      payload_Insert(payload)
     })
   }
 }
@@ -346,10 +332,8 @@ async function export_QUEUE_PERFORMANCE_SUMMARY_VIEW() {
   async function process() {
     payload_method('QUEUE_PERFORMANCE_SUMMARY_VIEW').then(async(payload)=>{
       for await (const media of mediatypes) {
-        const id = uuid.v4()
         payload.filter.mediaTypes = [media]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        payload_Insert(payload)
       }
     })
   }
@@ -359,10 +343,8 @@ async function export_FLOW_DESTINATION_SUMMARY_VIEW() {
   async function process() {
     payload_method('FLOW_DESTINATION_SUMMARY_VIEW').then(async(payload)=>{
       for await (const media of mediatypes) {
-        const id = uuid.v4()
         payload.filter.mediaTypes = [media]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        payload_Insert(payload)
       }
     })
   }
@@ -372,10 +354,8 @@ async function export_SKILLS_PERFORMANCE_VIEW() {
   async function process() {
     payload_method('SKILLS_PERFORMANCE_VIEW').then(async(payload)=>{
       for await (const media of mediatypes) {
-        const id = uuid.v4()
         payload.filter.mediaTypes = [media]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        payload_Insert(payload)
       }
     })
   }
@@ -385,10 +365,8 @@ async function export_SURVEY_FORM_PERFORMANCE_SUMMARY_VIEW() {
   async function process() {
     payload_method('SURVEY_FORM_PERFORMANCE_SUMMARY_VIEW').then(async(payload)=>{
       for await (const media of mediatypes) {
-        const id = uuid.v4()
         payload.filter.mediaTypes = [media]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        payload_Insert(payload)
       }
     }) 
   }
@@ -397,10 +375,8 @@ async function export_DNIS_PERFORMANCE_SUMMARY_VIEW() {
   await fileCheck('DNIS_PERFORMANCE_SUMMARY_VIEW', process)
   async function process() {
     payload_method('DNIS_PERFORMANCE_SUMMARY_VIEW').then(async(payload)=>{
-      const id = uuid.v4()
       payload.filter.mediaTypes = ['voice']
-      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      payload_Insert(payload)
     })   
   }
 }
@@ -408,11 +384,9 @@ async function export_DNIS_PERFORMANCE_DETAIL_VIEW() {
   await fileCheck('DNIS_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
     payload_method('DNIS_PERFORMANCE_DETAIL_VIEW').then(async(payload)=>{
-      const id = uuid.v4()
       payload.filter.mediaTypes = ['voice']
       payload.filter.dnisList = did
-      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      payload_Insert(payload)
     })
   }
 }
@@ -422,11 +396,9 @@ async function export_AGENT_QUEUE_DETAIL_VIEW() {
     payload_method('AGENT_QUEUE_DETAIL_VIEW').then(async(payload)=>{
       for await (const userid of user) {
         for await (const media of mediatypes) {
-          const id = uuid.v4()
           payload.filter.mediaTypes = [media]
-          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
           Object.assign(payload.filter, { filterQueuesByUserIds: [`${userid}`] })
-          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+          payload_Insert(payload)
         }
       }
     }) 
@@ -438,11 +410,9 @@ async function export_AGENT_EVALUATION_DETAIL_VIEW() {
     payload_method('AGENT_EVALUATION_DETAIL_VIEW').then(async(payload)=>{
       for await (const userid of user) {
         for await (const media of mediatypes) {
-          const id = uuid.v4()
           payload.filter.mediaTypes = [media]
-          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
           Object.assign(payload.filter, { userIds: [`${userid}`] })
-          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+          payload_Insert(payload)
         }
       }
     }) 
@@ -454,11 +424,9 @@ async function export_QUEUE_AGENT_DETAIL_VIEW() {
     payload_method('QUEUE_AGENT_DETAIL_VIEW').then(async(payload)=>{
       for await (const queueid of queue) {
         for await (const media of mediatypes) {
-          const id = uuid.v4()
           payload.filter.mediaTypes = [media]
-          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
           Object.assign(payload.filter, { filterUsersByQueueIds: [`${queueid}`] })
-          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+          payload_Insert(payload)
         }
       }
     })
@@ -470,11 +438,9 @@ async function export_ABANDON_INSIGHTS_VIEW() {
     payload_method('ABANDON_INSIGHTS_VIEW').then(async(payload)=>{
       for await (const queueid of queue) {
         for await (const media of mediatypes) {
-          const id = uuid.v4()
           payload.filter.mediaTypes = [media]
-          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
           Object.assign(payload.filter, { queueIds: [`${queueid}`] })
-          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+          payload_Insert(payload)
         }
       }
     }) 
@@ -486,12 +452,10 @@ async function export_AGENT_WRAP_UP_PERFORMANCE_DETAIL_VIEW() {
     payload_method('AGENT_WRAP_UP_PERFORMANCE_DETAIL_VIEW').then(async(payload)=>{
       for await (const userid of user) {
         for await (const media of mediatypes) {
-          const id = uuid.v4()
           payload.filter.mediaTypes = [media]
           payload.filter.WrapUpCodes = [wrapup]
-          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
           Object.assign(payload.filter, { userIds: [`${userid}`] })
-          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+          payload_Insert(payload)
         }
       }
     })
@@ -502,11 +466,9 @@ async function export_WRAP_UP_PERFORMANCE_SUMMARY_VIEW() {
   async function process() {
     payload_method('WRAP_UP_PERFORMANCE_SUMMARY_VIEW').then(async(payload)=>{
       for await (const media of mediatypes) {
-        const id = uuid.v4()
         payload.filter.mediaTypes = [media]
         payload.filter.WrapUpCodes = [wrapup]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        payload_Insert(payload)
       }
     })
   }
@@ -516,10 +478,8 @@ async function export_FLOW_OUTCOME_SUMMARY_VIEW() {
   async function process() {
     payload_method('FLOW_OUTCOME_SUMMARY_VIEW').then(async(payload)=>{
       for await (const media of mediatypes) {
-        const id = uuid.v4()
         payload.filter.mediaTypes = [media]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        payload_Insert(payload)
       }
     })
   }
@@ -529,10 +489,8 @@ async function export_IVR_PERFORMANCE_SUMMARY_VIEW() {
   async function process() {
     payload_method('IVR_PERFORMANCE_SUMMARY_VIEW').then(async(payload)=>{
       for await (const media of mediatypes) {
-        const id = uuid.v4()
         payload.filter.mediaTypes = [media]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        payload_Insert(payload)
       }
     })  
   }
@@ -543,11 +501,9 @@ async function export_IVR_PERFORMANCE_DETAIL_VIEW() {
     payload_method('IVR_PERFORMANCE_DETAIL_VIEW').then(async(payload)=>{
       for await (const flowid of flow) {
         for await (const media of mediatypes) {
-          const id = uuid.v4()
           payload.filter.mediaTypes = [media]
-          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
           Object.assign(payload.filter, { flowIds: [`${flowid}`] })
-          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+          payload_Insert(payload)
         }
       }
     })
@@ -559,11 +515,9 @@ async function export_FLOW_OUTCOME_PERFORMANCE_DETAIL_VIEW() {
     payload_method('FLOW_OUTCOME_PERFORMANCE_DETAIL_VIEW').then(async(payload)=>{
       for await (const flowid of flow) {
         for await (const media of mediatypes) {
-          const id = uuid.v4()
           payload.filter.mediaTypes = [media]
-          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
           Object.assign(payload.filter, { flowIds: [`${flowid}`] })
-          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+          payload_Insert(payload)
         }
       }
     }) 
@@ -575,11 +529,9 @@ async function export_SURVEY_FORM_PERFORMANCE_DETAIL_VIEW() {
     payload_method('SURVEY_FORM_PERFORMANCE_DETAIL_VIEW').then(async(payload)=>{
       for await (const surveyid of survey) {
         for await (const media of mediatypes) {
-          const id = uuid.v4()
           payload.filter.mediaTypes = [media]
           payload.filter.surveyFormIds = [surveyid]
-          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+          payload_Insert(payload)
         }
       }
     }) 
@@ -589,9 +541,7 @@ async function export_BOT_PERFORMANCE_DETAIL_VIEW() {
   await fileCheck('BOT_PERFORMANCE_DETAIL_VIEW', process)
   async function process() {
     payload_method('BOT_PERFORMANCE_DETAIL_VIEW').then(async(payload)=>{
-      const id = uuid.v4()
-      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      payload_Insert(payload)
     })
   }
 }
@@ -599,9 +549,7 @@ async function export_BOT_PERFORMANCE_SUMMARY_VIEW() {
   await fileCheck('BOT_PERFORMANCE_SUMMARY_VIEW', process)
   async function process() {
     payload_method('BOT_PERFORMANCE_SUMMARY_VIEW').then(async(payload)=>{
-      const id = uuid.v4()
-      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      payload_Insert(payload)
     })
   }
 }
@@ -609,9 +557,7 @@ async function export_CONTENT_SEARCH_VIEW() {
   await fileCheck('CONTENT_SEARCH_VIEW', process)
   async function process() {
     payload_method('CONTENT_SEARCH_VIEW').then(async(payload)=>{
-      const id = uuid.v4()
-      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      payload_Insert(payload)
     }) 
   }
 }
@@ -619,9 +565,7 @@ async function export_JOURNEY_ACTION_MAP_SUMMARY_VIEW() {
   await fileCheck('JOURNEY_ACTION_MAP_SUMMARY_VIEW', process)
   async function process() {
     payload_method('JOURNEY_ACTION_MAP_SUMMARY_VIEW').then(async(payload)=>{
-      const id = uuid.v4()
-      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      payload_Insert(payload)
     }) 
   }
 }
@@ -629,9 +573,7 @@ async function export_JOURNEY_OUTCOME_SUMMARY_VIEW() {
   await fileCheck('JOURNEY_OUTCOME_SUMMARY_VIEW', process)
   async function process() {
     payload_method('JOURNEY_OUTCOME_SUMMARY_VIEW').then(async(payload)=>{
-      const id = uuid.v4()
-      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      payload_Insert(payload)
     })  
   }
 }
@@ -639,9 +581,7 @@ async function export_JOURNEY_SEGMENT_SUMMARY_VIEW() {
   await fileCheck('JOURNEY_SEGMENT_SUMMARY_VIEW', process)
   async function process() {
     payload_method('JOURNEY_SEGMENT_SUMMARY_VIEW').then(async(payload)=>{
-      const id = uuid.v4()
-      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      payload_Insert(payload)
     })   
   }
 }
@@ -649,9 +589,7 @@ async function export_SCHEDULED_CALLBACKS_VIEW() {
   await fileCheck('SCHEDULED_CALLBACKS_VIEW', process)
   async function process() {
     payload_method('SCHEDULED_CALLBACKS_VIEW').then(async(payload)=>{
-      const id = uuid.v4()
-      Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-      sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      payload_Insert(payload)
     })
   }
 }
@@ -661,11 +599,9 @@ async function export_FLOW_MILESTONE_PERFORMANCE_DETAIL_VIEW() {
     payload_method('FLOW_MILESTONE_PERFORMANCE_DETAIL_VIEW').then(async(payload)=>{
       for await (const flowid of flow) {
         for await (const milestone of flowMileStone) {
-          const id = uuid.v4()
           payload.filter.flowMilestoneIds = [milestone]
-          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
           Object.assign(payload.filter, { flowIds: [`${flowid}`] })
-          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+          payload_Insert(payload)
         }
       }
     })
@@ -677,11 +613,9 @@ async function export_FLOW_MILESTONE_PERFORMANCE_INTERVAL_DETAIL_VIEW() {
     payload_method('FLOW_MILESTONE_PERFORMANCE_INTERVAL_DETAIL_VIEW').then(async(payload)=>{
       for await (const flowid of flow) {
         for await (const milestone of flowMileStone) {
-          const id = uuid.v4()
           payload.filter.flowMilestoneIds = [milestone]
-          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
           Object.assign(payload.filter, { flowIds: [`${flowid}`] })
-          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+          payload_Insert(payload)
         }
       }
     }) 
@@ -692,10 +626,8 @@ async function export_AGENT_DEVELOPMENT_SUMMARY_VIEW() {
   async function process() {
     payload_method('AGENT_DEVELOPMENT_SUMMARY_VIEW').then(async(payload)=>{
       for await (const mediatype of mediatypes) {
-        const id = uuid.v4()
         payload.filter.mediaTypes = [mediatype]
-        Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-        sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+        payload_Insert(payload)
       }
     })  
   }
@@ -706,11 +638,9 @@ async function export_AGENT_DEVELOPMENT_DETAIL_VIEW() {
     payload_method('AGENT_DEVELOPMENT_DETAIL_VIEW').then(async(payload)=>{
       for await (const userid of user) {
         for await (const media of mediatypes) {
-          const id = uuid.v4()
           payload.filter.mediaTypes = [media]
-          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
           Object.assign(payload.filter, { userIds: [`${userid}`] })
-          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+          payload_Insert(payload)
         }
       }
     })
@@ -722,11 +652,9 @@ async function export_AGENT_DEVELOPMENT_DETAIL_ME_VIEW() {
     payload_method('AGENT_DEVELOPMENT_DETAIL_ME_VIEW').then(async(payload)=>{
       for await (const userid of user) {
         for await (const media of mediatypes) {
-          const id = uuid.v4()
           payload.filter.mediaTypes = [media]
-          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
           Object.assign(payload.filter, { userIds: [`${userid}`] })
-          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+          payload_Insert(payload)
         }
       }
     })
@@ -739,12 +667,10 @@ async function export_FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW() {
       for await (const flowout of flowOutcome){
         for await (const flowid of flow){
             for await (const media of mediatypes) {
-              const id = uuid.v4()
               payload.filter.flowOutcomeIds = [flowout]
               payload.filter.mediaTypes = [media]
               payload.filter.flowIds = [flowid]
-              Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-              sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+              payload_Insert(payload)
             }
           }
         }
@@ -757,12 +683,10 @@ async function export_AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW() {
     payload_method('AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW').then(async(payload)=>{
       for await (const userid of user) {
         for await (const media of mediatypes) {
-          const id = uuid.v4()
           payload.filter.wrapUpCodes = wrapup
           payload.filter.mediaTypes = [media]
           payload.filter.userIds = [userid]
-          Object.assign(payload, { name: `${payload.viewType}_${datetime}_${id}` })
-          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+          payload_Insert(payload)
         }
       }
     })
