@@ -1,19 +1,9 @@
 const axios = require('axios').default
 const moment = require('moment')
-var datetime = moment().format('YYYY_MM_DD')
 var datetime = moment().format('YYYY-MM-DD')
 var yesterday = moment().subtract(6, 'days').format('YYYY-MM-DD')
-const eol = require('eol')
-const {
-  Parser,
-  transforms: { unwind, flatten },
-} = require('json2csv')
-const json2csvParser = new Parser({
-  transforms: [flatten({ objects: true, arrays: true })],
-})
-const fs = require('fs')
+const tocsv = require('../toCsv')
 const loggers = require('../Logger')
-const sql_conn = require('../sql_conn')
 
 const userAct = []
 const opts = {
@@ -47,16 +37,13 @@ async function Loop(res, body) {
     opts.paging.pageNumber = opts.paging.pageNumber + 1
     getUserAct(body)
   }
-  if (opts.paging.pageNumber == numberofLoops) {
+  else if (opts.paging.pageNumber == numberofLoops) {
     userD = res.userDetails
     userD.forEach((user) => {
       userAct.push(user)
     })
-  }
-  else{
     getCsv()
   }
-  return
 }
 async function getCsv(){
   const arr = []
@@ -100,25 +87,8 @@ async function getCsv(){
       })
     }   
   })
-
-  csv = json2csvParser.parse(arr)
-  let createdDateTime = new Date();
-  var viewType = "ISO_USER_ACTIVITY_REPORT"
-  var filename = `ISO_USER_ACTIVITY_REPORT_${datetime}`
-  fs.writeFileSync(`./reports/ISO_USER_ACTIVITY_REPORT_${datetime}.csv`, `${eol.split(csv).join(eol.lf)}\n`)
-  var path = process.cwd() + `\\reports\\` + filename
-  var file_path = path + '.csv'
-  var data = fs.readFileSync(file_path)
-  var resp = data.toString().split('\n').length;
-  const rowcount = resp - 2
-  if (rowcount < 0) {
-    rowcount = 0
-  }
-  await sql_conn.main(viewType, createdDateTime, filename, rowcount, file_path)
-    .then((res) => {
-    })
-    .catch((ex) => logger.error(ex.message))
-  loggers.info(`ISO_USER_ACTIVITY_REPORT EXPORTED SUCCESSFULLY`)
+  tocsv.main(arr,'ISO_USER_ACTIVITY_REPORT',datetime)
+  return
 }
 
 module.exports = getUserAct

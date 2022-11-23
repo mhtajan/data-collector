@@ -1,17 +1,12 @@
-const cron = require("node-cron");
 const fetch = require(`node-fetch`);
 const fs = require("fs");
 const token = `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`;
 const encodedToken = Buffer.from(token).toString("base64");
-const Pipe = require('./Controller/Pipe')
-const logger = require('./Controller/Logger')
+const { Controller, Lookup, exporter} = require('./Controller/handler.js')
+const logger = require('./Controller/Logger.js')
 const params = new URLSearchParams();
 params.append("grant_type", "client_credentials");
-const controller = require(`./Controller/Controller`)
-const lookup = require("./Controller/Lookup")
-const campaign = require("./Controller/Components/Campaign");
 const sleep = require("sleep-promise");
-
 runScript();
 async function runScript() {
   //oauth login
@@ -32,20 +27,21 @@ async function runScript() {
     })
     .then(async(jsonResponse) => {
         await ensureDirectoryExistence()       
-        controller(jsonResponse.access_token) //iso with custombreakview and presenceconfig
+        Controller(jsonResponse.access_token) //iso with custombreakview and presenceconfig
         await sleep(1000)
-        await lookup(jsonResponse.access_token) //lookups
+        await Lookup(jsonResponse.access_token) //lookups
         await sleep(1000)
-        Pipe(jsonResponse.access_token)
-         //analytics exports
-        //await campaign(jsonResponse.access_token)
+        exporter(jsonResponse.access_token)
     })
     .catch((e) => logger.error(e));
 }
 
 async function ensureDirectoryExistence() {
-  if (!fs.existsSync('./reports/')) {
-    fs.mkdirSync('./reports/')
- }
-}
+  if (!fs.existsSync('c:\\collector')) {
+    fs.mkdirSync('c:\\collector')
+    }
+  if(!fs.existsSync('c:\\collector\\reports\\')){
+    fs.mkdirSync('c:\\collector\\reports')
+    }
+  }
 

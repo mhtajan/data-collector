@@ -64,7 +64,7 @@ module.exports = {
               },
               function (err, res) {
                 if (err) {
-                  logger.error(`error: ${err}`);
+                  logger.error(`Error in ${viewType} : ${err}`);
                 } else {
                   logger.info(`Exported - ${viewType}`);
                 }

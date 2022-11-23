@@ -1,6 +1,5 @@
 const fs = require('fs')
 
-
 async function Main(token){
   const Components = fs
   .readdirSync(__dirname+'/Components/')
