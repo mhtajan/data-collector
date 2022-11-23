@@ -1,31 +1,11 @@
 const fetch = require(`node-fetch`)
 const axios = require('axios')
-const {
-  Parser,
-  transforms: { unwind, flatten },
-} = require('json2csv')
-const json2csvParser = new Parser({
-  transforms: [flatten({ objects: true, arrays: true })],
-})
-const subparser = new Parser({
-  transforms: [
-    unwind({ paths: ['fieldToUnwind'], blankOut: true }),
-    flatten({ objects: true, arrays: true }),
-  ],
-})
-const memberparser = new Parser({
-  transforms: [
-    unwind({ paths: ['fieldToUnwind'], blankOut: true }),
-    flatten({ objects: true, arrays: true }),
-  ],
-})
-const fs = require('fs')
 const moment = require('moment')
 var datetime = moment().format('YYYY_MM_DD')
 const loggers = require('../Logger')
-const eol = require('eol')
-const sql_conn = require('../sql_conn')
 const sleep = require('sleep-promise')
+const toCsv = require('../toCsv')
+
 let opts = {
   pageSize: 500,
   pageNumber: 1,
@@ -98,24 +78,7 @@ async function getGroup(token) {
             }
           })
         })
-        const csv = json2csvParser.parse(arr)
-        let createdDateTime = new Date();
-        var viewType = "ISO_LIST_GROUP_ROLES"
-        var filename = `ISO_LIST_GROUP_ROLES_${datetime}`
-        fs.writeFileSync(`./reports/ISO_LIST_GROUP_ROLES_${datetime}.csv`, `${eol.split(csv).join(eol.lf)}\n`)
-        var path = process.cwd() + `\\reports\\` + filename
-        var file_path = path + '.csv'
-        var data = fs.readFileSync(file_path)
-        var resp = data.toString().split('\n').length;
-        const rowcount = resp - 2
-        if (rowcount < 0) {
-          rowcount = 0
-        }
-        await sql_conn.main(viewType, createdDateTime, filename, rowcount, file_path)
-          .then(async (res) => {
-          })
-          .catch((ex) => logger.error(ex.message))
-        loggers.info('ISO_LIST_GROUP_ROLES EXPORTED SUCCESSFULLY')
+        toCsv.main(arr, 'ISO_LIST_GROUP_ROLES', datetime)
       }
     })
     .catch((e) => console.error(e))
@@ -211,26 +174,7 @@ async function getSub(token) {
       Policy_EntityName: ``
     })
   })
-  const csv = subparser.parse(arr)
-  let createdDateTime = new Date();
-  var viewType = "SUBJECT_LOOKUP"
-  var filename = `SUBJECT_LOOKUP_${datetime}`
-  fs.writeFileSync(`./reports/SUBJECT_LOOKUP_${datetime}.csv`, `${eol.split(csv).join(eol.lf)}\n`)
-  var path = process.cwd() + `\\reports\\` + filename
-  var file_path = path + '.csv'
-  var data = fs.readFileSync(file_path)
-  var resp = data.toString().split('\n').length;
-  const rowcount = resp - 2
-  if (rowcount < 0) {
-    rowcount = 0
-  }
-  await sql_conn.main(viewType, createdDateTime, filename, rowcount, file_path)
-    .then((res) => {
-    })
-    .catch((ex) => logger.error(ex.message))
-  loggers.info('SUBJECT_LOOKUP EXPORTED SUCCESSFULLY')
-
-
+  toCsv.main(arr, 'SUBJECT_LOOKUP', datetime)
 }
 
 async function getMember(token) {
@@ -358,26 +302,7 @@ async function getMember(token) {
       // 'name' should correspond to an identifying property of the objects
     })
   })
-  const csv = memberparser.parse(newArray)
-
-  let createdDateTime = new Date();
-  var viewType = "MEMBER_LOOKUP"
-  var filename = `MEMBER_LOOKUP_${datetime}`
-  fs.writeFileSync(`./reports/MEMBER_LOOKUP_${datetime}.csv`, `${eol.split(csv).join(eol.lf)}\n`)
-  var path = process.cwd() + `\\reports\\` + filename
-  var file_path = path + '.csv'
-  var data = fs.readFileSync(file_path)
-  var resp = data.toString().split('\n').length;
-  const rowcount = resp - 2
-  if (rowcount < 0) {
-    rowcount = 0
-  }
-  await sql_conn.main(viewType, createdDateTime, filename, rowcount, file_path)
-    .then((res) => {
-    })
-    .catch((ex) => logger.error(ex.message))
-  loggers.info('MEMBER_LOOKUP EXPORTED SUCCESSFULLY')
-
+  toCsv.main(arr, 'MEMBER_LOOKUP', datetime)
 }
 
 module.exports = getGroup

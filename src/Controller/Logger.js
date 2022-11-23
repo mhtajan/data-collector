@@ -1,7 +1,6 @@
 const { createLogger, format, transports } = require('winston');
 const { combine, timestamp, printf } = format;
 
-
 function info(body){
     logger.info(body)
 }
@@ -12,7 +11,6 @@ function error(body){
 const myFormat = printf(({ message, timestamp }) => {
     return `${timestamp}: ${message}`;
 });
-
 const logger = createLogger({
     format: combine(
         timestamp(),
@@ -21,11 +19,11 @@ const logger = createLogger({
     transports: [
     new transports.Console(),
     new transports.File({
-        filename: 'app.log',
+        filename: `C:\\collector\\collector.log`,
         level: 'info'
     }),
     new transports.File({
-        filename: 'errors.log',
+        filename: 'C:\\collector\\errors.log',
         level: 'error'
     })
     ]

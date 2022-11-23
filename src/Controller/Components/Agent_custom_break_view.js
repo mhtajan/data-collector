@@ -8,9 +8,6 @@ const {
   Parser,
   transforms: { unwind, flatten }
 } = require('json2csv')
-//   const json2csvParser = new Parser({
-//     transforms: [unwind({ blankOut: true }), flatten('__')],
-//   })
 const obj = {
   results :[]
 }
@@ -25,13 +22,12 @@ const json2csvParser = new Parser({
 
 const fs = require('fs')
 const loggers = require('../Logger')
-const pivot = require('pivot-keyvalues')
 const sleep = require('sleep-promise')
 const platformClient = require('purecloud-platform-client-v2')
-const BlobUpload = require('../sql_conn')
+const BlobUpload = require('../sql_conn');
+const toCsv = require('../toCsv');
 const client = platformClient.ApiClient.instance
 client.setEnvironment('mypurecloud.jp')
-const jsonToPivotjson = require("json-to-pivot-json");
 
 user = []
 let opts = {
@@ -119,28 +115,8 @@ async function GetApi(token, jsonPayload) {
           })
         })
       })
-      //Object.assign(obj,{results:`${[arr]}`})
-      //console.log(JSON.stringify(obj,null,2))
-      const csv = json2csvParser.parse(obj.results)
-      String(eol.lf)
-
-      var viewType = "AGENT_CUSTOM_BREAK_VIEW"
-      var filename = `AGENT_CUSTOM_BREAK_VIEW_${datetime}`
-      fs.writeFileSync(`./reports/AGENT_CUSTOM_BREAK_VIEW_${datetime}.csv`, `${eol.split(csv).join(eol.lf)}\n`)
-      var path = process.cwd() + `\\reports\\` + filename
-      var file_path = path + '.csv'
-      var data = fs.readFileSync(file_path)
-      var resp = data.toString().split('\n').length;
-      const rowcount = resp - 2
-      if (rowcount < 0) {
-        rowcount = 0
-      }
-      await BlobUpload.main(viewType, createdDateTime, filename, rowcount, file_path)
-        .then((res) => {
-        })
-        .catch((ex) => logger.error(ex.message))
-      loggers.info('Done Exporting AGENT_CUSTOM_BREAK_VIEW')
-    }).catch((e) => loggers.error(e, "at AGENT_CUSTOM_BREAK_VIEW"))
+      toCsv.main(obj.results,'AGENT_CUSTOM_BREAK_VIEW',datetime)
+})
 }
 
 module.exports = load

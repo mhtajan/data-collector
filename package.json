@@ -7,12 +7,13 @@
   "scripts": {
     "prebuild": "rimraf ./dist/*",
     "build": "nexe -i ./src/main.js -r ./src/**/*.js -r ./src/Controller/*.js -r ./src/**/*.json -r ./node_modules -o dist/data-collector.exe --build ",
-    "postbuild": "cp readme.md nssm.exe dist/"
+    "postbuild": "cp readme.md dist/"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "app-root-path": "^3.1.0",
     "axios": "^0.27.2",
     "build": "^0.1.4",
     "crossfilter": "^1.3.12",

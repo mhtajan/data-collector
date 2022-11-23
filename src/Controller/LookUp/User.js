@@ -1,23 +1,10 @@
 const axios = require('axios').default
-const {
-  Parser,
-  transforms: { unwind, flatten },
-} = require('json2csv')
-const json2csvParser = new Parser({
-  transforms: [
-    unwind({ paths: ['fieldToUnwind'], blankOut: true }),
-    flatten({ objects: true, arrays: true }),
-  ],
-})
-const eol = require('eol')
-const fs = require('fs')
 const moment = require('moment')
 const sleep = require("sleep-promise")
 var datetime = moment().format('YYYY_MM_DD')
-let createdDateTime = new Date();
 const loggers = require('../Logger')
 const platformClient = require('purecloud-platform-client-v2')
-const BlobUpload = require('../sql_conn')
+const toCsv = require('../toCsv')
 const client = platformClient.ApiClient.instance
 client.setEnvironment('mypurecloud.jp')
 
@@ -156,23 +143,6 @@ async function saveCsv(){
       // 'name' should correspond to an identifying property of the objects
     })
   }) 
-    const csv = json2csvParser.parse(newArray)
-    var viewType = "USERID_LOOKUP"
-    var filename = `USERID_LOOKUP_${datetime}`
-    fs.writeFileSync(`./reports/USERID_LOOKUP_${datetime}.csv`, `${eol.split(csv).join(eol.lf)}\n`)
-    
-    var path = process.cwd() + `\\reports\\` + filename
-        var file_path = path + '.csv'
-        var data = fs.readFileSync(file_path)
-        var resp = data.toString().split('\n').length;
-        const rowcount = resp - 2
-        if (rowcount<0){
-          rowcount = 0
-        }
-        BlobUpload.main(viewType,createdDateTime,filename,rowcount,file_path)
-        .then((res)=>{
-        })
-        .catch((ex)=> logger.error(ex.message))
-        loggers.info('USERID_LOOKUP EXPORTED SUCCESSFULLY')
+    toCsv.main(newArray,'USERID_LOOKUP',datetime)
 }
 module.exports = load

@@ -1,21 +1,9 @@
 const axios = require('axios').default
-const {
-  Parser,
-  transforms: { unwind, flatten },
-} = require('json2csv')
-const json2csvParser = new Parser({
-  transforms: [
-    unwind({ paths: ['fieldToUnwind'], blankOut: true }),
-    flatten({ objects: true, arrays: true }),
-  ],
-})
-const eol = require('eol')
-const fs = require('fs')
 const moment = require('moment')
 var datetime = moment().format('YYYY_MM_DD')
 const loggers = require('../Logger')
-const sql_conn = require('../sql_conn')
 const sleep = require('sleep-promise')
+const toCsv = require('../toCsv')
 
 let opts = {
   pageSize: 25, // Number | Page size
@@ -70,8 +58,8 @@ async function tocsv(){
         Address_Type: ``,
         Address_Extension: ``,
         Address_Country_Code: ``,
-      State: `${entry.state}`,
-      Username: `${entry.username}`,
+        State: `${entry.state}`,
+        Username: `${entry.username}`,
         })
     }
     if(entry.primaryContactInfo.length>=1){
@@ -84,18 +72,18 @@ async function tocsv(){
             Division_Name: `${entry.division.name}`,
             Chat_JabberId: `${entry.chat.jabberId}`,
             Email: `${entry.email}`,
-        Contact_Display: `${contact.display}`,
-        Contact_Address: `${contact.address}`,
-        Contact_Mediatype: `${contact.mediaType}`,
-        Contact_Type: `${contact.type}`,
-        Contact_Extension: `${contact.extension}`,
-        Address_Display: `${addr.display}`,
-        Address_Mediatype: `${addr.mediaType}`,
-        Address_Type: `${addr.type}`,
-        Address_Extension: `${addr.extension}`,
-        Address_Country_Code: `${addr.countryCode}`,
-        State: `${entry.state}`,
-        Username: `${entry.username}`,
+            Contact_Display: `${contact.display}`,
+            Contact_Address: `${contact.address}`,
+            Contact_Mediatype: `${contact.mediaType}`,
+            Contact_Type: `${contact.type}`,
+            Contact_Extension: `${contact.extension}`,
+            Address_Display: `${addr.display}`,
+            Address_Mediatype: `${addr.mediaType}`,
+            Address_Type: `${addr.type}`,
+            Address_Extension: `${addr.extension}`,
+            Address_Country_Code: `${addr.countryCode}`,
+            State: `${entry.state}`,
+            Username: `${entry.username}`,
           })
         })
           
@@ -107,13 +95,13 @@ async function tocsv(){
           Division_Name: `${entry.division.name}`,
           Chat_JabberId: `${entry.chat.jabberId}`,
           Email: `${entry.email}`,
-      Contact_Display: `${contact.display}`,
-      Contact_Address: `${contact.address}`,
-      Contact_Mediatype: `${contact.mediaType}`,
-      Contact_Type: `${contact.type}`,
-      Contact_Extension: `${contact.extension}`,
-      State: `${entry.state}`,
-      Username: `${entry.username}`,
+          Contact_Display: `${contact.display}`,
+          Contact_Address: `${contact.address}`,
+          Contact_Mediatype: `${contact.mediaType}`,
+          Contact_Type: `${contact.type}`,
+          Contact_Extension: `${contact.extension}`,
+          State: `${entry.state}`,
+          Username: `${entry.username}`,
         })
         }  
       })
@@ -126,36 +114,19 @@ async function tocsv(){
         Division_Name: `${entry.division.name}`,
         Chat_JabberId: `${entry.chat.jabberId}`,
         Email: `${entry.email}`,
-    Address_Display: `${addr.display}`,
-    Address_Mediatype: `${addr.mediaType}`,
-    Address_Type: `${addr.type}`,
-    Address_Extension: `${addr.extension}`,
-    Address_Country_Code: `${addr.countryCode}`,
-    State: `${entry.state}`,
-    Username: `${entry.username}`,
+        Address_Display: `${addr.display}`,
+        Address_Mediatype: `${addr.mediaType}`,
+        Address_Type: `${addr.type}`,
+        Address_Extension: `${addr.extension}`,
+        Address_Country_Code: `${addr.countryCode}`,
+        State: `${entry.state}`,
+        Username: `${entry.username}`,
       })
     })
     }    
   })
 await sleep(2000)
-const csv = json2csvParser.parse(arr)
-    let createdDateTime = new Date();
-    var viewType = "ISO_USER_PROFILE_REPORT"
-    var filename = `ISO_USER_PROFILE_REPORT_${datetime}`
-    fs.writeFileSync(`./reports/ISO_USER_PROFILE_REPORT_${datetime}.csv`, `${eol.split(csv).join(eol.lf)}\n`)
-    var path = process.cwd() + `\\reports\\` + filename
-    var file_path = path + '.csv'
-    var data = fs.readFileSync(file_path)
-    var resp = data.toString().split('\n').length;
-    const rowcount = resp - 2
-    if (rowcount < 0) {
-      rowcount = 0
-    }
-    await sql_conn.main(viewType, createdDateTime, filename, rowcount, file_path)
-      .then((res) => {
-      })
-      .catch((ex) => logger.error(ex.message))
-    loggers.info('ISO_USER_PROFILE_REPORT EXPORTED SUCCESSFULLY')
+toCsv.main(arr,'ISO_USER_PROFILE_REPORT',datetime)
 }
 
 module.exports = getUserProfile
