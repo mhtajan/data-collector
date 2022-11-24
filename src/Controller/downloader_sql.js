@@ -218,7 +218,7 @@ async function exportdata(payload, id) {
     export_counter++;
       sql_conn.doneExport(payload.viewType, id)
       // console.log(counter)
-    console.log(export_counter);
+    //console.log(export_counter);
     })
     .catch((err) => {
       logger.error(`Failed at ${payload.viewType} : ` + err.message)
