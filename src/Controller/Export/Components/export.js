@@ -106,7 +106,7 @@ async function load(acessToken) {
   await export_AGENT_DEVELOPMENT_DETAIL_VIEW()
   await export_AGENT_DEVELOPMENT_SUMMARY_VIEW()
   await export_AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW()
-  await export_FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW()
+  //await export_FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW()
   await sleep(35*second)
   await postExport()
 }
