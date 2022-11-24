@@ -39,7 +39,7 @@ async function getRoutingAvailablemediatype() {
           }
         }
         )
-        toCsv(arr,'MEDIATYPES_LOOKUP',datetime)
+        toCsv.main(arr,'MEDIATYPES_LOOKUP',datetime)
     })
     .catch((e) => loggers.error(e))
 }

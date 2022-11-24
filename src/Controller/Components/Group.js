@@ -10,6 +10,11 @@ let opts = {
   pageSize: 500,
   pageNumber: 1,
 }
+let optsUser = {
+  pageSize: 500,
+  pageNumber: 1,
+}
+
 
 var groups = []
 var members = []
@@ -33,7 +38,7 @@ async function getGroup(token) {
         })
         opts.pageNumber = opts.pageNumber + 1
         getGroup(token)
-        getSub(token)
+        await getUserProfile(token) //to get userid then use in subject
         getMember(token)
       }
       if (res.pageCount == res.pageNumber) {
@@ -85,7 +90,7 @@ async function getGroup(token) {
 }
 
 async function getSub(token) {
-  Id.forEach((id) => {
+  user.forEach((id) => {
     axios({
       method: 'get',
       url: `https://apps.mypurecloud.jp/platform/api/v2/authorization/subjects/${id}`,
@@ -96,29 +101,31 @@ async function getSub(token) {
   })
   await sleep(2000)
   const arr = []
-  Sub.forEach((entry) => {
+  Sub.forEach(async(entry) => {
     if (entry.hasOwnProperty('grants')) {
       entry.grants.forEach((grant) => {
         if (grant.role.hasOwnProperty('policies')) {
           grant.role.policies.forEach((policy) => {
             if (policy.hasOwnProperty('actions')) {
               policy.actions.forEach((action) => {
-                arr.push({
-                  Id: `${entry.id}`,
-                  Version: `${entry.version}`,
-                  SelfUri: `${entry.selfUri}`,
-                  Subject_Id: `${grant.subjectId}`,
-                  Division_Id: `${grant.division.id}`,
-                  Division_Name: `${grant.division.name}`,
-                  Division_Desc: `${grant.division.description}`,
-                  Division_selfUri: `${grant.division.selfUri}`,
-                  Role_Id: `${grant.role.id}`,
-                  Role_Name: `${grant.role.name}`,
-                  Role_Description: `${grant.role.description}`,
-                  Policy_Action: `${action}`,
-                  Policy_Domain: `${policy.domain}`,
-                  Policy_EntityName: `${policy.entityName}`
-                })
+                if(action=="view"){
+                  arr.push({
+                    Id: `${entry.id}`,
+                    Version: `${entry.version}`,
+                    SelfUri: `${entry.selfUri}`,
+                    Subject_Id: `${grant.subjectId}`,
+                    Division_Id: `${grant.division.id}`,
+                    Division_Name: `${grant.division.name}`,
+                    Division_Desc: `${grant.division.description}`,
+                    Division_selfUri: `${grant.division.selfUri}`,
+                    Role_Id: `${grant.role.id}`,
+                    Role_Name: `${grant.role.name}`,
+                    Role_Description: `${grant.role.description}`,
+                    Policy_Action: `${action}`,
+                    Policy_Domain: `${policy.domain}`,
+                    Policy_EntityName: `${policy.entityName}`
+                  })
+                }
               })
             }
             arr.push({
@@ -174,7 +181,17 @@ async function getSub(token) {
       Policy_EntityName: ``
     })
   })
-  toCsv.main(arr, 'SUBJECT_LOOKUP', datetime)
+  newarr = []
+  arr.forEach((entry,index)=>{
+    if(index>0){
+      if(entry.Policy_Domain!=arr[index-1].Policy_Action&&entry.Policy_EntityName!=arr[index-1].Policy_EntityName){
+        newarr.push(entry)
+      }
+    }
+    
+  })
+  await sleep(3000)
+  toCsv.main(newarr, 'SUBJECT_LOOKUP', datetime)
 }
 
 async function getMember(token) {
@@ -304,5 +321,31 @@ async function getMember(token) {
   })
   toCsv.main(arr, 'MEMBER_LOOKUP', datetime)
 }
+var user = []
 
+async function getUserProfile(body) {
+  axios({
+    method: 'get',
+    url: 'https://apps.mypurecloud.jp/platform/api/v2/users',
+    headers: { Authorization: 'Bearer ' + body },
+    params: optsUser,
+  })
+    .then((response) => {
+      Loop(response.data, body)
+    })
+    .catch((e) => loggers.error(e))
+}
+async function Loop(res, body) {
+  if (res.pageCount >= res.pageNumber) {
+    entities = res.entities
+    entities.forEach((entry) => {
+      user.push(entry.id)
+    })
+    if(res.pageCount==res.pageNumber){
+      getSub(body)
+    }
+    optsUser.pageNumber = optsUser.pageNumber + 1
+    getUserProfile(body)
+  }
+}
 module.exports = getGroup
