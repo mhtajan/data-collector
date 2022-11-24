@@ -21,6 +21,15 @@ var members = []
 var Sub = []
 var Id = []
 
+function ifExist(obj,arr_el,ele){
+  if(obj.hasOwnProperty(`${ele}`)){
+    return arr_el
+  }
+  else{
+   return ""
+  }
+}
+
 async function getGroup(token) {
   axios({
     method: 'get',
@@ -56,13 +65,16 @@ async function getGroup(token) {
               rulesVisible: `${entry.rulesVisible}`,
               visibility: `${entry.visibility}`,
               chat_jabberId: `${entry.chat.jabberId}`,
-              owner: `${owner.id}`
+              owner: `${owner.id}`,
+              Address_extension: ``,
+              Address_display: ``,
+              Address_type: ``,
+              Address_Mediatype: ``
             })
             if (entry.hasOwnProperty("addresses")) {
               if (entry.addresses.length > 0) {
                 entry.addresses.forEach((addr) => {
-                  arr.push({
-                    Id: `${entry.id}`,
+                  arr.push({Id: `${entry.id}`,
                     name: `${entry.name}`,
                     dateModified: `${entry.dateModified}`,
                     memberCount: `${entry.memberCount}`,
