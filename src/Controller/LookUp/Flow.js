@@ -37,6 +37,43 @@ async function Loop(res) {
   }
   else{
     const arr = []
+    arr.push({
+    Id: ``,
+    Name: ``,
+    Division_Id: ``,
+    Division_Name: ``,
+    Type: ``,
+    Active: ``,
+    System: ``,
+    Deleted: ``,
+    lockedUser_id: ``,
+    lockedUser_Name: ``,
+    Saved_Version_id: ``,
+    Saved_Version_name: ``,
+    Saved_Version_commit_version: ``,
+    Saved_Version_config_version: ``,
+    Saved_Version_config_uri: ``,
+    Publish_Version_id: ``,
+    Publish_Version_Name: ``,
+    Publish_Version_Commit_Version: ``,
+    Publish_Version_config_version: ``,
+    Publish_Version_secure: ``,
+    Publish_Version_debug: ``,
+    Publish_Version_createdBy: ``,
+    Publish_Version_dateCreated: ``,
+    Publish_Version_dateCheckedin: ``,
+    Publish_Version_dataSaved: ``,
+    Publish_Version_generation_ID: ``,
+    Publish_Version_inputSchema_title: ``,
+    Publish_Version_inputSchema_desc: ``,
+    Publish_Version_inputSchema_Type: ``,
+    Publish_Version_inputSchema_addtional_Properties: ``,
+    Publish_Version_generation_ID: ``,
+    Publish_Version_outputSchema_title: ``,
+    Publish_Version_outputSchema_desc: ``,
+    Publish_Version_outputSchema_Type: ``,
+    Publish_Version_outputSchema_addtional_Properties: ``,
+    })
     flow.forEach((entry,index)=>{
       arr.push({Id: `${entry.id}`,
     Name: `${entry.name}`,
@@ -48,7 +85,7 @@ async function Loop(res) {
     Deleted: `${entry.deleted}`,
     })
     if(entry.hasOwnProperty("publishedVersion")){
-      Object.assign(arr[index],{Publish_Version_id: `${entry.publishedVersion.id}`,
+      Object.assign(arr[index+1],{Publish_Version_id: `${entry.publishedVersion.id}`,
       Publish_Version_Name: `${entry.publishedVersion.name}`,
       Publish_Version_Commit_Version: `${entry.publishedVersion.commitVersion}`,
       Publish_Version_config_version: `${entry.publishedVersion.configurationVersion}`,
@@ -71,24 +108,25 @@ async function Loop(res) {
       })
     }
     if(entry.hasOwnProperty("lockedUser")){
-      Object.assign(arr[index],{lockedUser_id: `${entry.lockedUser.id}`,
+      Object.assign(arr[index+1],{lockedUser_id: `${entry.lockedUser.id}`,
       lockedUser_Name: `${entry.lockedUser.name}`,})
     }
-    if(entry.hasOwnProperty("checkedinVersion")){
-      Object.assign(arr[index],{CheckedInVersion_id: `${entry.checkedInVersion.id}`,
-      CheckedInVersion_name: `${entry.checkedInVersion.name}`,
-      CheckedInVersion_commitVersion: `${entry.checkedInVersion.commitVersion}`,
-      CheckedInVersion_configVersion: `${entry.checkedInVersion.configurationVersion}`,
-      CheckedInVersion_secure: `${entry.checkedInVersion.secure}`})
-    }
+    // if(entry.hasOwnProperty("checkedinVersion")){
+    //   Object.assign(arr[index],{CheckedInVersion_id: `${entry.checkedInVersion.id}`,
+    //   CheckedInVersion_name: `${entry.checkedInVersion.name}`,
+    //   CheckedInVersion_commitVersion: `${entry.checkedInVersion.commitVersion}`,
+    //   CheckedInVersion_configVersion: `${entry.checkedInVersion.configurationVersion}`,
+    //   CheckedInVersion_secure: `${entry.checkedInVersion.secure}`})
+    // }
     if(entry.hasOwnProperty("savedVersion")){
-      Object.assign(arr[index],{Saved_Version_id: `${entry.savedVersion.id}`,
+      Object.assign(arr[index+1],{Saved_Version_id: `${entry.savedVersion.id}`,
       Saved_Version_name: `${entry.savedVersion.name}`,
       Saved_Version_commit_version: `${entry.savedVersion.commitVersion}`,
       Saved_Version_config_version: `${entry.savedVersion.configurationVersion}`,
       Saved_Version_config_uri: `${entry.savedVersion.configurationUri}`,})
     }
     })
+    arr.splice(0,1)
     toCsv.main(arr,'FLOW_LOOKUP',datetime)
   }
 }
