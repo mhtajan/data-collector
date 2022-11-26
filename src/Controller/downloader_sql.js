@@ -1,6 +1,6 @@
 const logger = require(`./Logger`);
-const fs = require('fs')
-const { writeFile } = require('fs').promises;
+const fs = require("fs");
+const { writeFile } = require("fs").promises;
 const axios = require(`axios`);
 const sleep = require("sleep-promise");
 const fetch = require("node-fetch");
@@ -10,8 +10,8 @@ var dbConn = require("./config");
 const { sqlconfig } = require("./config");
 const tokeni = `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`;
 const encodedToken = Buffer.from(tokeni).toString("base64");
-const sql_conn = require('./sql_conn')
-var counter = 0
+const sql_conn = require("./sql_conn");
+var counter = 0;
 var export_counter = 0;
 
 let opts = {
@@ -36,7 +36,7 @@ async function mainDownload() {
       process.env.CLIENT_SECRET
     )
     .then(async (token) => {
-      logger.info("Extracting URL")
+      logger.info("Extracting URL");
       await dlExport();
     });
 }
@@ -46,72 +46,80 @@ async function dlExport(accessToken) {
     .then((res) => {
       Loop(res, accessToken);
     })
-    .catch((e) => console.error(e));
+    .catch((e) => {
+      logger.error(e.message);
+    });
 }
 async function Loop(res, accessToken) {
   if (res.pageCount >= res.pageNumber) {
     entities = res.entities;
     entities.forEach(async (entity) => {
       if (entity.status.includes("COMPLETED")) {
-        await sql_conn.dload(entity.name, entity.downloadUrl, entity.viewType)
+        await sql_conn.dload(entity.name, entity.downloadUrl, entity.viewType);
       }
     });
     opts.pageNumber = opts.pageNumber + 1;
     dlExport();
   }
   if (res.pageCount == res.pageNumber) {
-    await sleep(2000)
-    await sqlDownload()
+    await sleep(2000);
+    await sqlDownload();
   }
 }
 async function sqlDownload() {
   sql.connect(sqlconfig).then((pool) => {
     return pool
       .request()
-      .query("Select top (200) * from downloads where is_completed = 0", async function (err, res) {
-        if (err) {
-          console.log("error:", err);
-          return (err, null);
-        } else {
-          if (res.recordset.length > 0) {
-            logger.info("Downloading")
-            for (entry of res.recordset) {
-              await getDownloads(entry.url.substr(54), entry.report_name, entry.exports_id, entry.datasource_name)
-                .catch((err) => {
-                  logger.error(err)
-                })
+      .query(
+        "Select top (200) * from downloads where is_completed = 0",
+        async function (err, res) {
+          if (err) {
+            console.log("error:", err);
+            return err, null;
+          } else {
+            if (res.recordset.length > 0) {
+              logger.info("Downloading");
+              for (entry of res.recordset) {
+                await getDownloads(
+                  entry.url.substr(54),
+                  entry.report_name,
+                  entry.exports_id,
+                  entry.datasource_name
+                ).catch((err) => {
+                  logger.error(err);
+                });
+              }
+              await sleep(50000);
+              await sqlDownload();
+            } else {
+              await deleteRep();
             }
-            await sleep(50000)
-            await sqlDownload()
+            return null, res;
           }
-          else {
-            await deleteRep()
-          }
-          return (null, res);
         }
-      });
+      );
   });
 }
 async function getDownloads(id, name, exports_id, viewtype) {
   DlInstance.getDownload(id)
     .then(async (res) => {
-      await writeFile(`c:\\collector\\reports\\${name}.csv`, res)
-      var path = 'c:\\collector\\reports\\' + name
-      file_path = path + '.csv'
-      data = res.toString().split('\n').length
-      rowcount = data - 2
+      await writeFile(`c:\\collector\\reports\\${name}.csv`, res);
+      var path = "c:\\collector\\reports\\" + name;
+      file_path = path + ".csv";
+      data = res.toString().split("\n").length;
+      rowcount = data - 2;
       if (rowcount < 0) {
-        rowcount = 0
+        rowcount = 0;
       }
-      await sql_conn.main(viewtype, createdDateTime, name, rowcount, file_path)
-      await sql_conn.doneDownload(exports_id, name)
+      await sql_conn.main(viewtype, createdDateTime, name, rowcount, file_path);
+      await sql_conn.doneDownload(exports_id, name);
     })
     .catch((err) => {
-      logger.error(err)
-    })
+      logger.error(err);
+    });
 }
-async function deleteRep(){
-  await deleter()
+async function deleteRep() {
+  await deleter();
   async function deleter() {
     client
       .loginClientCredentialsGrant(
@@ -119,9 +127,9 @@ async function deleteRep(){
         process.env.CLIENT_SECRET
       )
       .then(async (token) => {
-        logger.info("Removing all successful export")
+        logger.info("Removing all successful export");
         await deleteExport(token.accessToken);
-        await sleep(10000)
+        await sleep(10000);
         await deleteReport(token.accessToken);
       });
   }
@@ -141,7 +149,7 @@ async function deleteRep(){
     if (res.pageCount >= res.pageNumber) {
       entities = res.entities;
       entities.forEach(async (entity) => {
-        sql_conn.status(entity.runId,entity.id,entity.status,entity.name)
+        sql_conn.status(entity.runId, entity.id, entity.status, entity.name);
       });
       deleteopts.pageNumber = deleteopts.pageNumber + 1;
       deleteExport();
@@ -152,126 +160,131 @@ async function deleteRep(){
     sql.connect(sqlconfig).then((pool) => {
       return pool
         .request()
-        .query("Select * from status where is_deleted = 0", async function (err, res) {
-          if (err) {
-            console.log("error:", err);
-            return(err, null);
-          } else {
-            await sleep(5000)
-            if(res.recordset.length>0){
-              for await(report of res.recordset){
-                await sleep(200)
-                axios({
-                  method: "delete",
-                  url: `https://apps.mypurecloud.jp/platform/api/v2/analytics/reporting/exports/${report.report_id}/history/${report.run_id}`,
-                  headers: { Authorization: "Bearer " + accessToken },
-                })
-                  .then(async() => {
-                    sql_conn.deleted(report.report_id)
-                    
+        .query(
+          "Select * from status where is_deleted = 0",
+          async function (err, res) {
+            if (err) {
+              console.log("error:", err);
+              return err, null;
+            } else {
+              await sleep(5000);
+              if (res.recordset.length > 0) {
+                for await (report of res.recordset) {
+                  await sleep(200);
+                  axios({
+                    method: "delete",
+                    url: `https://apps.mypurecloud.jp/platform/api/v2/analytics/reporting/exports/${report.report_id}/history/${report.run_id}`,
+                    headers: { Authorization: "Bearer " + accessToken },
                   })
-                  .catch((err) => {
-                    console.log(err.message);
-                  });
+                    .then(async () => {
+                      sql_conn.deleted(report.report_id);
+                    })
+                    .catch((err) => {
+                      console.log(err.message);
+                    });
+                }
+                await deleteReport(accessToken);
+              } else {
+                logger.info("Successfully deleted all reports");
+                counter = 0;
+                opts.pageNumber = 1;
+                deleteopts.pageNumber = 1;
+                CheckExportsLeft();
               }
-              await deleteReport(accessToken)
+              return null, res;
             }
-            else{
-              logger.info("Successfully deleted all reports")
-              counter = 0
-              opts.pageNumber = 1
-              deleteopts.pageNumber = 1
-              CheckExportsLeft()
-            }  
-            return(null, res);
           }
-        });
+        );
     });
   }
 
-  async function CheckExportsLeft(){
+  async function CheckExportsLeft() {
     sql.connect(sqlconfig).then((pool) => {
       pool
-      .request()
-      .query("Select * from exports where is_exported = 0", async function (err, res) {
-        if (err) {
-          logger.error("error");
-          return (err, null);
-        } else {
-          if(res.recordset.length > 0){
-            //not empty
-            await postExport()
+        .request()
+        .query(
+          "Select * from exports where is_exported = 0",
+          async function (err, res) {
+            if (err) {
+              logger.error("error");
+              return err, null;
+            } else {
+              if (res.recordset.length > 0) {
+                //not empty
+                await postExport();
+              } else {
+                logger.info("No more exports left");
+              }
+            }
           }
-          else{
-            logger.info("No more exports left")
-          }
-        }
-      });
+        );
     });
   }
 }
-async function exportdata(payload, id) {
-  apiInstance
+async function exportdata(payload, id, entry) {
+  await apiInstance
     .postAnalyticsReportingExports(payload)
-    .then(async() => {
-      //counter++
-    export_counter++;
-      sql_conn.doneExport(payload.viewType, id)
-      // console.log(counter)
-    //console.log(export_counter);
+    .then(async (res) => {
+      export_counter++;
+      sql_conn.doneExport(payload.viewType, id, payload.name);
     })
-    .catch((err) => {
-      logger.error(`Failed at ${payload.viewType} : ` + err.message)
-      sql_conn.failExport(payload.viewType, id)
-    })
+    .catch(async (err) => {
+      logger.error(`Failed at ${payload.name} : ` + err.message);
+      sql_conn.failExport(payload.viewType, id);
+      if (err.status == 403) {
+        await deleteRep();
+      }
+    });
 }
 async function postExport() {
   sql.connect(sqlconfig).then((pool) => {
     pool
-    .request()
-    // Get x number of records to send as post request to genesys
-    .query(`Select top (${process.env.MAX_EXPORT_QUERY}) * from exports where is_exported = 0 AND generation_retries<3`, async function (err, res) {
-      if (err) {
-        logger.error("error");
-        return (err, null);
-      } else {
-        console.log("counter:" + counter);
-        await sleep(5000); // is this needed as there is a sleep inside the if condition after this?
-        if (res.recordset.length > 0) {
-          counter = counter + export_counter;
-          export_counter = 0;
-          if(counter>process.env.MAX_EXPORT_LIMIT){
-            console.log("Limit Reach counter:" + counter);
-            mainDownload()
-          }
-          else{
-            await sleep(60000); // rate-limit avoidance
-          // iterate in the x number of records captured from database
-          for await (entry of res.recordset) {
-            reportname = entry.report_name;
-            // send post request to genesys
-            exportdata(JSON.parse(entry.payload), entry.id);
-            if(entry.datasource_id==29||entry.datasource_id==19){ 
-              // for AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW 
-              // and FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW 
-              // solution for failed statuses
-              await sleep(12000) //interval high success rate: 15000 = 99.995%
-            }
-            else{
-              await sleep(4000)
-            }
-          }
+      .request()
+      // Get x number of records to send as post request to genesys
+      .query(
+        `Select top (${process.env.MAX_EXPORT_QUERY}) * from exports where is_exported = 0 AND generation_retries<3`,
+        async function (err, res) {
+          if (err) {
+            logger.error("error");
+            return err, null;
+          } else {
             console.log("counter:" + counter);
-            await postExport()
+            await sleep(5000); // is this needed as there is a sleep inside the if condition after this?
+            if (res.recordset.length > 0) {
+              counter = counter + export_counter;
+              export_counter = 0;
+              if (counter > 2000) {
+                //process.env.MAX_EXPORT_LIMIT
+                console.log("Limit Reach counter:" + counter);
+                mainDownload();
+              } else {
+                await sleep(60000); // rate-limit avoidance
+                // iterate in the x number of records captured from database
+                for await (entry of res.recordset) {
+                  reportname = entry.report_name;
+                  // send post request to genesys
+                  exportdata(JSON.parse(entry.payload), entry.id, entry);
+                  if (entry.datasource_id == 29 || entry.datasource_id == 19) {
+                    // for AGENT_WRAP_UP_PERFORMANCE_INTERVAL_DETAIL_VIEW
+                    // and FLOW_OUTCOME_PERFORMANCE_INTERVAL_DETAIL_VIEW
+                    // solution for failed statuses
+                    await sleep(12000); //interval high success rate: 15000 = 99.995%
+                  } else {
+                    await sleep(4000);
+                  }
+                }
+                console.log("counter:" + counter);
+                await postExport();
+              }
+            } else {
+              logger.info("There is nothing to be exported");
+              // initiate report download then subtract total number of successful download to counter
+              await mainDownload();
+            }
           }
-        } else {
-          logger.info("There is nothing to be exported");
-          // initiate report download then subtract total number of successful download to counter
-          await mainDownload();
         }
-      }
-    });
+      );
   });
 }
 
-module.exports = postExport
+module.exports = postExport;

@@ -63,9 +63,9 @@ module.exports = {
               },
               function (err, res) {
                 if (err) {
-                  logger.error(`Error in ${viewType} : ${err}`);
+                  logger.error(`Error in ${report_Name} : ${err}`);
                 } else {
-                  logger.info(`Exported - ${viewType}`);
+                  logger.info(`Exported - ${report_Name}`);
                 }
                 ps.unprepare((err) => { });
               });
@@ -106,13 +106,13 @@ module.exports = {
       logger.error(error)
     }
   },
-  async doneExport(viewType, ID) {
+  async doneExport(viewType, ID,name) {
     try {
       sql.connect(sqlconfig).then((pool) => {
         return pool
           .request()
           .query(`UPDATE dbo.exports SET is_exported = 1 WHERE id = ${ID}`)
-          .then(logger.info('Done exporting - ' + viewType))
+          .then(logger.info('Done exporting - ' + name))
       });
     }
     catch (error) {
