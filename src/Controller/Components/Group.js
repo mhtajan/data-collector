@@ -98,7 +98,7 @@ async function getGroup(token) {
         toCsv.main(arr, 'ISO_LIST_GROUP_ROLES', datetime)
       }
     })
-    .catch((e) => console.error(e))
+    .catch((e) => loggers.error(e))
 }
 
 async function getSub(token) {

@@ -25,7 +25,7 @@ async function getUserAct(body) {
     .then(async (response) => {
       Loop(response.data, body)
     })
-    .catch((e) => console.error(e))
+    .catch((e) => loggers.error(e))
 }
 async function Loop(res, body) {
   numberofLoops = Math.floor(res.totalHits / 100) + 1  

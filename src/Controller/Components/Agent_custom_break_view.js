@@ -3,23 +3,6 @@ const moment = require(`moment`)
 let createdDateTime = new Date();
 var datetime = moment().format('YYYY-MM-DD')
 var yesterday = moment().subtract(6, 'days').format('YYYY-MM-DD')
-const eol = require('eol')
-const {
-  Parser,
-  transforms: { unwind, flatten }
-} = require('json2csv')
-const obj = {
-  results :[]
-}
-
-const json2csvParser = new Parser({
-  transforms: [
-    unwind({ paths: ['fieldToUnwind'], blankOut: true }),
-    flatten({ objects: true, arrays: true, separator: "_" }),
-    flatten('__')
-  ]
-})
-
 const fs = require('fs')
 const loggers = require('../Logger')
 const sleep = require('sleep-promise')
@@ -28,7 +11,9 @@ const BlobUpload = require('../sql_conn');
 const toCsv = require('../toCsv');
 const client = platformClient.ApiClient.instance
 client.setEnvironment('mypurecloud.jp')
-
+const obj = {
+  results :[]
+}
 user = []
 let opts = {
   pageSize: 500,
@@ -71,8 +56,7 @@ function getUserProfile(body) {
     })
     .catch((e) => console.error(e))
 }
-function fastpivot(a){"use strict";var t={};if("string"!=typeof a&&a.length>0){var l=Object.keys(a[0]),n={};l.forEach(function(a){n[a]={},n[a]._labels=[],n[a]._labelsdata=[],n[a]._data={}}),a.forEach(function(a,t){l.forEach(function(t){var l=a[t];n[t]._data[l]=(n[t]._data[l]||0)+1,n[t]._labels[l]=null})}),l.forEach(function(a){for(var t in n[a]._data)n[a]._labelsdata.push(n[a]._data[t]);n[a]._labels=Object.keys(n[a]._labels)}),t=n}return t}
-//var json = JSON.parse(resp);
+
 
 
 function LoopUser(res, body) {
@@ -86,7 +70,7 @@ function LoopUser(res, body) {
   }
 }
 
-function AgentCustom(token) {
+async function AgentCustom(token) {
   user.map((entry, index) => {
     array.push({
       "type": "dimension",
@@ -116,7 +100,7 @@ async function GetApi(token, jsonPayload) {
         })
       })
       toCsv.main(obj.results,'AGENT_CUSTOM_BREAK_VIEW',datetime)
-})
+}).catch((e) => loggers.error(e))
 }
 
 module.exports = load

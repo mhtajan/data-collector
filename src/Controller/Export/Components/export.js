@@ -82,7 +82,7 @@ async function load(acessToken) {
   await export_AGENT_EVALUATION_DETAIL_VIEW()
   await export_FLOW_DESTINATION_SUMMARY_VIEW()
   await export_SKILLS_PERFORMANCE_VIEW()
-  await export_SURVEY_FORM_PERFORMANCE_SUMMARY_VIEW()
+  //await export_SURVEY_FORM_PERFORMANCE_SUMMARY_VIEW()
   await export_DNIS_PERFORMANCE_SUMMARY_VIEW()
   await export_ABANDON_INSIGHTS_VIEW()
   await export_AGENT_WRAP_UP_PERFORMANCE_DETAIL_VIEW()
@@ -92,7 +92,7 @@ async function load(acessToken) {
   await export_FLOW_OUTCOME_SUMMARY_VIEW()
   await export_IVR_PERFORMANCE_DETAIL_VIEW()
   await export_IVR_PERFORMANCE_SUMMARY_VIEW()
-  await export_SURVEY_FORM_PERFORMANCE_DETAIL_VIEW()
+  //await export_SURVEY_FORM_PERFORMANCE_DETAIL_VIEW()
   await export_BOT_PERFORMANCE_DETAIL_VIEW()
   await export_BOT_PERFORMANCE_SUMMARY_VIEW()
   await export_CONTENT_SEARCH_VIEW()
@@ -110,7 +110,20 @@ async function load(acessToken) {
   await sleep(35*second)
   await postExport()
 }
-
+async function export_testmedia() {
+  await fileCheck('AGENT_PERFORMANCE_DETAIL_VIEW', process)
+  async function process() {
+    payload_method('AGENT_PERFORMANCE_DETAIL_VIEW').then(async(payload)=>{
+      for await (const userid of user) {
+          const id = uuid.v4()
+          payload.filter.mediaTypes = mediatypes
+          Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
+          Object.assign(payload.filter, { userIds: [`${userid}`] })
+          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
+      }
+    })
+  }
+}
 async function lookup() {
   getUserProfile()
   getQueue()

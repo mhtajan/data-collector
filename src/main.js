@@ -27,11 +27,11 @@ async function runScript() {
     })
     .then(async(jsonResponse) => {
         await ensureDirectoryExistence()       
-        Controller(jsonResponse.access_token) //iso with custombreakview and presenceconfig
-        await sleep(1000)
+        await Controller(jsonResponse.access_token) //iso with custombreakview and presenceconfig
+        await sleep(10000)
         await Lookup(jsonResponse.access_token) //lookups
         await sleep(1000)
-        exporter(jsonResponse.access_token)
+        await exporter(jsonResponse.access_token)
     })
     .catch((e) => logger.error(e));
 }
