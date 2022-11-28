@@ -11,7 +11,11 @@ const loggers = require('./Logger')
 const sql_conn = require('./sql_conn')
 
 module.exports = {
-    async main(arr,viewType,datetime){
+  async main(arr,viewType,datetime){
+    if(!arr){
+       loggers.error(`${viewType} does not have any data to be exported`)
+      }
+      else {
         csv = json2csvParser.parse(arr)
         let createdDateTime = new Date();
         var filename = `${viewType}_${datetime}`
@@ -23,9 +27,9 @@ module.exports = {
             rowcount = 0
         }
         await sql_conn.main(viewType, createdDateTime, filename, rowcount, file_path)
-            .then((res) => {
-            })
+            .then((res) => {})
             .catch((ex) => logger.error(ex.message))
         loggers.info(`${viewType} EXPORTED SUCCESSFULLY`)
-            }
+      }   
+    }
 }
