@@ -110,20 +110,7 @@ async function load(acessToken) {
   await sleep(35*second)
   await postExport()
 }
-async function export_testmedia() {
-  await fileCheck('AGENT_PERFORMANCE_DETAIL_VIEW', process)
-  async function process() {
-    payload_method('AGENT_PERFORMANCE_DETAIL_VIEW').then(async(payload)=>{
-      for await (const userid of user) {
-          const id = uuid.v4()
-          payload.filter.mediaTypes = mediatypes
-          Object.assign(payload, { name: `${payload.viewType}_${datetime.replaceAll("-", "_")}_${id.replaceAll("-", "_")}` })
-          Object.assign(payload.filter, { userIds: [`${userid}`] })
-          sql_conn.export(payload.viewType, JSON.stringify(payload), payload.name)
-      }
-    })
-  }
-}
+
 async function lookup() {
   getUserProfile()
   getQueue()
@@ -131,7 +118,7 @@ async function lookup() {
   getFlow()
   getFlowMilestone()
   getFlowOutCome()
-  getSurvey()
+  //getSurvey()
 async function getUserProfile() {
     let userInstance = new platformClient.UsersApi()
     await userInstance

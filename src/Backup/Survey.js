@@ -1,9 +1,9 @@
 const axios = require('axios').default
 const moment = require('moment')
 var datetime = moment().format('YYYY_MM_DD')
-const loggers = require('../Logger')
+const loggers = require('../Controller/Logger')
 const platformClient = require('purecloud-platform-client-v2')
-const toCsv = require('../toCsv')
+const toCsv = require('../Controller/toCsv')
 const client = platformClient.ApiClient.instance
 client.setEnvironment('mypurecloud.jp')
 
