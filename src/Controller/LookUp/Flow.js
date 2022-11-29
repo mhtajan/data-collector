@@ -84,6 +84,28 @@ async function Loop(res) {
     System: `${entry.system}`,
     Deleted: `${entry.deleted}`,
     })
+    if(entry.hasOwnProperty("lockedUser")){
+      Object.assign(arr[index+1],{lockedUser_id: `${entry.lockedUser.id}`,
+      lockedUser_Name: `${entry.lockedUser.name}`,})
+    }
+    else{
+      Object.assign(arr[index+1],{lockedUser_id: ``,
+      lockedUser_Name: ``,})
+    }
+    if(entry.hasOwnProperty("savedVersion")){
+      Object.assign(arr[index+1],{Saved_Version_id: `${entry.savedVersion.id}`,
+      Saved_Version_name: `${entry.savedVersion.name}`,
+      Saved_Version_commit_version: `${entry.savedVersion.commitVersion}`,
+      Saved_Version_config_version: `${entry.savedVersion.configurationVersion}`,
+      Saved_Version_config_uri: `${entry.savedVersion.configurationUri}`,})
+    }
+    else{
+      Object.assign(arr[index+1],{Saved_Version_id: ``,
+      Saved_Version_name: ``,
+      Saved_Version_commit_version: ``,
+      Saved_Version_config_version: ``,
+      Saved_Version_config_uri: ``,})
+    }
     if(entry.hasOwnProperty("publishedVersion")){
       Object.assign(arr[index+1],{Publish_Version_id: `${entry.publishedVersion.id}`,
       Publish_Version_Name: `${entry.publishedVersion.name}`,
@@ -107,24 +129,7 @@ async function Loop(res) {
       Publish_Version_outputSchema_addtional_Properties: `${entry.publishedVersion.outputSchema.additionalProperties}`,
       })
     }
-    if(entry.hasOwnProperty("lockedUser")){
-      Object.assign(arr[index+1],{lockedUser_id: `${entry.lockedUser.id}`,
-      lockedUser_Name: `${entry.lockedUser.name}`,})
-    }
-    // if(entry.hasOwnProperty("checkedinVersion")){
-    //   Object.assign(arr[index],{CheckedInVersion_id: `${entry.checkedInVersion.id}`,
-    //   CheckedInVersion_name: `${entry.checkedInVersion.name}`,
-    //   CheckedInVersion_commitVersion: `${entry.checkedInVersion.commitVersion}`,
-    //   CheckedInVersion_configVersion: `${entry.checkedInVersion.configurationVersion}`,
-    //   CheckedInVersion_secure: `${entry.checkedInVersion.secure}`})
-    // }
-    if(entry.hasOwnProperty("savedVersion")){
-      Object.assign(arr[index+1],{Saved_Version_id: `${entry.savedVersion.id}`,
-      Saved_Version_name: `${entry.savedVersion.name}`,
-      Saved_Version_commit_version: `${entry.savedVersion.commitVersion}`,
-      Saved_Version_config_version: `${entry.savedVersion.configurationVersion}`,
-      Saved_Version_config_uri: `${entry.savedVersion.configurationUri}`,})
-    }
+    
     })
     arr.splice(0,1)
     toCsv.main(arr,'FLOW_LOOKUP',datetime)
