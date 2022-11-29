@@ -12,7 +12,7 @@ const sql_conn = require('./sql_conn')
 
 module.exports = {
   async main(arr,viewType,datetime){
-    if(!arr){
+    if(!arr.length){
        loggers.error(`${viewType} does not have any data to be exported`)
       }
       else {
@@ -22,7 +22,7 @@ module.exports = {
         fs.writeFileSync(`c:\\collector\\reports\\${viewType}_${datetime}.csv`, `${eol.split(csv).join(eol.lf)}\n`)
         var path = 'c:\\collector\\reports\\' + filename
         var file_path = path + '.csv'
-        const rowcount = csv.toString().split('\n').length; - 2
+        const rowcount = csv.toString().split('\n').length - 2;
         if (rowcount < 0) {
             rowcount = 0
         }
